@@ -14,6 +14,8 @@
 #include "task_notify.hpp"
 #include "signal.hpp"
 #include "frame_scheduler.hpp"
+#include "../drivers/display/oled_driver.hpp"
+#include "../drivers/display/framebuffer.hpp"
 extern Mutex uart_mutex;
 #include "mpu.hpp"
 
@@ -281,27 +283,46 @@ void sender_task(void) {
     }
 }
 
+// 1. 实例化全局 128x128 智能手表 OLED 驱动与显存缓冲
+OledDriver g_oled("oled0", 128, 128);
+FrameBuffer<128, 128> g_fb;
+
 // ==========================================
-// 1. 手表 UI 表盘渲染线程 (CRITICAL 帧内优享)
+// 手表主 UI 界面渲染任务 (受 30FPS 窗口调度)
 // ==========================================
 void ui_render_task(void) {
+    g_oled.open();
+    
     int fd = open("/dev/uart0", 0);
-    write(fd, "[BlueOS UI] Render Engine Online. Locked to 30FPS (33ms window).\r\n", 66);
+    write(fd, "\r\n[BlueOS GUI] Dirty Rectangle Super Render Tree Online.\r\n", 58);
     close(fd);
 
+    uint32_t frame_count = 0;
+
     while (true) {
+        frame_count++;
         fd = open("/dev/uart0", 0);
-        write(fd, "\r\n[+ 0ms] 🟢 V-Sync! UI Intra-Frame Render START...\r\n", 54);
+        write(fd, "\r\n🟢 --- V-Sync! Intra-Frame UI Render Window --- 🟢\r\n", 55);
         close(fd);
 
-        // 模拟高强度的图形界面脏区域绘制、字模排版，耗时约 12ms
-        for (volatile int i = 0; i < 600000; i++); 
+        if (frame_count == 1) {
+            // 【第 1 帧：表盘初始化】画全屏深灰底色与表盘外框
+            g_fb.clear(0x18E3); // 触发全屏脏矩形
+            g_fb.fill_rect(10, 10, 108, 108, 0xFFFF); // 画外层白边框
+        } else {
+            // 【之后的每帧：局部动态数据更新】
+            // 我们绝对不刷全屏！我们仅仅在右下角更新一个 20x10 的心率/秒针数值盒
+            uint16_t anim_offset = (frame_count * 2) % 30;
+            
+            // 用新颜色覆盖上一帧的小色块
+            g_fb.fill_rect(50, 60, 28, 14, 0xF800); // 红色动感心跳框
+            g_fb.set_pixel(50 + anim_offset, 65, 0x07E0); // 移动的高亮像素
+        }
 
-        fd = open("/dev/uart0", 0);
-        write(fd, "[+12ms] 🏁 UI Render DONE! Unlocking Inter-Frame CPU budget...\r\n", 66);
-        close(fd);
+        // 【核心时刻】调用 flush，脏区域树自动求交集，生成最小更新补丁送入 OLED！
+        g_fb.flush(g_oled);
 
-        // 向 FrameScheduler 上报渲染结束，立刻让出算力
+        // 绘制结束，释放剩余 CPU 算力给后台，并睡眠直到下一个 33ms V-Sync！
         FrameScheduler::instance().wait_for_next_frame();
     }
 }
@@ -389,6 +410,7 @@ extern "C" void kernel_main(void) {
     // 挂载 设备 和 /tmp 目录下的虚拟文件
     DeviceRegistry::instance().register_device(new UartDevice("uart0"));
 #endif
+    DeviceRegistry::instance().register_device(&g_oled);
     
 #ifdef CONFIG_FS_PROCFS
     // 挂载 ProcFS 虚拟节点
