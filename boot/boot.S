@@ -101,10 +101,6 @@ PendSV_Handler:
     ldr r1, [r1]                @ r1 = *g_current_tcb_ptr
     str r0, [r1]                @ TCB 的第一个成员就是 stack_ptr，等同于 tcb->stack_ptr = r0
 
-    @ 保存 CONTROL 寄存器到 TCB (control_reg 偏移量 16)
-    mrs r3, control
-    str r3, [r1, #16]
-
     @ --- 切换 TCB 指针 ---
     ldr r2, =g_next_tcb_ptr
     ldr r2, [r2]                @ r2 = *g_next_tcb_ptr
@@ -114,11 +110,14 @@ PendSV_Handler:
 
     @ --- 恢复新线程的上下文 ---
     ldr r0, [r2]                @ r0 = tcb_next->stack_ptr (获取新线程的栈顶)
-    
-    @ 从新线程的 TCB 中恢复 CONTROL 寄存器
-    ldr r3, [r2, #16]
-    msr control, r3
-    isb                         @ 设置控制寄存器后需要 ISB 确保生效
+
+    @ 注：所有任务统一使用 CONTROL=0x2（特权 Thread 模式 + PSP），
+    @ 该值已由 Arch::start_first_task() 在引导第一个任务时设置一次，
+    @ 此后不再需要按任务切换 CONTROL——历史上这里曾尝试从 TCB 偏移量 16
+    @ 读回一个 control_reg 字段，但该字段在重构中被移除、偏移 16 处
+    @ 现在是 sleep_ticks，继续按旧偏移量读写会把休眠计时错当成
+    @ CONTROL 寄存器值写入硬件，导致 SPSEL 位被破坏、任务错误地
+    @ 切换到 MSP 栈。因此这里不再触碰 CONTROL 寄存器。
 
     @ 从新线程的栈中弹出 r4-r11 恢复给 CPU
     ldmia r0!, {r4-r11}
