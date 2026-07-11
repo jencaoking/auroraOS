@@ -101,6 +101,10 @@ PendSV_Handler:
     ldr r1, [r1]                @ r1 = *g_current_tcb_ptr
     str r0, [r1]                @ TCB 的第一个成员就是 stack_ptr，等同于 tcb->stack_ptr = r0
 
+    @ 保存 CONTROL 寄存器到 TCB (control_reg 偏移量 16)
+    mrs r3, control
+    str r3, [r1, #16]
+
     @ --- 切换 TCB 指针 ---
     ldr r2, =g_next_tcb_ptr
     ldr r2, [r2]                @ r2 = *g_next_tcb_ptr
@@ -111,6 +115,11 @@ PendSV_Handler:
     @ --- 恢复新线程的上下文 ---
     ldr r0, [r2]                @ r0 = tcb_next->stack_ptr (获取新线程的栈顶)
     
+    @ 从新线程的 TCB 中恢复 CONTROL 寄存器
+    ldr r3, [r2, #16]
+    msr control, r3
+    isb                         @ 设置控制寄存器后需要 ISB 确保生效
+
     @ 从新线程的栈中弹出 r4-r11 恢复给 CPU
     ldmia r0!, {r4-r11}
     
@@ -119,3 +128,14 @@ PendSV_Handler:
     cpsie i                     @ 2. 重新开启全局中断
     bx lr                       @ 3. 硬件自动弹出剩下寄存器，并跳转回新线程的 PC 处继续执行！
 
+.global SVC_Handler
+.thumb_func
+.type SVC_Handler, %function
+SVC_Handler:
+    @ 判断异常前使用的是 MSP 还是 PSP
+    tst lr, #4
+    ite eq
+    mrseq r0, msp
+    mrsne r0, psp
+    @ 跳转到 C 函数，r0 即为传入的上下文帧指针
+    b SVC_Handler_C

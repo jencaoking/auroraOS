@@ -6,6 +6,7 @@
 #include "vfs.hpp"
 #include "ramfs.hpp"
 #include "shell.hpp" // 引入 Shell
+#include "syscall.hpp"
 #include "mutex.hpp"
 
 extern "C" {
@@ -18,11 +19,19 @@ Mutex uart_mutex;
 // 依然保留挂载设备
 extern class UartDevice g_uart_device;
 
-// ==========================================
-// 终端前台任务
-// ==========================================
+void dummy_task(void) {
+    while (1) {
+        // Idle task must never sleep. It just spins to keep CPU busy when others sleep.
+    }
+}
+
 extern "C" void shell_task(void) {
-    // 在启动终端前，我们先往内存文件里预埋一段密文
+    // 【隔离验证测试】
+    // 尝试在非特权态访问系统控制空间 (SCB) 的 ICSR 寄存器以触发 PendSV
+    // 如果隔离生效，这行代码会立即触发 BusFault 或 HardFault 异常
+    volatile uint32_t* scb_icsr = (volatile uint32_t*)0xE000ED04;
+    *scb_icsr = (1 << 28); 
+    
     int fd = VfsManager::instance().open("/tmp/log.txt");
     if (fd >= 0) {
         const char* secret = "Hello from auroraOS RamFS! You found the hidden message.";
@@ -51,7 +60,11 @@ extern "C" void kernel_main(void) {
     sched.init();
 
     uint32_t* shell_stack = new uint32_t[512]; // 稍微给大一点栈空间
-    sched.create_task(shell_task, shell_stack, 512 * sizeof(uint32_t));
+    // 【修改点】创建任务时，指定 is_privileged = false
+    sched.create_task(shell_task, shell_stack, 512 * sizeof(uint32_t), false);
+
+    uint32_t* dummy_stack = new uint32_t[128];
+    sched.create_task(dummy_task, dummy_stack, 128 * sizeof(uint32_t), false);
 
     g_current_tcb_ptr = sched.get_current_tcb();
 
@@ -62,7 +75,7 @@ extern "C" void kernel_main(void) {
 
     __asm__ volatile (
         "msr psp, %0\n\t"
-        "mov r0, #2\n\t"
+        "mov r0, #3\n\t"
         "msr control, r0\n\t"
         "isb\n\t"
         "cpsie i\n\t"

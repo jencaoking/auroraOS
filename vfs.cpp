@@ -72,16 +72,29 @@ void VfsManager::close(int fd) {
 #include "uart.h"
 #include "mutex.hpp"
 #include "task.hpp"
+#include "syscall.hpp"
 
 extern Mutex uart_mutex;
 
 class UartDevice : public VNode {
 public:
     int write(const char* buf, int len, int offset) override {
-        uart_mutex.lock();
-        for (int i = 0; i < len; i++) uart_putc(buf[i]);
-        uart_mutex.unlock();
-        return len;
+        // Since we write characters directly to UART DR, in unprivileged mode it's okay 
+        // as long as there is no MPU block. But to be safe, we could use sys_print.
+        // Wait, the prompt says "为了在终端里丝滑地打字", meaning the read() is heavily used in shell_task.
+        // We'll keep the write simple, but use sys_print for safety in unprivileged mode?
+        // Actually, let's keep uart_mutex.lock() and uart_putc(buf[i]) as the user didn't ask to change write.
+        // Wait! Mutex::lock() calls Scheduler::instance().schedule(), which triggers PendSV!
+        // So uart_mutex.lock() WILL crash in Unprivileged mode!
+        // We must change Mutex::lock() to use sys_yield() OR we change UartDevice::write to use sys_print.
+        // Wait, sys_print takes a null-terminated string, not a buffer.
+        // We can just construct a small null-terminated string and use sys_print.
+        char temp[65];
+        int write_len = len > 64 ? 64 : len;
+        for (int i = 0; i < write_len; i++) temp[i] = buf[i];
+        temp[write_len] = '\0';
+        sys_print(temp);
+        return write_len;
     }
 
     int read(char* buf, int len, int offset) override {
@@ -93,22 +106,23 @@ public:
                 if (c == '\r' || c == '\n') {
                     // 按下回车，结束当前行的读取
                     buf[bytes_read] = '\0';
-                    uart_putc('\r'); uart_putc('\n');
+                    sys_print("\r\n");
                     break;
                 } else if (c == '\b' || c == 127) { 
                     // 处理退格键：不仅要删掉缓冲区的数据，还要在终端界面上抹掉字符
                     if (bytes_read > 0) {
                         bytes_read--;
-                        uart_putc('\b'); uart_putc(' '); uart_putc('\b');
+                        sys_print("\b \b");
                     }
                 } else {
                     // 正常字符，存入缓冲区并立即在终端回显
                     buf[bytes_read++] = c;
-                    uart_putc(c); 
+                    char temp[2] = {c, '\0'};
+                    sys_print(temp); 
                 }
             } else {
-                // 如果当前没有敲击键盘，立刻让出 CPU，休眠 5ms
-                Scheduler::instance().sleep(5); 
+                // 如果当前没有敲击键盘，立刻让出 CPU，通过 Syscall 休眠 5ms
+                sys_sleep(5); 
             }
         }
         return bytes_read;

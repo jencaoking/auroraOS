@@ -15,6 +15,7 @@ struct TaskControlBlock {
     TaskState state;
     uint32_t  id;
     uint32_t  sleep_ticks;     // 记录还需要休眠多少个系统 Tick
+    uint32_t  control_reg;     // 【新增】保存任务的 CONTROL 寄存器状态
 };
 
 extern "C" {
@@ -34,13 +35,15 @@ public:
         task_count = 0;
     }
 
-    void create_task(void (*task_entry)(void), uint32_t* stack_space, uint32_t stack_size) {
+    void create_task(void (*task_entry)(void), uint32_t* stack_space, uint32_t stack_size, bool is_privileged = true) {
         if (task_count >= MAX_TASKS) return;
 
         TaskControlBlock& tcb = tasks[task_count];
         tcb.id = task_count;
         tcb.state = TaskState::Ready;
         tcb.sleep_ticks = 0;
+        // CONTROL: Bit 1 (SPSEL) = 1 (Use PSP). Bit 0 (nPRIV) = 0 (Privileged) or 1 (Unprivileged)
+        tcb.control_reg = is_privileged ? 0x02 : 0x03;
 
         uint32_t* top = stack_space + (stack_size / sizeof(uint32_t));
         top--; *top = 0x01000000;   
