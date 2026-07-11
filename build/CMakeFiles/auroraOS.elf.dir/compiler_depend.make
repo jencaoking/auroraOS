@@ -15,18 +15,26 @@ CMakeFiles/auroraOS.elf.dir/kernel.cpp.obj: J:/PROJECT/auroraOS/kernel.cpp \
   J:/PROJECT/auroraOS/config.h \
   J:/PROJECT/auroraOS/interrupts.hpp \
   J:/PROJECT/auroraOS/memory.hpp \
-  J:/PROJECT/auroraOS/msg_queue.hpp \
   J:/PROJECT/auroraOS/mutex.hpp \
-  J:/PROJECT/auroraOS/semaphore.hpp \
-  J:/PROJECT/auroraOS/softbus.hpp \
+  J:/PROJECT/auroraOS/ramfs.hpp \
+  J:/PROJECT/auroraOS/shell.hpp \
   J:/PROJECT/auroraOS/task.hpp \
-  J:/PROJECT/auroraOS/uart.h
+  J:/PROJECT/auroraOS/uart.h \
+  J:/PROJECT/auroraOS/vfs.hpp
 
 CMakeFiles/auroraOS.elf.dir/memory.cpp.obj: J:/PROJECT/auroraOS/memory.cpp \
   J:/CODE/arm-gnu-toolchain/lib/gcc/arm-none-eabi/13.2.1/include/stddef.h \
   J:/CODE/arm-gnu-toolchain/lib/gcc/arm-none-eabi/13.2.1/include/stdint-gcc.h \
   J:/CODE/arm-gnu-toolchain/lib/gcc/arm-none-eabi/13.2.1/include/stdint.h \
   J:/PROJECT/auroraOS/memory.hpp
+
+CMakeFiles/auroraOS.elf.dir/ramfs.cpp.obj: J:/PROJECT/auroraOS/ramfs.cpp \
+  J:/PROJECT/auroraOS/ramfs.hpp \
+  J:/PROJECT/auroraOS/vfs.hpp
+
+CMakeFiles/auroraOS.elf.dir/shell.cpp.obj: J:/PROJECT/auroraOS/shell.cpp \
+  J:/PROJECT/auroraOS/shell.hpp \
+  J:/PROJECT/auroraOS/vfs.hpp
 
 CMakeFiles/auroraOS.elf.dir/softbus.cpp.obj: J:/PROJECT/auroraOS/softbus.cpp \
   J:/CODE/arm-gnu-toolchain/lib/gcc/arm-none-eabi/13.2.1/include/stdint-gcc.h \
@@ -39,8 +47,18 @@ CMakeFiles/auroraOS.elf.dir/uart.c.obj: J:/PROJECT/auroraOS/uart.c \
   J:/CODE/arm-gnu-toolchain/lib/gcc/arm-none-eabi/13.2.1/include/stdint.h \
   J:/PROJECT/auroraOS/uart.h
 
+CMakeFiles/auroraOS.elf.dir/vfs.cpp.obj: J:/PROJECT/auroraOS/vfs.cpp \
+  J:/CODE/arm-gnu-toolchain/lib/gcc/arm-none-eabi/13.2.1/include/stdint-gcc.h \
+  J:/CODE/arm-gnu-toolchain/lib/gcc/arm-none-eabi/13.2.1/include/stdint.h \
+  J:/PROJECT/auroraOS/mutex.hpp \
+  J:/PROJECT/auroraOS/task.hpp \
+  J:/PROJECT/auroraOS/uart.h \
+  J:/PROJECT/auroraOS/vfs.hpp
+
 
 J:/PROJECT/auroraOS/interrupts.cpp:
+
+J:/PROJECT/auroraOS/shell.hpp:
 
 J:/PROJECT/auroraOS/uart.h:
 
@@ -52,6 +70,8 @@ J:/CODE/arm-gnu-toolchain/lib/gcc/arm-none-eabi/13.2.1/include/stdint-gcc.h:
 
 J:/CODE/arm-gnu-toolchain/lib/gcc/arm-none-eabi/13.2.1/include/stdint.h:
 
+J:/PROJECT/auroraOS/ramfs.hpp:
+
 J:/PROJECT/auroraOS/task.hpp:
 
 J:/PROJECT/auroraOS/kernel.cpp:
@@ -60,16 +80,20 @@ J:/PROJECT/auroraOS/config.h:
 
 J:/PROJECT/auroraOS/memory.hpp:
 
-J:/PROJECT/auroraOS/msg_queue.hpp:
-
 J:/PROJECT/auroraOS/mutex.hpp:
 
-J:/PROJECT/auroraOS/semaphore.hpp:
-
-J:/PROJECT/auroraOS/softbus.hpp:
+J:/PROJECT/auroraOS/vfs.hpp:
 
 J:/PROJECT/auroraOS/memory.cpp:
+
+J:/PROJECT/auroraOS/ramfs.cpp:
+
+J:/PROJECT/auroraOS/shell.cpp:
 
 J:/PROJECT/auroraOS/uart.c:
 
 J:/PROJECT/auroraOS/softbus.cpp:
+
+J:/PROJECT/auroraOS/softbus.hpp:
+
+J:/PROJECT/auroraOS/vfs.cpp:

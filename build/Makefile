@@ -208,6 +208,54 @@ memory.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/memory.cpp.s
 .PHONY : memory.cpp.s
 
+ramfs.obj: ramfs.cpp.obj
+.PHONY : ramfs.obj
+
+# target to build an object file
+ramfs.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/ramfs.cpp.obj
+.PHONY : ramfs.cpp.obj
+
+ramfs.i: ramfs.cpp.i
+.PHONY : ramfs.i
+
+# target to preprocess a source file
+ramfs.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/ramfs.cpp.i
+.PHONY : ramfs.cpp.i
+
+ramfs.s: ramfs.cpp.s
+.PHONY : ramfs.s
+
+# target to generate assembly for a file
+ramfs.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/ramfs.cpp.s
+.PHONY : ramfs.cpp.s
+
+shell.obj: shell.cpp.obj
+.PHONY : shell.obj
+
+# target to build an object file
+shell.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/shell.cpp.obj
+.PHONY : shell.cpp.obj
+
+shell.i: shell.cpp.i
+.PHONY : shell.i
+
+# target to preprocess a source file
+shell.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/shell.cpp.i
+.PHONY : shell.cpp.i
+
+shell.s: shell.cpp.s
+.PHONY : shell.s
+
+# target to generate assembly for a file
+shell.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/shell.cpp.s
+.PHONY : shell.cpp.s
+
 softbus.obj: softbus.cpp.obj
 .PHONY : softbus.obj
 
@@ -256,6 +304,30 @@ uart.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/uart.c.s
 .PHONY : uart.c.s
 
+vfs.obj: vfs.cpp.obj
+.PHONY : vfs.obj
+
+# target to build an object file
+vfs.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/vfs.cpp.obj
+.PHONY : vfs.cpp.obj
+
+vfs.i: vfs.cpp.i
+.PHONY : vfs.i
+
+# target to preprocess a source file
+vfs.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/vfs.cpp.i
+.PHONY : vfs.cpp.i
+
+vfs.s: vfs.cpp.s
+.PHONY : vfs.s
+
+# target to generate assembly for a file
+vfs.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/vfs.cpp.s
+.PHONY : vfs.cpp.s
+
 # Help Target
 help:
 	@echo The following are some of the valid targets for this Makefile:
@@ -275,12 +347,21 @@ help:
 	@echo ... memory.obj
 	@echo ... memory.i
 	@echo ... memory.s
+	@echo ... ramfs.obj
+	@echo ... ramfs.i
+	@echo ... ramfs.s
+	@echo ... shell.obj
+	@echo ... shell.i
+	@echo ... shell.s
 	@echo ... softbus.obj
 	@echo ... softbus.i
 	@echo ... softbus.s
 	@echo ... uart.obj
 	@echo ... uart.i
 	@echo ... uart.s
+	@echo ... vfs.obj
+	@echo ... vfs.i
+	@echo ... vfs.s
 .PHONY : help
 
 
