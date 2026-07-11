@@ -31,7 +31,8 @@ struct TaskControlBlock {
     TaskState    state;           // 任务状态机
     uint32_t     id;              // 任务唯一 ID
     uint32_t     sleep_ticks;     // 剩余休眠 Tick 数
-    TaskPriority priority;        // 调度优先级
+    TaskPriority base_priority;   // 基础优先级
+    TaskPriority current_priority;// 动态优先级（用于优先级继承）
 };
 
 // 前向声明：供 PendSV 汇编读取的两个全局 TCB 指针
@@ -69,7 +70,8 @@ public:
         tcb.id          = task_count;
         tcb.state       = TaskState::Ready;
         tcb.sleep_ticks = 0;
-        tcb.priority    = prio;
+        tcb.base_priority = prio;
+        tcb.current_priority = prio;
         tcb.entry_point = task_entry;
 
         // 调用 HAL 接口完成 Cortex-M4 栈帧伪造，与具体架构解耦
@@ -92,8 +94,8 @@ public:
         TaskPriority max_prio = TaskPriority::Idle;
         for (uint32_t i = 0; i < task_count; i++) {
             if (tasks[i].state != TaskState::Sleeping &&
-                tasks[i].priority > max_prio) {
-                max_prio = tasks[i].priority;
+                tasks[i].current_priority > max_prio) {
+                max_prio = tasks[i].current_priority;
             }
         }
 
@@ -102,7 +104,7 @@ public:
         for (uint32_t i = 0; i < task_count; i++) {
             next_task = (next_task + 1) % task_count;
             if (tasks[next_task].state != TaskState::Sleeping &&
-                tasks[next_task].priority == max_prio) {
+                tasks[next_task].current_priority == max_prio) {
                 break;
             }
         }
@@ -171,7 +173,7 @@ public:
 
 private:
     Scheduler() = default;
-    static constexpr int MAX_TASKS = 8;
+    static constexpr int MAX_TASKS = 16;
     TaskControlBlock tasks[MAX_TASKS]{};
     uint32_t current_task_index = 0;
     uint32_t task_count = 0;

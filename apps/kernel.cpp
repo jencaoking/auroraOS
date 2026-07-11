@@ -145,6 +145,40 @@ extern "C" void shell_task(void) {
     Shell::run();
 }
 
+#include "mutex_pi.hpp"
+MutexPI pi_lock;
+
+void pi_test_low() {
+    Scheduler::instance().sleep(500); // 错开系统启动的日志打印期
+    sys_print("\r\n[Low] Task started, grabbing lock...\r\n");
+    pi_lock.lock();
+    sys_print("[Low] Lock acquired. Sleeping to let Mid & High wake up...\r\n");
+    Scheduler::instance().sleep(500); 
+    // 此时它被唤醒，如果 PI 成功，它的优先级已经被 High 拔高，它能抢占 Mid 运行！
+    sys_print("[Low] Woken up with inherited priority. Releasing lock...\r\n");
+    pi_lock.unlock();
+    sys_print("[Low] Lock released. Base priority restored.\r\n");
+    while (1) Scheduler::instance().sleep(10000);
+}
+
+void pi_test_mid() {
+    Scheduler::instance().sleep(700); // 等 Low 先拿到锁
+    sys_print("[Mid] Task woken up! Starting busy loop to starve Low...\r\n");
+    // 疯狂循环模拟 CPU 占用，注意不能加 volatile 防止被优化没，而是加一点实际工作或者 volatile 计数
+    for (volatile int i = 0; i < 50000000; i++) {}
+    sys_print("[Mid] Busy loop finished. If PI worked, this prints AFTER High gets the lock.\r\n");
+    while (1) Scheduler::instance().sleep(10000);
+}
+
+void pi_test_high() {
+    Scheduler::instance().sleep(800); // 等 Mid 开始疯狂占用 CPU 后再醒来
+    sys_print("[High] Task woken up! Trying to grab lock...\r\n");
+    pi_lock.lock();
+    sys_print("[High] Lock acquired! Priority Inheritance SUCCESS!\r\n");
+    pi_lock.unlock();
+    while (1) Scheduler::instance().sleep(10000);
+}
+
 extern "C" void kernel_main(void) {
     uart_init();
     KernelHeap::instance().init(&_heap_start, &_heap_end);
@@ -187,7 +221,12 @@ extern "C" void kernel_main(void) {
         sys_print("[Kernel] FATAL: failed to spawn shell_task!\r\n");
     }
 
-    // 调起 lwIP 协议栈引擎（内部回调中将以 Realtime 优先级注册网卡 RX 任务）
+    // 3. PI Mutex 测试任务
+    Scheduler::instance().create_task(pi_test_low, new uint32_t[128], 128*sizeof(uint32_t), TaskPriority::Low);
+    Scheduler::instance().create_task(pi_test_mid, new uint32_t[128], 128*sizeof(uint32_t), TaskPriority::Normal);
+    Scheduler::instance().create_task(pi_test_high, new uint32_t[128], 128*sizeof(uint32_t), TaskPriority::High);
+
+    // 将调度权移交给内核，必须最后调用！起 lwIP 协议栈引擎（内部回调中将以 Realtime 优先级注册网卡 RX 任务）
     sys_print("[lwIP] Initializing TCP/IP Engine...\r\n");
     tcpip_init(tcpip_init_done, nullptr);
 
