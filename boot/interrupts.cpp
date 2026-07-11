@@ -47,12 +47,23 @@ extern "C" {
 //                       * 同级任务轮转时间片
 // ================================================================
 #include "timer.hpp"
+#include "work_queue.hpp"
+#include "syscall.hpp"
 
 void SysTick_Handler(void) {
     tick_count++;
     
     // 1. 驱动软件定时器引擎
     TimerManager::instance().on_tick();
+
+    // 2. 工作队列测试：每 3 秒从中断环境提交一个耗时任务
+    if (tick_count % 3000 == 0) {
+        WorkQueue::instance().submit_from_isr([](void* arg) {
+            sys_print("\r\n[WorkQueue Daemon] Background job started. Simulating heavy work...\r\n");
+            Scheduler::instance().sleep(500); 
+            sys_print("[WorkQueue Daemon] Heavy job completed!\r\n");
+        }, nullptr);
+    }
 
     Scheduler& sched = Scheduler::instance();
 

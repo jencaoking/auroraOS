@@ -181,6 +181,12 @@ void pi_test_high() {
 
 #include "timer.hpp"
 #include "posix.hpp"
+#include "work_queue.hpp"
+
+// 工作队列守护线程的入口包裹函数
+void workqueue_daemon_entry(void) {
+    WorkQueue::instance().worker_task();
+}
 
 // 定时器守护线程的入口包裹函数
 void timer_daemon_entry(void) {
@@ -262,6 +268,9 @@ extern "C" void kernel_main(void) {
     // 4. 定时器守护进程与测试 App
     Scheduler::instance().create_task(timer_daemon_entry, new uint32_t[256], 256*sizeof(uint32_t), TaskPriority::Realtime);
     Scheduler::instance().create_task(posix_app_task, new uint32_t[256], 256*sizeof(uint32_t), TaskPriority::Low);
+
+    // 5. 工作队列守护进程 (使用 High 优先级)
+    Scheduler::instance().create_task(workqueue_daemon_entry, new uint32_t[256], 256*sizeof(uint32_t), TaskPriority::High);
 
     // 起 lwIP 协议栈引擎（内部回调中将以 Realtime 优先级注册网卡 RX 任务）
     sys_print("[lwIP] Initializing TCP/IP Engine...\r\n");
