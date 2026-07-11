@@ -132,7 +132,7 @@ public:
 
 private:
     Scheduler() = default;
-    static constexpr int MAX_TASKS = 4;
+    static constexpr int MAX_TASKS = 8;
     TaskControlBlock tasks[MAX_TASKS];
     uint32_t current_task_index = 0;
     uint32_t task_count = 0;

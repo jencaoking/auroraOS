@@ -13,62 +13,61 @@
 extern void safe_print(const char* msg);
 extern Mutex uart_mutex;
 
-// ==========================================
-// L2 数据链路层监听后台任务
-// ==========================================
-void net_rx_task(void) {
-    uint8_t rx_buffer[1514]; // 标准以太网最大 MTU 缓冲区
-    
-    // 1. 初始化物理以太网卡
-    StellarisEth::instance().init();
+#include "lwip/init.h"
+#include "lwip/tcpip.h"
+#include "lwip/netif.h"
+#include "lwip/api.h"
 
-    // 2. 手动伪造并发出一串 raw L2 广播测试帧！
-    uint8_t test_frame[] = {
-        0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 目的 MAC: 全局广播 (Broadcast)
-        0x52, 0x54, 0x00, 0x12, 0x34, 0x56, // 源 MAC: 本机 auroraOS
-        0x88, 0xB5,                         // 协议类型: 0x88B5 (实验性/自定义以太网协议)
-        'a', 'u', 'r', 'o', 'r', 'a', 'O', 'S', '_', 'N', 'E', 'T', '_', 'A', 'C', 'T', 'I', 'V', 'E', '!'
-    };
-    
-    sys_print("[NetTask] Sending L2 Broadcast Test Packet to QEMU Virtual Switch...\r\n");
-    StellarisEth::instance().send_frame(test_frame, sizeof(test_frame));
+extern err_t ethernetif_init(struct netif *netif);
+extern void ethernetif_input_task(void);
 
-    // 3. 持续轮询监听网卡 FIFO 的来包
+struct netif g_netif;
+
+// ==========================================
+// 业务层测试：基于 lwIP Netconn API 的 UDP Echo 服务器
+// ==========================================
+void udp_echo_server_task(void) {
+    sys_print("[App] Starting UDP Echo Server on Port 8080...\r\n");
+
+    // 创建一个 UDP 通信绑定
+    struct netconn* conn = netconn_new(NETCONN_UDP);
+    netconn_bind(conn, IP_ADDR_ANY, 8080);
+
+    struct netbuf* buf;
     while (true) {
-        int bytes = StellarisEth::instance().receive_frame(rx_buffer, sizeof(rx_buffer));
-        if (bytes > 0) {
-            sys_print("\r\n>>> [NetTask] Ethernet Frame Received! Bytes: ");
+        // 挂起自身，直到物理网线那边发来目标为 8080 端口的数据包！
+        if (netconn_recv(conn, &buf) == ERR_OK) {
+            sys_print("\r\n>>> [UDP Server] Received packet from Net! Echoing back...\r\n");
             
-            // 简单转成十进制数字字符串打印
-            char num_str[16]; int idx = 0, temp = bytes;
-            if (temp == 0) num_str[idx++] = '0';
-            while (temp > 0) { num_str[idx++] = (temp % 10) + '0'; temp /= 10; }
-            char out_str[16];
-            int out_idx = 0;
-            while (--idx >= 0) { out_str[out_idx++] = num_str[idx]; }
-            out_str[out_idx] = '\0';
-            sys_print(out_str);
-            sys_print("\r\n");
-
-            // 解析以太网头部
-            EthernetHeader* hdr = reinterpret_cast<EthernetHeader*>(rx_buffer);
-            sys_print("    |-- Type: 0x");
-            
-            // 打印两字节 16 进制协议类型
-            const char hex_chars[] = "0123456789ABCDEF";
-            char hex_str[5];
-            hex_str[0] = hex_chars[(hdr->eth_type >> 4) & 0x0F];
-            hex_str[1] = hex_chars[hdr->eth_type & 0x0F];
-            hex_str[2] = (hdr->eth_type >> 12) & 0x0F ? hex_chars[(hdr->eth_type >> 12) & 0x0F] : '0';
-            hex_str[3] = hex_chars[(hdr->eth_type >> 8) & 0x0F];
-            hex_str[4] = '\0';
-            sys_print(hex_str);
-            sys_print("\r\n");
+            // 工业级原路奉还 (Echo 回发给源 IP 和源端口)
+            netconn_sendto(conn, buf, netbuf_fromaddr(buf), netbuf_fromport(buf));
+            netbuf_delete(buf);
         }
-
-        // 没包时优雅让出 CPU，不占算力
-        Scheduler::instance().sleep(20);
     }
+}
+
+// 协议栈就绪回调函数
+void tcpip_init_done(void* arg) {
+    sys_print("[lwIP] TCP/IP Core Stack Booted Successfully!\r\n");
+
+    // 1. 设置静态 IPv4 地址: 192.168.1.100, 子网掩码: 255.255.255.0, 网关: 192.168.1.1
+    ip4_addr_t ipaddr, netmask, gw;
+    IP4_ADDR(&ipaddr, 192, 168, 1, 100);
+    IP4_ADDR(&netmask, 255, 255, 255, 0);
+    IP4_ADDR(&gw, 192, 168, 1, 1);
+
+    // 2. 将网卡挂载进 lwIP 路由表
+    netif_add(&g_netif, &ipaddr, &netmask, &gw, nullptr, ethernetif_init, tcpip_input);
+    netif_set_default(&g_netif);
+    netif_set_up(&g_netif);
+
+    sys_print("[lwIP] Static IP configured: 192.168.1.100\r\n");
+
+    // 3. 起飞网卡数据泵任务与 UDP Echo 测试任务
+    uint32_t* rx_stack = new uint32_t[512];
+    uint32_t* app_stack = new uint32_t[512];
+    Scheduler::instance().create_task(reinterpret_cast<void (*)()>(ethernetif_input_task), rx_stack, 512 * sizeof(uint32_t), true);
+    Scheduler::instance().create_task(udp_echo_server_task, app_stack, 512 * sizeof(uint32_t), true);
 }
 
 extern "C" {
@@ -141,20 +140,21 @@ extern "C" void kernel_main(void) {
     VfsManager::instance().mount("/tmp/app.elf", (VNode*)elf_file);
     
     // 初始化调度器并起飞
-    Scheduler& sched = Scheduler::instance();
-    sched.init();
+    Scheduler::instance().init();
 
     uint32_t* shell_stack = new uint32_t[512];
-    uint32_t* net_stack   = new uint32_t[512]; // 为网络任务独立申请栈
 
     extern void shell_task(void);
-    sched.create_task(shell_task, shell_stack, 512 * sizeof(uint32_t), false);
-    sched.create_task(net_rx_task, net_stack, 512 * sizeof(uint32_t), false); // [新增] 调起网络后台
+    Scheduler::instance().create_task(shell_task, shell_stack, 512 * sizeof(uint32_t), false);
+
+    // 调起 lwIP 协议栈引擎，传递就绪回调
+    sys_print("[lwIP] Initializing TCP/IP Engine...\r\n");
+    tcpip_init(tcpip_init_done, nullptr);
 
     uint32_t* dummy_stack = new uint32_t[128];
-    sched.create_task(dummy_task, dummy_stack, 128 * sizeof(uint32_t), false);
+    Scheduler::instance().create_task(dummy_task, dummy_stack, 128 * sizeof(uint32_t), true);
 
-    g_current_tcb_ptr = sched.get_current_tcb();
+    g_current_tcb_ptr = Scheduler::instance().get_current_tcb();
 
     volatile uint32_t* syst_ctrl = reinterpret_cast<volatile uint32_t*>(0xE000E010);
     volatile uint32_t* syst_load = reinterpret_cast<volatile uint32_t*>(0xE000E014);
@@ -163,7 +163,7 @@ extern "C" void kernel_main(void) {
 
     __asm__ volatile (
         "msr psp, %0\n\t"
-        "mov r0, #3\n\t"
+        "mov r0, #2\n\t"  // 2 = b10: Privileged, use PSP
         "msr control, r0\n\t"
         "isb\n\t"
         "cpsie i\n\t"

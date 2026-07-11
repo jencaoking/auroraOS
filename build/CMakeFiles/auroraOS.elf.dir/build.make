@@ -126,10 +126,24 @@ CMakeFiles/auroraOS.elf.dir/kernel/memory.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/auroraOS.elf.dir/kernel/memory.cpp.s"
 	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S J:\PROJECT\auroraOS\kernel\memory.cpp -o CMakeFiles\auroraOS.elf.dir\kernel\memory.cpp.s
 
+CMakeFiles/auroraOS.elf.dir/kernel/libc.cpp.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/kernel/libc.cpp.obj: J:/PROJECT/auroraOS/kernel/libc.cpp
+CMakeFiles/auroraOS.elf.dir/kernel/libc.cpp.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/auroraOS.elf.dir/kernel/libc.cpp.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/kernel/libc.cpp.obj -MF CMakeFiles\auroraOS.elf.dir\kernel\libc.cpp.obj.d -o CMakeFiles\auroraOS.elf.dir\kernel\libc.cpp.obj -c J:\PROJECT\auroraOS\kernel\libc.cpp
+
+CMakeFiles/auroraOS.elf.dir/kernel/libc.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/auroraOS.elf.dir/kernel/libc.cpp.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E J:\PROJECT\auroraOS\kernel\libc.cpp > CMakeFiles\auroraOS.elf.dir\kernel\libc.cpp.i
+
+CMakeFiles/auroraOS.elf.dir/kernel/libc.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/auroraOS.elf.dir/kernel/libc.cpp.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S J:\PROJECT\auroraOS\kernel\libc.cpp -o CMakeFiles\auroraOS.elf.dir\kernel\libc.cpp.s
+
 CMakeFiles/auroraOS.elf.dir/vfs/vfs.cpp.obj: CMakeFiles/auroraOS.elf.dir/flags.make
 CMakeFiles/auroraOS.elf.dir/vfs/vfs.cpp.obj: J:/PROJECT/auroraOS/vfs/vfs.cpp
 CMakeFiles/auroraOS.elf.dir/vfs/vfs.cpp.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/auroraOS.elf.dir/vfs/vfs.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/auroraOS.elf.dir/vfs/vfs.cpp.obj"
 	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/vfs/vfs.cpp.obj -MF CMakeFiles\auroraOS.elf.dir\vfs\vfs.cpp.obj.d -o CMakeFiles\auroraOS.elf.dir\vfs\vfs.cpp.obj -c J:\PROJECT\auroraOS\vfs\vfs.cpp
 
 CMakeFiles/auroraOS.elf.dir/vfs/vfs.cpp.i: cmake_force
@@ -143,7 +157,7 @@ CMakeFiles/auroraOS.elf.dir/vfs/vfs.cpp.s: cmake_force
 CMakeFiles/auroraOS.elf.dir/vfs/ramfs.cpp.obj: CMakeFiles/auroraOS.elf.dir/flags.make
 CMakeFiles/auroraOS.elf.dir/vfs/ramfs.cpp.obj: J:/PROJECT/auroraOS/vfs/ramfs.cpp
 CMakeFiles/auroraOS.elf.dir/vfs/ramfs.cpp.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/auroraOS.elf.dir/vfs/ramfs.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/auroraOS.elf.dir/vfs/ramfs.cpp.obj"
 	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/vfs/ramfs.cpp.obj -MF CMakeFiles\auroraOS.elf.dir\vfs\ramfs.cpp.obj.d -o CMakeFiles\auroraOS.elf.dir\vfs\ramfs.cpp.obj -c J:\PROJECT\auroraOS\vfs\ramfs.cpp
 
 CMakeFiles/auroraOS.elf.dir/vfs/ramfs.cpp.i: cmake_force
@@ -157,7 +171,7 @@ CMakeFiles/auroraOS.elf.dir/vfs/ramfs.cpp.s: cmake_force
 CMakeFiles/auroraOS.elf.dir/apps/shell.cpp.obj: CMakeFiles/auroraOS.elf.dir/flags.make
 CMakeFiles/auroraOS.elf.dir/apps/shell.cpp.obj: J:/PROJECT/auroraOS/apps/shell.cpp
 CMakeFiles/auroraOS.elf.dir/apps/shell.cpp.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/auroraOS.elf.dir/apps/shell.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/auroraOS.elf.dir/apps/shell.cpp.obj"
 	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/apps/shell.cpp.obj -MF CMakeFiles\auroraOS.elf.dir\apps\shell.cpp.obj.d -o CMakeFiles\auroraOS.elf.dir\apps\shell.cpp.obj -c J:\PROJECT\auroraOS\apps\shell.cpp
 
 CMakeFiles/auroraOS.elf.dir/apps/shell.cpp.i: cmake_force
@@ -171,7 +185,7 @@ CMakeFiles/auroraOS.elf.dir/apps/shell.cpp.s: cmake_force
 CMakeFiles/auroraOS.elf.dir/apps/elf_loader.cpp.obj: CMakeFiles/auroraOS.elf.dir/flags.make
 CMakeFiles/auroraOS.elf.dir/apps/elf_loader.cpp.obj: J:/PROJECT/auroraOS/apps/elf_loader.cpp
 CMakeFiles/auroraOS.elf.dir/apps/elf_loader.cpp.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/auroraOS.elf.dir/apps/elf_loader.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/auroraOS.elf.dir/apps/elf_loader.cpp.obj"
 	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/apps/elf_loader.cpp.obj -MF CMakeFiles\auroraOS.elf.dir\apps\elf_loader.cpp.obj.d -o CMakeFiles\auroraOS.elf.dir\apps\elf_loader.cpp.obj -c J:\PROJECT\auroraOS\apps\elf_loader.cpp
 
 CMakeFiles/auroraOS.elf.dir/apps/elf_loader.cpp.i: cmake_force
@@ -185,7 +199,7 @@ CMakeFiles/auroraOS.elf.dir/apps/elf_loader.cpp.s: cmake_force
 CMakeFiles/auroraOS.elf.dir/apps/kernel.cpp.obj: CMakeFiles/auroraOS.elf.dir/flags.make
 CMakeFiles/auroraOS.elf.dir/apps/kernel.cpp.obj: J:/PROJECT/auroraOS/apps/kernel.cpp
 CMakeFiles/auroraOS.elf.dir/apps/kernel.cpp.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/auroraOS.elf.dir/apps/kernel.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/auroraOS.elf.dir/apps/kernel.cpp.obj"
 	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/apps/kernel.cpp.obj -MF CMakeFiles\auroraOS.elf.dir\apps\kernel.cpp.obj.d -o CMakeFiles\auroraOS.elf.dir\apps\kernel.cpp.obj -c J:\PROJECT\auroraOS\apps\kernel.cpp
 
 CMakeFiles/auroraOS.elf.dir/apps/kernel.cpp.i: cmake_force
@@ -199,7 +213,7 @@ CMakeFiles/auroraOS.elf.dir/apps/kernel.cpp.s: cmake_force
 CMakeFiles/auroraOS.elf.dir/net/eth_driver.cpp.obj: CMakeFiles/auroraOS.elf.dir/flags.make
 CMakeFiles/auroraOS.elf.dir/net/eth_driver.cpp.obj: J:/PROJECT/auroraOS/net/eth_driver.cpp
 CMakeFiles/auroraOS.elf.dir/net/eth_driver.cpp.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/auroraOS.elf.dir/net/eth_driver.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/auroraOS.elf.dir/net/eth_driver.cpp.obj"
 	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/net/eth_driver.cpp.obj -MF CMakeFiles\auroraOS.elf.dir\net\eth_driver.cpp.obj.d -o CMakeFiles\auroraOS.elf.dir\net\eth_driver.cpp.obj -c J:\PROJECT\auroraOS\net\eth_driver.cpp
 
 CMakeFiles/auroraOS.elf.dir/net/eth_driver.cpp.i: cmake_force
@@ -210,18 +224,619 @@ CMakeFiles/auroraOS.elf.dir/net/eth_driver.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/auroraOS.elf.dir/net/eth_driver.cpp.s"
 	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S J:\PROJECT\auroraOS\net\eth_driver.cpp -o CMakeFiles\auroraOS.elf.dir\net\eth_driver.cpp.s
 
+CMakeFiles/auroraOS.elf.dir/adapter/net/sys_arch.cpp.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/adapter/net/sys_arch.cpp.obj: J:/PROJECT/auroraOS/adapter/net/sys_arch.cpp
+CMakeFiles/auroraOS.elf.dir/adapter/net/sys_arch.cpp.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/auroraOS.elf.dir/adapter/net/sys_arch.cpp.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/adapter/net/sys_arch.cpp.obj -MF CMakeFiles\auroraOS.elf.dir\adapter\net\sys_arch.cpp.obj.d -o CMakeFiles\auroraOS.elf.dir\adapter\net\sys_arch.cpp.obj -c J:\PROJECT\auroraOS\adapter\net\sys_arch.cpp
+
+CMakeFiles/auroraOS.elf.dir/adapter/net/sys_arch.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/auroraOS.elf.dir/adapter/net/sys_arch.cpp.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E J:\PROJECT\auroraOS\adapter\net\sys_arch.cpp > CMakeFiles\auroraOS.elf.dir\adapter\net\sys_arch.cpp.i
+
+CMakeFiles/auroraOS.elf.dir/adapter/net/sys_arch.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/auroraOS.elf.dir/adapter/net/sys_arch.cpp.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S J:\PROJECT\auroraOS\adapter\net\sys_arch.cpp -o CMakeFiles\auroraOS.elf.dir\adapter\net\sys_arch.cpp.s
+
+CMakeFiles/auroraOS.elf.dir/adapter/net/ethernetif.cpp.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/adapter/net/ethernetif.cpp.obj: J:/PROJECT/auroraOS/adapter/net/ethernetif.cpp
+CMakeFiles/auroraOS.elf.dir/adapter/net/ethernetif.cpp.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/auroraOS.elf.dir/adapter/net/ethernetif.cpp.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/adapter/net/ethernetif.cpp.obj -MF CMakeFiles\auroraOS.elf.dir\adapter\net\ethernetif.cpp.obj.d -o CMakeFiles\auroraOS.elf.dir\adapter\net\ethernetif.cpp.obj -c J:\PROJECT\auroraOS\adapter\net\ethernetif.cpp
+
+CMakeFiles/auroraOS.elf.dir/adapter/net/ethernetif.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/auroraOS.elf.dir/adapter/net/ethernetif.cpp.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E J:\PROJECT\auroraOS\adapter\net\ethernetif.cpp > CMakeFiles\auroraOS.elf.dir\adapter\net\ethernetif.cpp.i
+
+CMakeFiles/auroraOS.elf.dir/adapter/net/ethernetif.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/auroraOS.elf.dir/adapter/net/ethernetif.cpp.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S J:\PROJECT\auroraOS\adapter\net\ethernetif.cpp -o CMakeFiles\auroraOS.elf.dir\adapter\net\ethernetif.cpp.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/api_lib.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/api_lib.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/api/api_lib.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/api_lib.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/api_lib.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/api_lib.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\api_lib.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\api_lib.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\api\api_lib.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/api_lib.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/api_lib.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\api\api_lib.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\api_lib.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/api_lib.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/api_lib.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\api\api_lib.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\api_lib.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/api_msg.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/api_msg.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/api/api_msg.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/api_msg.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/api_msg.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/api_msg.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\api_msg.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\api_msg.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\api\api_msg.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/api_msg.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/api_msg.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\api\api_msg.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\api_msg.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/api_msg.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/api_msg.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\api\api_msg.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\api_msg.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/err.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/err.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/api/err.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/err.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/err.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/err.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\err.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\err.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\api\err.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/err.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/err.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\api\err.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\err.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/err.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/err.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\api\err.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\err.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/if_api.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/if_api.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/api/if_api.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/if_api.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/if_api.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/if_api.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\if_api.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\if_api.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\api\if_api.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/if_api.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/if_api.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\api\if_api.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\if_api.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/if_api.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/if_api.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\api\if_api.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\if_api.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netbuf.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netbuf.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/api/netbuf.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netbuf.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netbuf.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netbuf.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\netbuf.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\netbuf.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\api\netbuf.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netbuf.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netbuf.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\api\netbuf.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\netbuf.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netbuf.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netbuf.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\api\netbuf.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\netbuf.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netdb.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netdb.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/api/netdb.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netdb.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netdb.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netdb.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\netdb.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\netdb.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\api\netdb.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netdb.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netdb.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\api\netdb.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\netdb.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netdb.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netdb.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\api\netdb.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\netdb.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netifapi.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netifapi.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/api/netifapi.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netifapi.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netifapi.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netifapi.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\netifapi.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\netifapi.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\api\netifapi.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netifapi.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netifapi.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\api\netifapi.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\netifapi.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netifapi.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netifapi.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\api\netifapi.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\netifapi.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/sockets.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/sockets.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/api/sockets.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/sockets.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/sockets.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/sockets.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\sockets.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\sockets.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\api\sockets.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/sockets.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/sockets.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\api\sockets.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\sockets.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/sockets.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/sockets.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\api\sockets.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\sockets.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/tcpip.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/tcpip.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/api/tcpip.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/tcpip.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/tcpip.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/tcpip.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\tcpip.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\tcpip.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\api\tcpip.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/tcpip.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/tcpip.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\api\tcpip.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\tcpip.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/tcpip.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/tcpip.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\api\tcpip.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\api\tcpip.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/core/altcp.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\altcp.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\altcp.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\core\altcp.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\core\altcp.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\altcp.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\core\altcp.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\altcp.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp_alloc.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp_alloc.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/core/altcp_alloc.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp_alloc.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp_alloc.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp_alloc.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\altcp_alloc.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\altcp_alloc.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\core\altcp_alloc.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp_alloc.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp_alloc.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\core\altcp_alloc.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\altcp_alloc.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp_alloc.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp_alloc.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\core\altcp_alloc.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\altcp_alloc.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp_tcp.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp_tcp.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/core/altcp_tcp.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp_tcp.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp_tcp.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp_tcp.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\altcp_tcp.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\altcp_tcp.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\core\altcp_tcp.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp_tcp.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp_tcp.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\core\altcp_tcp.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\altcp_tcp.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp_tcp.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp_tcp.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\core\altcp_tcp.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\altcp_tcp.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/def.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/def.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/core/def.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/def.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_26) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/def.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/def.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\def.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\def.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\core\def.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/def.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/def.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\core\def.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\def.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/def.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/def.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\core\def.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\def.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/dns.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/dns.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/core/dns.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/dns.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_27) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/dns.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/dns.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\dns.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\dns.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\core\dns.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/dns.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/dns.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\core\dns.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\dns.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/dns.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/dns.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\core\dns.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\dns.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/inet_chksum.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/inet_chksum.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/core/inet_chksum.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/inet_chksum.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_28) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/inet_chksum.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/inet_chksum.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\inet_chksum.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\inet_chksum.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\core\inet_chksum.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/inet_chksum.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/inet_chksum.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\core\inet_chksum.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\inet_chksum.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/inet_chksum.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/inet_chksum.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\core\inet_chksum.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\inet_chksum.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/init.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/init.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/core/init.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/init.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_29) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/init.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/init.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\init.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\init.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\core\init.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/init.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/init.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\core\init.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\init.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/init.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/init.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\core\init.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\init.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ip.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ip.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/core/ip.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ip.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_30) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ip.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ip.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ip.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ip.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\core\ip.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ip.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ip.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\core\ip.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ip.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ip.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ip.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\core\ip.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ip.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/autoip.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/autoip.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/core/ipv4/autoip.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/autoip.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_31) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/autoip.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/autoip.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ipv4\autoip.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ipv4\autoip.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\core\ipv4\autoip.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/autoip.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/autoip.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\core\ipv4\autoip.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ipv4\autoip.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/autoip.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/autoip.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\core\ipv4\autoip.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ipv4\autoip.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/dhcp.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/dhcp.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/core/ipv4/dhcp.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/dhcp.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_32) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/dhcp.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/dhcp.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ipv4\dhcp.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ipv4\dhcp.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\core\ipv4\dhcp.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/dhcp.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/dhcp.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\core\ipv4\dhcp.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ipv4\dhcp.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/dhcp.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/dhcp.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\core\ipv4\dhcp.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ipv4\dhcp.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/etharp.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/etharp.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/core/ipv4/etharp.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/etharp.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_33) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/etharp.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/etharp.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ipv4\etharp.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ipv4\etharp.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\core\ipv4\etharp.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/etharp.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/etharp.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\core\ipv4\etharp.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ipv4\etharp.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/etharp.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/etharp.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\core\ipv4\etharp.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ipv4\etharp.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/icmp.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/icmp.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/core/ipv4/icmp.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/icmp.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_34) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/icmp.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/icmp.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ipv4\icmp.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ipv4\icmp.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\core\ipv4\icmp.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/icmp.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/icmp.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\core\ipv4\icmp.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ipv4\icmp.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/icmp.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/icmp.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\core\ipv4\icmp.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ipv4\icmp.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/igmp.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/igmp.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/core/ipv4/igmp.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/igmp.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_35) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/igmp.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/igmp.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ipv4\igmp.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ipv4\igmp.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\core\ipv4\igmp.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/igmp.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/igmp.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\core\ipv4\igmp.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ipv4\igmp.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/igmp.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/igmp.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\core\ipv4\igmp.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ipv4\igmp.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/core/ipv4/ip4.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_36) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ipv4\ip4.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ipv4\ip4.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\core\ipv4\ip4.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\core\ipv4\ip4.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ipv4\ip4.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\core\ipv4\ip4.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ipv4\ip4.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4_addr.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4_addr.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/core/ipv4/ip4_addr.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4_addr.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_37) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4_addr.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4_addr.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ipv4\ip4_addr.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ipv4\ip4_addr.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\core\ipv4\ip4_addr.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4_addr.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4_addr.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\core\ipv4\ip4_addr.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ipv4\ip4_addr.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4_addr.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4_addr.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\core\ipv4\ip4_addr.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ipv4\ip4_addr.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4_frag.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4_frag.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/core/ipv4/ip4_frag.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4_frag.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_38) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4_frag.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4_frag.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ipv4\ip4_frag.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ipv4\ip4_frag.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\core\ipv4\ip4_frag.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4_frag.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4_frag.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\core\ipv4\ip4_frag.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ipv4\ip4_frag.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4_frag.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4_frag.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\core\ipv4\ip4_frag.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\ipv4\ip4_frag.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/mem.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/mem.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/core/mem.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/mem.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_39) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/mem.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/mem.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\mem.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\mem.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\core\mem.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/mem.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/mem.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\core\mem.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\mem.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/mem.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/mem.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\core\mem.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\mem.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/memp.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/memp.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/core/memp.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/memp.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_40) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/memp.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/memp.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\memp.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\memp.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\core\memp.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/memp.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/memp.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\core\memp.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\memp.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/memp.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/memp.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\core\memp.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\memp.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/netif.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/netif.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/core/netif.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/netif.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_41) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/netif.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/netif.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\netif.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\netif.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\core\netif.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/netif.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/netif.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\core\netif.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\netif.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/netif.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/netif.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\core\netif.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\netif.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/pbuf.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/pbuf.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/core/pbuf.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/pbuf.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_42) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/pbuf.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/pbuf.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\pbuf.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\pbuf.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\core\pbuf.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/pbuf.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/pbuf.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\core\pbuf.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\pbuf.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/pbuf.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/pbuf.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\core\pbuf.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\pbuf.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/raw.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/raw.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/core/raw.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/raw.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_43) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/raw.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/raw.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\raw.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\raw.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\core\raw.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/raw.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/raw.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\core\raw.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\raw.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/raw.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/raw.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\core\raw.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\raw.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/stats.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/stats.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/core/stats.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/stats.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_44) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/stats.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/stats.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\stats.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\stats.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\core\stats.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/stats.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/stats.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\core\stats.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\stats.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/stats.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/stats.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\core\stats.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\stats.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/sys.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/sys.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/core/sys.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/sys.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_45) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/sys.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/sys.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\sys.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\sys.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\core\sys.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/sys.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/sys.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\core\sys.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\sys.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/sys.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/sys.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\core\sys.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\sys.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/core/tcp.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_46) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\tcp.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\tcp.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\core\tcp.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\core\tcp.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\tcp.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\core\tcp.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\tcp.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp_in.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp_in.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/core/tcp_in.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp_in.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_47) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp_in.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp_in.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\tcp_in.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\tcp_in.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\core\tcp_in.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp_in.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp_in.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\core\tcp_in.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\tcp_in.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp_in.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp_in.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\core\tcp_in.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\tcp_in.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp_out.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp_out.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/core/tcp_out.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp_out.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_48) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp_out.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp_out.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\tcp_out.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\tcp_out.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\core\tcp_out.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp_out.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp_out.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\core\tcp_out.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\tcp_out.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp_out.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp_out.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\core\tcp_out.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\tcp_out.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/timeouts.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/timeouts.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/core/timeouts.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/timeouts.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_49) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/timeouts.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/timeouts.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\timeouts.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\timeouts.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\core\timeouts.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/timeouts.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/timeouts.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\core\timeouts.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\timeouts.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/timeouts.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/timeouts.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\core\timeouts.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\timeouts.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/udp.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/udp.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/core/udp.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/udp.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_50) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/udp.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/udp.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\udp.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\udp.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\core\udp.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/udp.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/udp.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\core\udp.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\udp.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/udp.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/udp.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\core\udp.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\core\udp.c.s
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/netif/ethernet.c.obj: CMakeFiles/auroraOS.elf.dir/flags.make
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/netif/ethernet.c.obj: J:/PROJECT/auroraOS/3rdparty/lwip/src/netif/ethernet.c
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/netif/ethernet.c.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_51) "Building C object CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/netif/ethernet.c.obj"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/netif/ethernet.c.obj -MF CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\netif\ethernet.c.obj.d -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\netif\ethernet.c.obj -c J:\PROJECT\auroraOS\3rdparty\lwip\src\netif\ethernet.c
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/netif/ethernet.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/netif/ethernet.c.i"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E J:\PROJECT\auroraOS\3rdparty\lwip\src\netif\ethernet.c > CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\netif\ethernet.c.i
+
+CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/netif/ethernet.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/netif/ethernet.c.s"
+	J:\CODE\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S J:\PROJECT\auroraOS\3rdparty\lwip\src\netif\ethernet.c -o CMakeFiles\auroraOS.elf.dir\3rdparty\lwip\src\netif\ethernet.c.s
+
 # Object files for target auroraOS.elf
 auroraOS_elf_OBJECTS = \
 "CMakeFiles/auroraOS.elf.dir/boot/boot.S.obj" \
 "CMakeFiles/auroraOS.elf.dir/boot/uart.c.obj" \
 "CMakeFiles/auroraOS.elf.dir/boot/interrupts.cpp.obj" \
 "CMakeFiles/auroraOS.elf.dir/kernel/memory.cpp.obj" \
+"CMakeFiles/auroraOS.elf.dir/kernel/libc.cpp.obj" \
 "CMakeFiles/auroraOS.elf.dir/vfs/vfs.cpp.obj" \
 "CMakeFiles/auroraOS.elf.dir/vfs/ramfs.cpp.obj" \
 "CMakeFiles/auroraOS.elf.dir/apps/shell.cpp.obj" \
 "CMakeFiles/auroraOS.elf.dir/apps/elf_loader.cpp.obj" \
 "CMakeFiles/auroraOS.elf.dir/apps/kernel.cpp.obj" \
-"CMakeFiles/auroraOS.elf.dir/net/eth_driver.cpp.obj"
+"CMakeFiles/auroraOS.elf.dir/net/eth_driver.cpp.obj" \
+"CMakeFiles/auroraOS.elf.dir/adapter/net/sys_arch.cpp.obj" \
+"CMakeFiles/auroraOS.elf.dir/adapter/net/ethernetif.cpp.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/api_lib.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/api_msg.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/err.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/if_api.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netbuf.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netdb.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netifapi.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/sockets.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/tcpip.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp_alloc.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp_tcp.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/def.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/dns.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/inet_chksum.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/init.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ip.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/autoip.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/dhcp.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/etharp.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/icmp.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/igmp.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4_addr.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4_frag.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/mem.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/memp.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/netif.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/pbuf.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/raw.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/stats.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/sys.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp_in.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp_out.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/timeouts.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/udp.c.obj" \
+"CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/netif/ethernet.c.obj"
 
 # External object files for target auroraOS.elf
 auroraOS_elf_EXTERNAL_OBJECTS =
@@ -230,15 +845,56 @@ auroraOS.elf: CMakeFiles/auroraOS.elf.dir/boot/boot.S.obj
 auroraOS.elf: CMakeFiles/auroraOS.elf.dir/boot/uart.c.obj
 auroraOS.elf: CMakeFiles/auroraOS.elf.dir/boot/interrupts.cpp.obj
 auroraOS.elf: CMakeFiles/auroraOS.elf.dir/kernel/memory.cpp.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/kernel/libc.cpp.obj
 auroraOS.elf: CMakeFiles/auroraOS.elf.dir/vfs/vfs.cpp.obj
 auroraOS.elf: CMakeFiles/auroraOS.elf.dir/vfs/ramfs.cpp.obj
 auroraOS.elf: CMakeFiles/auroraOS.elf.dir/apps/shell.cpp.obj
 auroraOS.elf: CMakeFiles/auroraOS.elf.dir/apps/elf_loader.cpp.obj
 auroraOS.elf: CMakeFiles/auroraOS.elf.dir/apps/kernel.cpp.obj
 auroraOS.elf: CMakeFiles/auroraOS.elf.dir/net/eth_driver.cpp.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/adapter/net/sys_arch.cpp.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/adapter/net/ethernetif.cpp.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/api_lib.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/api_msg.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/err.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/if_api.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netbuf.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netdb.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netifapi.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/sockets.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/tcpip.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp_alloc.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp_tcp.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/def.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/dns.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/inet_chksum.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/init.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ip.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/autoip.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/dhcp.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/etharp.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/icmp.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/igmp.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4_addr.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4_frag.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/mem.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/memp.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/netif.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/pbuf.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/raw.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/stats.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/sys.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp_in.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp_out.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/timeouts.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/udp.c.obj
+auroraOS.elf: CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/netif/ethernet.c.obj
 auroraOS.elf: CMakeFiles/auroraOS.elf.dir/build.make
 auroraOS.elf: CMakeFiles/auroraOS.elf.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Linking CXX executable auroraOS.elf"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_52) "Linking CXX executable auroraOS.elf"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\auroraOS.elf.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

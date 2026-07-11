@@ -8,7 +8,7 @@ extern "C" {
     volatile TaskControlBlock* g_next_tcb_ptr = nullptr;
 }
 
-static volatile uint32_t tick_count = 0;
+volatile uint32_t tick_count = 0;
 
 
 

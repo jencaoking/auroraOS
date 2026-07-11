@@ -128,6 +128,966 @@ auroraOS.elf/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/build
 .PHONY : auroraOS.elf/fast
 
+3rdparty/lwip/src/api/api_lib.obj: 3rdparty/lwip/src/api/api_lib.c.obj
+.PHONY : 3rdparty/lwip/src/api/api_lib.obj
+
+# target to build an object file
+3rdparty/lwip/src/api/api_lib.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/api_lib.c.obj
+.PHONY : 3rdparty/lwip/src/api/api_lib.c.obj
+
+3rdparty/lwip/src/api/api_lib.i: 3rdparty/lwip/src/api/api_lib.c.i
+.PHONY : 3rdparty/lwip/src/api/api_lib.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/api/api_lib.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/api_lib.c.i
+.PHONY : 3rdparty/lwip/src/api/api_lib.c.i
+
+3rdparty/lwip/src/api/api_lib.s: 3rdparty/lwip/src/api/api_lib.c.s
+.PHONY : 3rdparty/lwip/src/api/api_lib.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/api/api_lib.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/api_lib.c.s
+.PHONY : 3rdparty/lwip/src/api/api_lib.c.s
+
+3rdparty/lwip/src/api/api_msg.obj: 3rdparty/lwip/src/api/api_msg.c.obj
+.PHONY : 3rdparty/lwip/src/api/api_msg.obj
+
+# target to build an object file
+3rdparty/lwip/src/api/api_msg.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/api_msg.c.obj
+.PHONY : 3rdparty/lwip/src/api/api_msg.c.obj
+
+3rdparty/lwip/src/api/api_msg.i: 3rdparty/lwip/src/api/api_msg.c.i
+.PHONY : 3rdparty/lwip/src/api/api_msg.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/api/api_msg.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/api_msg.c.i
+.PHONY : 3rdparty/lwip/src/api/api_msg.c.i
+
+3rdparty/lwip/src/api/api_msg.s: 3rdparty/lwip/src/api/api_msg.c.s
+.PHONY : 3rdparty/lwip/src/api/api_msg.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/api/api_msg.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/api_msg.c.s
+.PHONY : 3rdparty/lwip/src/api/api_msg.c.s
+
+3rdparty/lwip/src/api/err.obj: 3rdparty/lwip/src/api/err.c.obj
+.PHONY : 3rdparty/lwip/src/api/err.obj
+
+# target to build an object file
+3rdparty/lwip/src/api/err.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/err.c.obj
+.PHONY : 3rdparty/lwip/src/api/err.c.obj
+
+3rdparty/lwip/src/api/err.i: 3rdparty/lwip/src/api/err.c.i
+.PHONY : 3rdparty/lwip/src/api/err.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/api/err.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/err.c.i
+.PHONY : 3rdparty/lwip/src/api/err.c.i
+
+3rdparty/lwip/src/api/err.s: 3rdparty/lwip/src/api/err.c.s
+.PHONY : 3rdparty/lwip/src/api/err.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/api/err.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/err.c.s
+.PHONY : 3rdparty/lwip/src/api/err.c.s
+
+3rdparty/lwip/src/api/if_api.obj: 3rdparty/lwip/src/api/if_api.c.obj
+.PHONY : 3rdparty/lwip/src/api/if_api.obj
+
+# target to build an object file
+3rdparty/lwip/src/api/if_api.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/if_api.c.obj
+.PHONY : 3rdparty/lwip/src/api/if_api.c.obj
+
+3rdparty/lwip/src/api/if_api.i: 3rdparty/lwip/src/api/if_api.c.i
+.PHONY : 3rdparty/lwip/src/api/if_api.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/api/if_api.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/if_api.c.i
+.PHONY : 3rdparty/lwip/src/api/if_api.c.i
+
+3rdparty/lwip/src/api/if_api.s: 3rdparty/lwip/src/api/if_api.c.s
+.PHONY : 3rdparty/lwip/src/api/if_api.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/api/if_api.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/if_api.c.s
+.PHONY : 3rdparty/lwip/src/api/if_api.c.s
+
+3rdparty/lwip/src/api/netbuf.obj: 3rdparty/lwip/src/api/netbuf.c.obj
+.PHONY : 3rdparty/lwip/src/api/netbuf.obj
+
+# target to build an object file
+3rdparty/lwip/src/api/netbuf.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netbuf.c.obj
+.PHONY : 3rdparty/lwip/src/api/netbuf.c.obj
+
+3rdparty/lwip/src/api/netbuf.i: 3rdparty/lwip/src/api/netbuf.c.i
+.PHONY : 3rdparty/lwip/src/api/netbuf.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/api/netbuf.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netbuf.c.i
+.PHONY : 3rdparty/lwip/src/api/netbuf.c.i
+
+3rdparty/lwip/src/api/netbuf.s: 3rdparty/lwip/src/api/netbuf.c.s
+.PHONY : 3rdparty/lwip/src/api/netbuf.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/api/netbuf.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netbuf.c.s
+.PHONY : 3rdparty/lwip/src/api/netbuf.c.s
+
+3rdparty/lwip/src/api/netdb.obj: 3rdparty/lwip/src/api/netdb.c.obj
+.PHONY : 3rdparty/lwip/src/api/netdb.obj
+
+# target to build an object file
+3rdparty/lwip/src/api/netdb.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netdb.c.obj
+.PHONY : 3rdparty/lwip/src/api/netdb.c.obj
+
+3rdparty/lwip/src/api/netdb.i: 3rdparty/lwip/src/api/netdb.c.i
+.PHONY : 3rdparty/lwip/src/api/netdb.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/api/netdb.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netdb.c.i
+.PHONY : 3rdparty/lwip/src/api/netdb.c.i
+
+3rdparty/lwip/src/api/netdb.s: 3rdparty/lwip/src/api/netdb.c.s
+.PHONY : 3rdparty/lwip/src/api/netdb.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/api/netdb.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netdb.c.s
+.PHONY : 3rdparty/lwip/src/api/netdb.c.s
+
+3rdparty/lwip/src/api/netifapi.obj: 3rdparty/lwip/src/api/netifapi.c.obj
+.PHONY : 3rdparty/lwip/src/api/netifapi.obj
+
+# target to build an object file
+3rdparty/lwip/src/api/netifapi.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netifapi.c.obj
+.PHONY : 3rdparty/lwip/src/api/netifapi.c.obj
+
+3rdparty/lwip/src/api/netifapi.i: 3rdparty/lwip/src/api/netifapi.c.i
+.PHONY : 3rdparty/lwip/src/api/netifapi.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/api/netifapi.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netifapi.c.i
+.PHONY : 3rdparty/lwip/src/api/netifapi.c.i
+
+3rdparty/lwip/src/api/netifapi.s: 3rdparty/lwip/src/api/netifapi.c.s
+.PHONY : 3rdparty/lwip/src/api/netifapi.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/api/netifapi.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/netifapi.c.s
+.PHONY : 3rdparty/lwip/src/api/netifapi.c.s
+
+3rdparty/lwip/src/api/sockets.obj: 3rdparty/lwip/src/api/sockets.c.obj
+.PHONY : 3rdparty/lwip/src/api/sockets.obj
+
+# target to build an object file
+3rdparty/lwip/src/api/sockets.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/sockets.c.obj
+.PHONY : 3rdparty/lwip/src/api/sockets.c.obj
+
+3rdparty/lwip/src/api/sockets.i: 3rdparty/lwip/src/api/sockets.c.i
+.PHONY : 3rdparty/lwip/src/api/sockets.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/api/sockets.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/sockets.c.i
+.PHONY : 3rdparty/lwip/src/api/sockets.c.i
+
+3rdparty/lwip/src/api/sockets.s: 3rdparty/lwip/src/api/sockets.c.s
+.PHONY : 3rdparty/lwip/src/api/sockets.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/api/sockets.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/sockets.c.s
+.PHONY : 3rdparty/lwip/src/api/sockets.c.s
+
+3rdparty/lwip/src/api/tcpip.obj: 3rdparty/lwip/src/api/tcpip.c.obj
+.PHONY : 3rdparty/lwip/src/api/tcpip.obj
+
+# target to build an object file
+3rdparty/lwip/src/api/tcpip.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/tcpip.c.obj
+.PHONY : 3rdparty/lwip/src/api/tcpip.c.obj
+
+3rdparty/lwip/src/api/tcpip.i: 3rdparty/lwip/src/api/tcpip.c.i
+.PHONY : 3rdparty/lwip/src/api/tcpip.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/api/tcpip.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/tcpip.c.i
+.PHONY : 3rdparty/lwip/src/api/tcpip.c.i
+
+3rdparty/lwip/src/api/tcpip.s: 3rdparty/lwip/src/api/tcpip.c.s
+.PHONY : 3rdparty/lwip/src/api/tcpip.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/api/tcpip.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/api/tcpip.c.s
+.PHONY : 3rdparty/lwip/src/api/tcpip.c.s
+
+3rdparty/lwip/src/core/altcp.obj: 3rdparty/lwip/src/core/altcp.c.obj
+.PHONY : 3rdparty/lwip/src/core/altcp.obj
+
+# target to build an object file
+3rdparty/lwip/src/core/altcp.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp.c.obj
+.PHONY : 3rdparty/lwip/src/core/altcp.c.obj
+
+3rdparty/lwip/src/core/altcp.i: 3rdparty/lwip/src/core/altcp.c.i
+.PHONY : 3rdparty/lwip/src/core/altcp.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/core/altcp.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp.c.i
+.PHONY : 3rdparty/lwip/src/core/altcp.c.i
+
+3rdparty/lwip/src/core/altcp.s: 3rdparty/lwip/src/core/altcp.c.s
+.PHONY : 3rdparty/lwip/src/core/altcp.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/core/altcp.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp.c.s
+.PHONY : 3rdparty/lwip/src/core/altcp.c.s
+
+3rdparty/lwip/src/core/altcp_alloc.obj: 3rdparty/lwip/src/core/altcp_alloc.c.obj
+.PHONY : 3rdparty/lwip/src/core/altcp_alloc.obj
+
+# target to build an object file
+3rdparty/lwip/src/core/altcp_alloc.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp_alloc.c.obj
+.PHONY : 3rdparty/lwip/src/core/altcp_alloc.c.obj
+
+3rdparty/lwip/src/core/altcp_alloc.i: 3rdparty/lwip/src/core/altcp_alloc.c.i
+.PHONY : 3rdparty/lwip/src/core/altcp_alloc.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/core/altcp_alloc.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp_alloc.c.i
+.PHONY : 3rdparty/lwip/src/core/altcp_alloc.c.i
+
+3rdparty/lwip/src/core/altcp_alloc.s: 3rdparty/lwip/src/core/altcp_alloc.c.s
+.PHONY : 3rdparty/lwip/src/core/altcp_alloc.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/core/altcp_alloc.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp_alloc.c.s
+.PHONY : 3rdparty/lwip/src/core/altcp_alloc.c.s
+
+3rdparty/lwip/src/core/altcp_tcp.obj: 3rdparty/lwip/src/core/altcp_tcp.c.obj
+.PHONY : 3rdparty/lwip/src/core/altcp_tcp.obj
+
+# target to build an object file
+3rdparty/lwip/src/core/altcp_tcp.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp_tcp.c.obj
+.PHONY : 3rdparty/lwip/src/core/altcp_tcp.c.obj
+
+3rdparty/lwip/src/core/altcp_tcp.i: 3rdparty/lwip/src/core/altcp_tcp.c.i
+.PHONY : 3rdparty/lwip/src/core/altcp_tcp.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/core/altcp_tcp.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp_tcp.c.i
+.PHONY : 3rdparty/lwip/src/core/altcp_tcp.c.i
+
+3rdparty/lwip/src/core/altcp_tcp.s: 3rdparty/lwip/src/core/altcp_tcp.c.s
+.PHONY : 3rdparty/lwip/src/core/altcp_tcp.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/core/altcp_tcp.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/altcp_tcp.c.s
+.PHONY : 3rdparty/lwip/src/core/altcp_tcp.c.s
+
+3rdparty/lwip/src/core/def.obj: 3rdparty/lwip/src/core/def.c.obj
+.PHONY : 3rdparty/lwip/src/core/def.obj
+
+# target to build an object file
+3rdparty/lwip/src/core/def.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/def.c.obj
+.PHONY : 3rdparty/lwip/src/core/def.c.obj
+
+3rdparty/lwip/src/core/def.i: 3rdparty/lwip/src/core/def.c.i
+.PHONY : 3rdparty/lwip/src/core/def.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/core/def.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/def.c.i
+.PHONY : 3rdparty/lwip/src/core/def.c.i
+
+3rdparty/lwip/src/core/def.s: 3rdparty/lwip/src/core/def.c.s
+.PHONY : 3rdparty/lwip/src/core/def.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/core/def.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/def.c.s
+.PHONY : 3rdparty/lwip/src/core/def.c.s
+
+3rdparty/lwip/src/core/dns.obj: 3rdparty/lwip/src/core/dns.c.obj
+.PHONY : 3rdparty/lwip/src/core/dns.obj
+
+# target to build an object file
+3rdparty/lwip/src/core/dns.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/dns.c.obj
+.PHONY : 3rdparty/lwip/src/core/dns.c.obj
+
+3rdparty/lwip/src/core/dns.i: 3rdparty/lwip/src/core/dns.c.i
+.PHONY : 3rdparty/lwip/src/core/dns.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/core/dns.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/dns.c.i
+.PHONY : 3rdparty/lwip/src/core/dns.c.i
+
+3rdparty/lwip/src/core/dns.s: 3rdparty/lwip/src/core/dns.c.s
+.PHONY : 3rdparty/lwip/src/core/dns.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/core/dns.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/dns.c.s
+.PHONY : 3rdparty/lwip/src/core/dns.c.s
+
+3rdparty/lwip/src/core/inet_chksum.obj: 3rdparty/lwip/src/core/inet_chksum.c.obj
+.PHONY : 3rdparty/lwip/src/core/inet_chksum.obj
+
+# target to build an object file
+3rdparty/lwip/src/core/inet_chksum.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/inet_chksum.c.obj
+.PHONY : 3rdparty/lwip/src/core/inet_chksum.c.obj
+
+3rdparty/lwip/src/core/inet_chksum.i: 3rdparty/lwip/src/core/inet_chksum.c.i
+.PHONY : 3rdparty/lwip/src/core/inet_chksum.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/core/inet_chksum.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/inet_chksum.c.i
+.PHONY : 3rdparty/lwip/src/core/inet_chksum.c.i
+
+3rdparty/lwip/src/core/inet_chksum.s: 3rdparty/lwip/src/core/inet_chksum.c.s
+.PHONY : 3rdparty/lwip/src/core/inet_chksum.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/core/inet_chksum.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/inet_chksum.c.s
+.PHONY : 3rdparty/lwip/src/core/inet_chksum.c.s
+
+3rdparty/lwip/src/core/init.obj: 3rdparty/lwip/src/core/init.c.obj
+.PHONY : 3rdparty/lwip/src/core/init.obj
+
+# target to build an object file
+3rdparty/lwip/src/core/init.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/init.c.obj
+.PHONY : 3rdparty/lwip/src/core/init.c.obj
+
+3rdparty/lwip/src/core/init.i: 3rdparty/lwip/src/core/init.c.i
+.PHONY : 3rdparty/lwip/src/core/init.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/core/init.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/init.c.i
+.PHONY : 3rdparty/lwip/src/core/init.c.i
+
+3rdparty/lwip/src/core/init.s: 3rdparty/lwip/src/core/init.c.s
+.PHONY : 3rdparty/lwip/src/core/init.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/core/init.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/init.c.s
+.PHONY : 3rdparty/lwip/src/core/init.c.s
+
+3rdparty/lwip/src/core/ip.obj: 3rdparty/lwip/src/core/ip.c.obj
+.PHONY : 3rdparty/lwip/src/core/ip.obj
+
+# target to build an object file
+3rdparty/lwip/src/core/ip.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ip.c.obj
+.PHONY : 3rdparty/lwip/src/core/ip.c.obj
+
+3rdparty/lwip/src/core/ip.i: 3rdparty/lwip/src/core/ip.c.i
+.PHONY : 3rdparty/lwip/src/core/ip.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/core/ip.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ip.c.i
+.PHONY : 3rdparty/lwip/src/core/ip.c.i
+
+3rdparty/lwip/src/core/ip.s: 3rdparty/lwip/src/core/ip.c.s
+.PHONY : 3rdparty/lwip/src/core/ip.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/core/ip.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ip.c.s
+.PHONY : 3rdparty/lwip/src/core/ip.c.s
+
+3rdparty/lwip/src/core/ipv4/autoip.obj: 3rdparty/lwip/src/core/ipv4/autoip.c.obj
+.PHONY : 3rdparty/lwip/src/core/ipv4/autoip.obj
+
+# target to build an object file
+3rdparty/lwip/src/core/ipv4/autoip.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/autoip.c.obj
+.PHONY : 3rdparty/lwip/src/core/ipv4/autoip.c.obj
+
+3rdparty/lwip/src/core/ipv4/autoip.i: 3rdparty/lwip/src/core/ipv4/autoip.c.i
+.PHONY : 3rdparty/lwip/src/core/ipv4/autoip.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/core/ipv4/autoip.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/autoip.c.i
+.PHONY : 3rdparty/lwip/src/core/ipv4/autoip.c.i
+
+3rdparty/lwip/src/core/ipv4/autoip.s: 3rdparty/lwip/src/core/ipv4/autoip.c.s
+.PHONY : 3rdparty/lwip/src/core/ipv4/autoip.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/core/ipv4/autoip.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/autoip.c.s
+.PHONY : 3rdparty/lwip/src/core/ipv4/autoip.c.s
+
+3rdparty/lwip/src/core/ipv4/dhcp.obj: 3rdparty/lwip/src/core/ipv4/dhcp.c.obj
+.PHONY : 3rdparty/lwip/src/core/ipv4/dhcp.obj
+
+# target to build an object file
+3rdparty/lwip/src/core/ipv4/dhcp.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/dhcp.c.obj
+.PHONY : 3rdparty/lwip/src/core/ipv4/dhcp.c.obj
+
+3rdparty/lwip/src/core/ipv4/dhcp.i: 3rdparty/lwip/src/core/ipv4/dhcp.c.i
+.PHONY : 3rdparty/lwip/src/core/ipv4/dhcp.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/core/ipv4/dhcp.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/dhcp.c.i
+.PHONY : 3rdparty/lwip/src/core/ipv4/dhcp.c.i
+
+3rdparty/lwip/src/core/ipv4/dhcp.s: 3rdparty/lwip/src/core/ipv4/dhcp.c.s
+.PHONY : 3rdparty/lwip/src/core/ipv4/dhcp.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/core/ipv4/dhcp.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/dhcp.c.s
+.PHONY : 3rdparty/lwip/src/core/ipv4/dhcp.c.s
+
+3rdparty/lwip/src/core/ipv4/etharp.obj: 3rdparty/lwip/src/core/ipv4/etharp.c.obj
+.PHONY : 3rdparty/lwip/src/core/ipv4/etharp.obj
+
+# target to build an object file
+3rdparty/lwip/src/core/ipv4/etharp.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/etharp.c.obj
+.PHONY : 3rdparty/lwip/src/core/ipv4/etharp.c.obj
+
+3rdparty/lwip/src/core/ipv4/etharp.i: 3rdparty/lwip/src/core/ipv4/etharp.c.i
+.PHONY : 3rdparty/lwip/src/core/ipv4/etharp.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/core/ipv4/etharp.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/etharp.c.i
+.PHONY : 3rdparty/lwip/src/core/ipv4/etharp.c.i
+
+3rdparty/lwip/src/core/ipv4/etharp.s: 3rdparty/lwip/src/core/ipv4/etharp.c.s
+.PHONY : 3rdparty/lwip/src/core/ipv4/etharp.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/core/ipv4/etharp.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/etharp.c.s
+.PHONY : 3rdparty/lwip/src/core/ipv4/etharp.c.s
+
+3rdparty/lwip/src/core/ipv4/icmp.obj: 3rdparty/lwip/src/core/ipv4/icmp.c.obj
+.PHONY : 3rdparty/lwip/src/core/ipv4/icmp.obj
+
+# target to build an object file
+3rdparty/lwip/src/core/ipv4/icmp.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/icmp.c.obj
+.PHONY : 3rdparty/lwip/src/core/ipv4/icmp.c.obj
+
+3rdparty/lwip/src/core/ipv4/icmp.i: 3rdparty/lwip/src/core/ipv4/icmp.c.i
+.PHONY : 3rdparty/lwip/src/core/ipv4/icmp.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/core/ipv4/icmp.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/icmp.c.i
+.PHONY : 3rdparty/lwip/src/core/ipv4/icmp.c.i
+
+3rdparty/lwip/src/core/ipv4/icmp.s: 3rdparty/lwip/src/core/ipv4/icmp.c.s
+.PHONY : 3rdparty/lwip/src/core/ipv4/icmp.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/core/ipv4/icmp.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/icmp.c.s
+.PHONY : 3rdparty/lwip/src/core/ipv4/icmp.c.s
+
+3rdparty/lwip/src/core/ipv4/igmp.obj: 3rdparty/lwip/src/core/ipv4/igmp.c.obj
+.PHONY : 3rdparty/lwip/src/core/ipv4/igmp.obj
+
+# target to build an object file
+3rdparty/lwip/src/core/ipv4/igmp.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/igmp.c.obj
+.PHONY : 3rdparty/lwip/src/core/ipv4/igmp.c.obj
+
+3rdparty/lwip/src/core/ipv4/igmp.i: 3rdparty/lwip/src/core/ipv4/igmp.c.i
+.PHONY : 3rdparty/lwip/src/core/ipv4/igmp.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/core/ipv4/igmp.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/igmp.c.i
+.PHONY : 3rdparty/lwip/src/core/ipv4/igmp.c.i
+
+3rdparty/lwip/src/core/ipv4/igmp.s: 3rdparty/lwip/src/core/ipv4/igmp.c.s
+.PHONY : 3rdparty/lwip/src/core/ipv4/igmp.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/core/ipv4/igmp.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/igmp.c.s
+.PHONY : 3rdparty/lwip/src/core/ipv4/igmp.c.s
+
+3rdparty/lwip/src/core/ipv4/ip4.obj: 3rdparty/lwip/src/core/ipv4/ip4.c.obj
+.PHONY : 3rdparty/lwip/src/core/ipv4/ip4.obj
+
+# target to build an object file
+3rdparty/lwip/src/core/ipv4/ip4.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4.c.obj
+.PHONY : 3rdparty/lwip/src/core/ipv4/ip4.c.obj
+
+3rdparty/lwip/src/core/ipv4/ip4.i: 3rdparty/lwip/src/core/ipv4/ip4.c.i
+.PHONY : 3rdparty/lwip/src/core/ipv4/ip4.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/core/ipv4/ip4.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4.c.i
+.PHONY : 3rdparty/lwip/src/core/ipv4/ip4.c.i
+
+3rdparty/lwip/src/core/ipv4/ip4.s: 3rdparty/lwip/src/core/ipv4/ip4.c.s
+.PHONY : 3rdparty/lwip/src/core/ipv4/ip4.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/core/ipv4/ip4.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4.c.s
+.PHONY : 3rdparty/lwip/src/core/ipv4/ip4.c.s
+
+3rdparty/lwip/src/core/ipv4/ip4_addr.obj: 3rdparty/lwip/src/core/ipv4/ip4_addr.c.obj
+.PHONY : 3rdparty/lwip/src/core/ipv4/ip4_addr.obj
+
+# target to build an object file
+3rdparty/lwip/src/core/ipv4/ip4_addr.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4_addr.c.obj
+.PHONY : 3rdparty/lwip/src/core/ipv4/ip4_addr.c.obj
+
+3rdparty/lwip/src/core/ipv4/ip4_addr.i: 3rdparty/lwip/src/core/ipv4/ip4_addr.c.i
+.PHONY : 3rdparty/lwip/src/core/ipv4/ip4_addr.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/core/ipv4/ip4_addr.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4_addr.c.i
+.PHONY : 3rdparty/lwip/src/core/ipv4/ip4_addr.c.i
+
+3rdparty/lwip/src/core/ipv4/ip4_addr.s: 3rdparty/lwip/src/core/ipv4/ip4_addr.c.s
+.PHONY : 3rdparty/lwip/src/core/ipv4/ip4_addr.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/core/ipv4/ip4_addr.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4_addr.c.s
+.PHONY : 3rdparty/lwip/src/core/ipv4/ip4_addr.c.s
+
+3rdparty/lwip/src/core/ipv4/ip4_frag.obj: 3rdparty/lwip/src/core/ipv4/ip4_frag.c.obj
+.PHONY : 3rdparty/lwip/src/core/ipv4/ip4_frag.obj
+
+# target to build an object file
+3rdparty/lwip/src/core/ipv4/ip4_frag.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4_frag.c.obj
+.PHONY : 3rdparty/lwip/src/core/ipv4/ip4_frag.c.obj
+
+3rdparty/lwip/src/core/ipv4/ip4_frag.i: 3rdparty/lwip/src/core/ipv4/ip4_frag.c.i
+.PHONY : 3rdparty/lwip/src/core/ipv4/ip4_frag.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/core/ipv4/ip4_frag.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4_frag.c.i
+.PHONY : 3rdparty/lwip/src/core/ipv4/ip4_frag.c.i
+
+3rdparty/lwip/src/core/ipv4/ip4_frag.s: 3rdparty/lwip/src/core/ipv4/ip4_frag.c.s
+.PHONY : 3rdparty/lwip/src/core/ipv4/ip4_frag.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/core/ipv4/ip4_frag.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/ipv4/ip4_frag.c.s
+.PHONY : 3rdparty/lwip/src/core/ipv4/ip4_frag.c.s
+
+3rdparty/lwip/src/core/mem.obj: 3rdparty/lwip/src/core/mem.c.obj
+.PHONY : 3rdparty/lwip/src/core/mem.obj
+
+# target to build an object file
+3rdparty/lwip/src/core/mem.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/mem.c.obj
+.PHONY : 3rdparty/lwip/src/core/mem.c.obj
+
+3rdparty/lwip/src/core/mem.i: 3rdparty/lwip/src/core/mem.c.i
+.PHONY : 3rdparty/lwip/src/core/mem.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/core/mem.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/mem.c.i
+.PHONY : 3rdparty/lwip/src/core/mem.c.i
+
+3rdparty/lwip/src/core/mem.s: 3rdparty/lwip/src/core/mem.c.s
+.PHONY : 3rdparty/lwip/src/core/mem.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/core/mem.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/mem.c.s
+.PHONY : 3rdparty/lwip/src/core/mem.c.s
+
+3rdparty/lwip/src/core/memp.obj: 3rdparty/lwip/src/core/memp.c.obj
+.PHONY : 3rdparty/lwip/src/core/memp.obj
+
+# target to build an object file
+3rdparty/lwip/src/core/memp.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/memp.c.obj
+.PHONY : 3rdparty/lwip/src/core/memp.c.obj
+
+3rdparty/lwip/src/core/memp.i: 3rdparty/lwip/src/core/memp.c.i
+.PHONY : 3rdparty/lwip/src/core/memp.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/core/memp.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/memp.c.i
+.PHONY : 3rdparty/lwip/src/core/memp.c.i
+
+3rdparty/lwip/src/core/memp.s: 3rdparty/lwip/src/core/memp.c.s
+.PHONY : 3rdparty/lwip/src/core/memp.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/core/memp.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/memp.c.s
+.PHONY : 3rdparty/lwip/src/core/memp.c.s
+
+3rdparty/lwip/src/core/netif.obj: 3rdparty/lwip/src/core/netif.c.obj
+.PHONY : 3rdparty/lwip/src/core/netif.obj
+
+# target to build an object file
+3rdparty/lwip/src/core/netif.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/netif.c.obj
+.PHONY : 3rdparty/lwip/src/core/netif.c.obj
+
+3rdparty/lwip/src/core/netif.i: 3rdparty/lwip/src/core/netif.c.i
+.PHONY : 3rdparty/lwip/src/core/netif.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/core/netif.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/netif.c.i
+.PHONY : 3rdparty/lwip/src/core/netif.c.i
+
+3rdparty/lwip/src/core/netif.s: 3rdparty/lwip/src/core/netif.c.s
+.PHONY : 3rdparty/lwip/src/core/netif.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/core/netif.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/netif.c.s
+.PHONY : 3rdparty/lwip/src/core/netif.c.s
+
+3rdparty/lwip/src/core/pbuf.obj: 3rdparty/lwip/src/core/pbuf.c.obj
+.PHONY : 3rdparty/lwip/src/core/pbuf.obj
+
+# target to build an object file
+3rdparty/lwip/src/core/pbuf.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/pbuf.c.obj
+.PHONY : 3rdparty/lwip/src/core/pbuf.c.obj
+
+3rdparty/lwip/src/core/pbuf.i: 3rdparty/lwip/src/core/pbuf.c.i
+.PHONY : 3rdparty/lwip/src/core/pbuf.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/core/pbuf.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/pbuf.c.i
+.PHONY : 3rdparty/lwip/src/core/pbuf.c.i
+
+3rdparty/lwip/src/core/pbuf.s: 3rdparty/lwip/src/core/pbuf.c.s
+.PHONY : 3rdparty/lwip/src/core/pbuf.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/core/pbuf.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/pbuf.c.s
+.PHONY : 3rdparty/lwip/src/core/pbuf.c.s
+
+3rdparty/lwip/src/core/raw.obj: 3rdparty/lwip/src/core/raw.c.obj
+.PHONY : 3rdparty/lwip/src/core/raw.obj
+
+# target to build an object file
+3rdparty/lwip/src/core/raw.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/raw.c.obj
+.PHONY : 3rdparty/lwip/src/core/raw.c.obj
+
+3rdparty/lwip/src/core/raw.i: 3rdparty/lwip/src/core/raw.c.i
+.PHONY : 3rdparty/lwip/src/core/raw.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/core/raw.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/raw.c.i
+.PHONY : 3rdparty/lwip/src/core/raw.c.i
+
+3rdparty/lwip/src/core/raw.s: 3rdparty/lwip/src/core/raw.c.s
+.PHONY : 3rdparty/lwip/src/core/raw.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/core/raw.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/raw.c.s
+.PHONY : 3rdparty/lwip/src/core/raw.c.s
+
+3rdparty/lwip/src/core/stats.obj: 3rdparty/lwip/src/core/stats.c.obj
+.PHONY : 3rdparty/lwip/src/core/stats.obj
+
+# target to build an object file
+3rdparty/lwip/src/core/stats.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/stats.c.obj
+.PHONY : 3rdparty/lwip/src/core/stats.c.obj
+
+3rdparty/lwip/src/core/stats.i: 3rdparty/lwip/src/core/stats.c.i
+.PHONY : 3rdparty/lwip/src/core/stats.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/core/stats.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/stats.c.i
+.PHONY : 3rdparty/lwip/src/core/stats.c.i
+
+3rdparty/lwip/src/core/stats.s: 3rdparty/lwip/src/core/stats.c.s
+.PHONY : 3rdparty/lwip/src/core/stats.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/core/stats.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/stats.c.s
+.PHONY : 3rdparty/lwip/src/core/stats.c.s
+
+3rdparty/lwip/src/core/sys.obj: 3rdparty/lwip/src/core/sys.c.obj
+.PHONY : 3rdparty/lwip/src/core/sys.obj
+
+# target to build an object file
+3rdparty/lwip/src/core/sys.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/sys.c.obj
+.PHONY : 3rdparty/lwip/src/core/sys.c.obj
+
+3rdparty/lwip/src/core/sys.i: 3rdparty/lwip/src/core/sys.c.i
+.PHONY : 3rdparty/lwip/src/core/sys.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/core/sys.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/sys.c.i
+.PHONY : 3rdparty/lwip/src/core/sys.c.i
+
+3rdparty/lwip/src/core/sys.s: 3rdparty/lwip/src/core/sys.c.s
+.PHONY : 3rdparty/lwip/src/core/sys.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/core/sys.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/sys.c.s
+.PHONY : 3rdparty/lwip/src/core/sys.c.s
+
+3rdparty/lwip/src/core/tcp.obj: 3rdparty/lwip/src/core/tcp.c.obj
+.PHONY : 3rdparty/lwip/src/core/tcp.obj
+
+# target to build an object file
+3rdparty/lwip/src/core/tcp.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp.c.obj
+.PHONY : 3rdparty/lwip/src/core/tcp.c.obj
+
+3rdparty/lwip/src/core/tcp.i: 3rdparty/lwip/src/core/tcp.c.i
+.PHONY : 3rdparty/lwip/src/core/tcp.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/core/tcp.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp.c.i
+.PHONY : 3rdparty/lwip/src/core/tcp.c.i
+
+3rdparty/lwip/src/core/tcp.s: 3rdparty/lwip/src/core/tcp.c.s
+.PHONY : 3rdparty/lwip/src/core/tcp.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/core/tcp.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp.c.s
+.PHONY : 3rdparty/lwip/src/core/tcp.c.s
+
+3rdparty/lwip/src/core/tcp_in.obj: 3rdparty/lwip/src/core/tcp_in.c.obj
+.PHONY : 3rdparty/lwip/src/core/tcp_in.obj
+
+# target to build an object file
+3rdparty/lwip/src/core/tcp_in.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp_in.c.obj
+.PHONY : 3rdparty/lwip/src/core/tcp_in.c.obj
+
+3rdparty/lwip/src/core/tcp_in.i: 3rdparty/lwip/src/core/tcp_in.c.i
+.PHONY : 3rdparty/lwip/src/core/tcp_in.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/core/tcp_in.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp_in.c.i
+.PHONY : 3rdparty/lwip/src/core/tcp_in.c.i
+
+3rdparty/lwip/src/core/tcp_in.s: 3rdparty/lwip/src/core/tcp_in.c.s
+.PHONY : 3rdparty/lwip/src/core/tcp_in.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/core/tcp_in.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp_in.c.s
+.PHONY : 3rdparty/lwip/src/core/tcp_in.c.s
+
+3rdparty/lwip/src/core/tcp_out.obj: 3rdparty/lwip/src/core/tcp_out.c.obj
+.PHONY : 3rdparty/lwip/src/core/tcp_out.obj
+
+# target to build an object file
+3rdparty/lwip/src/core/tcp_out.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp_out.c.obj
+.PHONY : 3rdparty/lwip/src/core/tcp_out.c.obj
+
+3rdparty/lwip/src/core/tcp_out.i: 3rdparty/lwip/src/core/tcp_out.c.i
+.PHONY : 3rdparty/lwip/src/core/tcp_out.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/core/tcp_out.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp_out.c.i
+.PHONY : 3rdparty/lwip/src/core/tcp_out.c.i
+
+3rdparty/lwip/src/core/tcp_out.s: 3rdparty/lwip/src/core/tcp_out.c.s
+.PHONY : 3rdparty/lwip/src/core/tcp_out.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/core/tcp_out.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/tcp_out.c.s
+.PHONY : 3rdparty/lwip/src/core/tcp_out.c.s
+
+3rdparty/lwip/src/core/timeouts.obj: 3rdparty/lwip/src/core/timeouts.c.obj
+.PHONY : 3rdparty/lwip/src/core/timeouts.obj
+
+# target to build an object file
+3rdparty/lwip/src/core/timeouts.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/timeouts.c.obj
+.PHONY : 3rdparty/lwip/src/core/timeouts.c.obj
+
+3rdparty/lwip/src/core/timeouts.i: 3rdparty/lwip/src/core/timeouts.c.i
+.PHONY : 3rdparty/lwip/src/core/timeouts.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/core/timeouts.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/timeouts.c.i
+.PHONY : 3rdparty/lwip/src/core/timeouts.c.i
+
+3rdparty/lwip/src/core/timeouts.s: 3rdparty/lwip/src/core/timeouts.c.s
+.PHONY : 3rdparty/lwip/src/core/timeouts.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/core/timeouts.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/timeouts.c.s
+.PHONY : 3rdparty/lwip/src/core/timeouts.c.s
+
+3rdparty/lwip/src/core/udp.obj: 3rdparty/lwip/src/core/udp.c.obj
+.PHONY : 3rdparty/lwip/src/core/udp.obj
+
+# target to build an object file
+3rdparty/lwip/src/core/udp.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/udp.c.obj
+.PHONY : 3rdparty/lwip/src/core/udp.c.obj
+
+3rdparty/lwip/src/core/udp.i: 3rdparty/lwip/src/core/udp.c.i
+.PHONY : 3rdparty/lwip/src/core/udp.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/core/udp.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/udp.c.i
+.PHONY : 3rdparty/lwip/src/core/udp.c.i
+
+3rdparty/lwip/src/core/udp.s: 3rdparty/lwip/src/core/udp.c.s
+.PHONY : 3rdparty/lwip/src/core/udp.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/core/udp.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/core/udp.c.s
+.PHONY : 3rdparty/lwip/src/core/udp.c.s
+
+3rdparty/lwip/src/netif/ethernet.obj: 3rdparty/lwip/src/netif/ethernet.c.obj
+.PHONY : 3rdparty/lwip/src/netif/ethernet.obj
+
+# target to build an object file
+3rdparty/lwip/src/netif/ethernet.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/netif/ethernet.c.obj
+.PHONY : 3rdparty/lwip/src/netif/ethernet.c.obj
+
+3rdparty/lwip/src/netif/ethernet.i: 3rdparty/lwip/src/netif/ethernet.c.i
+.PHONY : 3rdparty/lwip/src/netif/ethernet.i
+
+# target to preprocess a source file
+3rdparty/lwip/src/netif/ethernet.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/netif/ethernet.c.i
+.PHONY : 3rdparty/lwip/src/netif/ethernet.c.i
+
+3rdparty/lwip/src/netif/ethernet.s: 3rdparty/lwip/src/netif/ethernet.c.s
+.PHONY : 3rdparty/lwip/src/netif/ethernet.s
+
+# target to generate assembly for a file
+3rdparty/lwip/src/netif/ethernet.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lwip/src/netif/ethernet.c.s
+.PHONY : 3rdparty/lwip/src/netif/ethernet.c.s
+
+adapter/net/ethernetif.obj: adapter/net/ethernetif.cpp.obj
+.PHONY : adapter/net/ethernetif.obj
+
+# target to build an object file
+adapter/net/ethernetif.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/adapter/net/ethernetif.cpp.obj
+.PHONY : adapter/net/ethernetif.cpp.obj
+
+adapter/net/ethernetif.i: adapter/net/ethernetif.cpp.i
+.PHONY : adapter/net/ethernetif.i
+
+# target to preprocess a source file
+adapter/net/ethernetif.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/adapter/net/ethernetif.cpp.i
+.PHONY : adapter/net/ethernetif.cpp.i
+
+adapter/net/ethernetif.s: adapter/net/ethernetif.cpp.s
+.PHONY : adapter/net/ethernetif.s
+
+# target to generate assembly for a file
+adapter/net/ethernetif.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/adapter/net/ethernetif.cpp.s
+.PHONY : adapter/net/ethernetif.cpp.s
+
+adapter/net/sys_arch.obj: adapter/net/sys_arch.cpp.obj
+.PHONY : adapter/net/sys_arch.obj
+
+# target to build an object file
+adapter/net/sys_arch.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/adapter/net/sys_arch.cpp.obj
+.PHONY : adapter/net/sys_arch.cpp.obj
+
+adapter/net/sys_arch.i: adapter/net/sys_arch.cpp.i
+.PHONY : adapter/net/sys_arch.i
+
+# target to preprocess a source file
+adapter/net/sys_arch.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/adapter/net/sys_arch.cpp.i
+.PHONY : adapter/net/sys_arch.cpp.i
+
+adapter/net/sys_arch.s: adapter/net/sys_arch.cpp.s
+.PHONY : adapter/net/sys_arch.s
+
+# target to generate assembly for a file
+adapter/net/sys_arch.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/adapter/net/sys_arch.cpp.s
+.PHONY : adapter/net/sys_arch.cpp.s
+
 apps/elf_loader.obj: apps/elf_loader.cpp.obj
 .PHONY : apps/elf_loader.obj
 
@@ -256,6 +1216,30 @@ boot/uart.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/boot/uart.c.s
 .PHONY : boot/uart.c.s
 
+kernel/libc.obj: kernel/libc.cpp.obj
+.PHONY : kernel/libc.obj
+
+# target to build an object file
+kernel/libc.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/kernel/libc.cpp.obj
+.PHONY : kernel/libc.cpp.obj
+
+kernel/libc.i: kernel/libc.cpp.i
+.PHONY : kernel/libc.i
+
+# target to preprocess a source file
+kernel/libc.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/kernel/libc.cpp.i
+.PHONY : kernel/libc.cpp.i
+
+kernel/libc.s: kernel/libc.cpp.s
+.PHONY : kernel/libc.s
+
+# target to generate assembly for a file
+kernel/libc.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/kernel/libc.cpp.s
+.PHONY : kernel/libc.cpp.s
+
 kernel/memory.obj: kernel/memory.cpp.obj
 .PHONY : kernel/memory.obj
 
@@ -361,6 +1345,126 @@ help:
 	@echo ... edit_cache
 	@echo ... rebuild_cache
 	@echo ... auroraOS.elf
+	@echo ... 3rdparty/lwip/src/api/api_lib.obj
+	@echo ... 3rdparty/lwip/src/api/api_lib.i
+	@echo ... 3rdparty/lwip/src/api/api_lib.s
+	@echo ... 3rdparty/lwip/src/api/api_msg.obj
+	@echo ... 3rdparty/lwip/src/api/api_msg.i
+	@echo ... 3rdparty/lwip/src/api/api_msg.s
+	@echo ... 3rdparty/lwip/src/api/err.obj
+	@echo ... 3rdparty/lwip/src/api/err.i
+	@echo ... 3rdparty/lwip/src/api/err.s
+	@echo ... 3rdparty/lwip/src/api/if_api.obj
+	@echo ... 3rdparty/lwip/src/api/if_api.i
+	@echo ... 3rdparty/lwip/src/api/if_api.s
+	@echo ... 3rdparty/lwip/src/api/netbuf.obj
+	@echo ... 3rdparty/lwip/src/api/netbuf.i
+	@echo ... 3rdparty/lwip/src/api/netbuf.s
+	@echo ... 3rdparty/lwip/src/api/netdb.obj
+	@echo ... 3rdparty/lwip/src/api/netdb.i
+	@echo ... 3rdparty/lwip/src/api/netdb.s
+	@echo ... 3rdparty/lwip/src/api/netifapi.obj
+	@echo ... 3rdparty/lwip/src/api/netifapi.i
+	@echo ... 3rdparty/lwip/src/api/netifapi.s
+	@echo ... 3rdparty/lwip/src/api/sockets.obj
+	@echo ... 3rdparty/lwip/src/api/sockets.i
+	@echo ... 3rdparty/lwip/src/api/sockets.s
+	@echo ... 3rdparty/lwip/src/api/tcpip.obj
+	@echo ... 3rdparty/lwip/src/api/tcpip.i
+	@echo ... 3rdparty/lwip/src/api/tcpip.s
+	@echo ... 3rdparty/lwip/src/core/altcp.obj
+	@echo ... 3rdparty/lwip/src/core/altcp.i
+	@echo ... 3rdparty/lwip/src/core/altcp.s
+	@echo ... 3rdparty/lwip/src/core/altcp_alloc.obj
+	@echo ... 3rdparty/lwip/src/core/altcp_alloc.i
+	@echo ... 3rdparty/lwip/src/core/altcp_alloc.s
+	@echo ... 3rdparty/lwip/src/core/altcp_tcp.obj
+	@echo ... 3rdparty/lwip/src/core/altcp_tcp.i
+	@echo ... 3rdparty/lwip/src/core/altcp_tcp.s
+	@echo ... 3rdparty/lwip/src/core/def.obj
+	@echo ... 3rdparty/lwip/src/core/def.i
+	@echo ... 3rdparty/lwip/src/core/def.s
+	@echo ... 3rdparty/lwip/src/core/dns.obj
+	@echo ... 3rdparty/lwip/src/core/dns.i
+	@echo ... 3rdparty/lwip/src/core/dns.s
+	@echo ... 3rdparty/lwip/src/core/inet_chksum.obj
+	@echo ... 3rdparty/lwip/src/core/inet_chksum.i
+	@echo ... 3rdparty/lwip/src/core/inet_chksum.s
+	@echo ... 3rdparty/lwip/src/core/init.obj
+	@echo ... 3rdparty/lwip/src/core/init.i
+	@echo ... 3rdparty/lwip/src/core/init.s
+	@echo ... 3rdparty/lwip/src/core/ip.obj
+	@echo ... 3rdparty/lwip/src/core/ip.i
+	@echo ... 3rdparty/lwip/src/core/ip.s
+	@echo ... 3rdparty/lwip/src/core/ipv4/autoip.obj
+	@echo ... 3rdparty/lwip/src/core/ipv4/autoip.i
+	@echo ... 3rdparty/lwip/src/core/ipv4/autoip.s
+	@echo ... 3rdparty/lwip/src/core/ipv4/dhcp.obj
+	@echo ... 3rdparty/lwip/src/core/ipv4/dhcp.i
+	@echo ... 3rdparty/lwip/src/core/ipv4/dhcp.s
+	@echo ... 3rdparty/lwip/src/core/ipv4/etharp.obj
+	@echo ... 3rdparty/lwip/src/core/ipv4/etharp.i
+	@echo ... 3rdparty/lwip/src/core/ipv4/etharp.s
+	@echo ... 3rdparty/lwip/src/core/ipv4/icmp.obj
+	@echo ... 3rdparty/lwip/src/core/ipv4/icmp.i
+	@echo ... 3rdparty/lwip/src/core/ipv4/icmp.s
+	@echo ... 3rdparty/lwip/src/core/ipv4/igmp.obj
+	@echo ... 3rdparty/lwip/src/core/ipv4/igmp.i
+	@echo ... 3rdparty/lwip/src/core/ipv4/igmp.s
+	@echo ... 3rdparty/lwip/src/core/ipv4/ip4.obj
+	@echo ... 3rdparty/lwip/src/core/ipv4/ip4.i
+	@echo ... 3rdparty/lwip/src/core/ipv4/ip4.s
+	@echo ... 3rdparty/lwip/src/core/ipv4/ip4_addr.obj
+	@echo ... 3rdparty/lwip/src/core/ipv4/ip4_addr.i
+	@echo ... 3rdparty/lwip/src/core/ipv4/ip4_addr.s
+	@echo ... 3rdparty/lwip/src/core/ipv4/ip4_frag.obj
+	@echo ... 3rdparty/lwip/src/core/ipv4/ip4_frag.i
+	@echo ... 3rdparty/lwip/src/core/ipv4/ip4_frag.s
+	@echo ... 3rdparty/lwip/src/core/mem.obj
+	@echo ... 3rdparty/lwip/src/core/mem.i
+	@echo ... 3rdparty/lwip/src/core/mem.s
+	@echo ... 3rdparty/lwip/src/core/memp.obj
+	@echo ... 3rdparty/lwip/src/core/memp.i
+	@echo ... 3rdparty/lwip/src/core/memp.s
+	@echo ... 3rdparty/lwip/src/core/netif.obj
+	@echo ... 3rdparty/lwip/src/core/netif.i
+	@echo ... 3rdparty/lwip/src/core/netif.s
+	@echo ... 3rdparty/lwip/src/core/pbuf.obj
+	@echo ... 3rdparty/lwip/src/core/pbuf.i
+	@echo ... 3rdparty/lwip/src/core/pbuf.s
+	@echo ... 3rdparty/lwip/src/core/raw.obj
+	@echo ... 3rdparty/lwip/src/core/raw.i
+	@echo ... 3rdparty/lwip/src/core/raw.s
+	@echo ... 3rdparty/lwip/src/core/stats.obj
+	@echo ... 3rdparty/lwip/src/core/stats.i
+	@echo ... 3rdparty/lwip/src/core/stats.s
+	@echo ... 3rdparty/lwip/src/core/sys.obj
+	@echo ... 3rdparty/lwip/src/core/sys.i
+	@echo ... 3rdparty/lwip/src/core/sys.s
+	@echo ... 3rdparty/lwip/src/core/tcp.obj
+	@echo ... 3rdparty/lwip/src/core/tcp.i
+	@echo ... 3rdparty/lwip/src/core/tcp.s
+	@echo ... 3rdparty/lwip/src/core/tcp_in.obj
+	@echo ... 3rdparty/lwip/src/core/tcp_in.i
+	@echo ... 3rdparty/lwip/src/core/tcp_in.s
+	@echo ... 3rdparty/lwip/src/core/tcp_out.obj
+	@echo ... 3rdparty/lwip/src/core/tcp_out.i
+	@echo ... 3rdparty/lwip/src/core/tcp_out.s
+	@echo ... 3rdparty/lwip/src/core/timeouts.obj
+	@echo ... 3rdparty/lwip/src/core/timeouts.i
+	@echo ... 3rdparty/lwip/src/core/timeouts.s
+	@echo ... 3rdparty/lwip/src/core/udp.obj
+	@echo ... 3rdparty/lwip/src/core/udp.i
+	@echo ... 3rdparty/lwip/src/core/udp.s
+	@echo ... 3rdparty/lwip/src/netif/ethernet.obj
+	@echo ... 3rdparty/lwip/src/netif/ethernet.i
+	@echo ... 3rdparty/lwip/src/netif/ethernet.s
+	@echo ... adapter/net/ethernetif.obj
+	@echo ... adapter/net/ethernetif.i
+	@echo ... adapter/net/ethernetif.s
+	@echo ... adapter/net/sys_arch.obj
+	@echo ... adapter/net/sys_arch.i
+	@echo ... adapter/net/sys_arch.s
 	@echo ... apps/elf_loader.obj
 	@echo ... apps/elf_loader.i
 	@echo ... apps/elf_loader.s
@@ -377,6 +1481,9 @@ help:
 	@echo ... boot/uart.obj
 	@echo ... boot/uart.i
 	@echo ... boot/uart.s
+	@echo ... kernel/libc.obj
+	@echo ... kernel/libc.i
+	@echo ... kernel/libc.s
 	@echo ... kernel/memory.obj
 	@echo ... kernel/memory.i
 	@echo ... kernel/memory.s
