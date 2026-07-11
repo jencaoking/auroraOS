@@ -5,37 +5,57 @@
 #include "memory.hpp"
 #include "softbus.hpp"
 #include "mutex.hpp"
+#include "msg_queue.hpp"
 
 extern "C" {
     extern uint32_t _heap_start;
     extern uint32_t _heap_end;
 }
 
-// 实例化一个全局互斥锁，保护串口
 Mutex uart_mutex;
-
-// 改进版的带锁打印
 void safe_print(const char* msg) {
     uart_mutex.lock();
     uart_puts(msg);
     uart_mutex.unlock();
 }
 
+// 1. 定义消息载体结构
+struct RpcMessage {
+    char payload[64];
+    
+    // 裸机环境下简单的深拷贝赋值函数
+    void set_payload(const char* p) {
+        int i = 0;
+        while (p[i] && i < 63) { payload[i] = p[i]; i++; }
+        payload[i] = '\0';
+    }
+};
+
+// 2. 实例化全局消息队列（容量为 8）
+MessageQueue<RpcMessage, 8> app_queue;
+
 extern "C" void bus_daemon_task(void) {
     while (1) {
         SoftBus::instance().poll();
-        
-        // 优雅休眠：让出 CPU 10 个 Tick (10ms)，不再死占算力
         Scheduler::instance().sleep(10);
     }
 }
 
+// 3. 业务线程彻底变为“事件驱动”模型
 extern "C" void app_task(void) {
     while (1) {
-        safe_print("[App Task] Running background job...\n");
+        // pop() 会挂起当前线程，直到队列里被推入了新的消息。
+        // 这意味着平时 app_task 的 CPU 占用率为 0%！
+        RpcMessage msg = app_queue.pop();
         
-        // 模拟耗时任务完成，进入深度休眠 2000ms (2秒)
-        Scheduler::instance().sleep(2000);
+        safe_print("\n[App Task] Woke up! Received RPC Payload: ");
+        safe_print(msg.payload);
+        safe_print("\n[App Task] Processing heavy workload for 1 second...\n");
+        
+        // 模拟极其耗时的业务处理
+        Scheduler::instance().sleep(1000); 
+        
+        safe_print("[App Task] Workload complete. Going back to sleep.\n\n");
     }
 }
 
@@ -43,26 +63,19 @@ extern "C" void kernel_main(void) {
     uart_init();
     KernelHeap::instance().init(&_heap_start, &_heap_end);
     SoftBus::instance().init();
+    app_queue.init();
 
-    // 修改 SoftBus 的回调，使用安全打印
-    SoftBus::instance().register_service("PING", [](const char* payload) {
-        safe_print(">> [RPC Exec] PING matched! Sending PONG...\n");
+    // 4. 重构微服务回调：守护线程现在只负责 Push 消息，绝不恋战
+    SoftBus::instance().register_service("EXEC", [](const char* payload) {
+        safe_print(">> [Daemon] 'EXEC' RPC matched. Pushing to App Queue...\n");
         
-        uart_mutex.lock();
-        SoftBus::instance().send_request("PONG", payload);
-        uart_mutex.unlock();
-    });
-
-    SoftBus::instance().register_service("SYSINFO", [](const char* payload) {
-        (void)payload;
-        safe_print(">> [RPC Exec] Fetching system info...\n");
-        uart_mutex.lock();
-        SoftBus::instance().send_request("INFO", "auroraOS_v0.1_Active");
-        uart_mutex.unlock();
+        RpcMessage msg;
+        msg.set_payload(payload);
+        app_queue.push(msg); // 瞬间完成，立刻返回继续监听串口
     });
 
     safe_print("\n========================================\n");
-    safe_print(" auroraOS Upgraded: Sleep & Mutex Active\n");
+    safe_print(" auroraOS Upgraded: IPC Message Queue\n");
     safe_print("========================================\n");
 
     Scheduler& sched = Scheduler::instance();
@@ -78,7 +91,7 @@ extern "C" void kernel_main(void) {
 
     volatile uint32_t* syst_ctrl = reinterpret_cast<volatile uint32_t*>(0xE000E010);
     volatile uint32_t* syst_load = reinterpret_cast<volatile uint32_t*>(0xE000E014);
-    *syst_load = (SYSCLK_FREQ / 1000) - 1; // 1ms Tick
+    *syst_load = (SYSCLK_FREQ / 1000) - 1;
     *syst_ctrl = (1 << 2) | (1 << 1) | (1 << 0);
 
     __asm__ volatile (
