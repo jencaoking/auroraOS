@@ -141,18 +141,14 @@ void Shell::execute_command(const char* raw_cmd) {
             ipaddr_aton(argv[1], &dest_ip);    // 解析目标 IP
             int port = my_atoi(argv[2]);       // 解析目标端口
 
-            // 1. 创建 UDP Socket
             struct netconn* conn = netconn_new(NETCONN_UDP);
             if (conn) {
-                // 2. 连接到目标主机
                 netconn_connect(conn, &dest_ip, port);
                 
-                // 3. 构建底层网络报文 (netbuf)
                 struct netbuf* buf = netbuf_new();
                 int msg_len = 0; while(argv[3][msg_len]) msg_len++;
                 netbuf_ref(buf, argv[3], msg_len); // 零拷贝引用 Payload
 
-                // 4. 发送数据！
                 err_t err = netconn_send(conn, buf);
                 if (err == ERR_OK) {
                     print(">> UDP Packet sent successfully via lwIP!\r\n");
@@ -160,9 +156,10 @@ void Shell::execute_command(const char* raw_cmd) {
                     print(">> [Error] Failed to send UDP packet.\r\n");
                 }
 
-                // 5. 释放内存资源
                 netbuf_delete(buf);
                 netconn_delete(conn);
+            } else {
+                print(">> [Error] Failed to create netconn.\r\n");
             }
         }
     }
