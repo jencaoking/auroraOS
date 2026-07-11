@@ -2,31 +2,29 @@
 #include "uart.h"
 #include "task.hpp"
 
-// 供汇编读取的两个全局 TCB 指针
+// 供 PendSV 汇编读取的两个全局 TCB 指针
+// 声明为非 volatile：汇编直接使用符号地址，编译器临界区内通过 Arch:: 保护
 extern "C" {
-    volatile TaskControlBlock* g_current_tcb_ptr = nullptr;
-    volatile TaskControlBlock* g_next_tcb_ptr = nullptr;
+    TaskControlBlock* g_current_tcb_ptr = nullptr;
+    TaskControlBlock* g_next_tcb_ptr    = nullptr;
 }
 
+// 系统 Tick 计数器（全局可见，供 lwIP OSAL 等读取系统时间）
 volatile uint32_t tick_count = 0;
 
-
-
 extern "C" {
-    // SVC 中断的处理逻辑
-    // frame 是由硬件自动压入栈中的上下文指针
+    // ================================================================
+    // SVC 分发处理函数（由 boot.S 中的 SVC_Handler 调用）
+    // frame 是硬件自动压栈的寄存器快照，通过它读取系统调用参数
+    // ================================================================
     void SVC_Handler_C(InterruptFrame* frame) {
-        // SVC 指令会带一个 8 位的立即数（SVC ID），
-        // 我们可以通过 PC 指针回溯到 SVC 指令所在位置，读取其中的立即数
-        uint32_t* svc_pc = (uint32_t*)frame->pc;
-        uint16_t svc_instr = ((uint16_t*)svc_pc)[-1];
-        uint8_t svc_number = svc_instr & 0xFF;
+        // 通过 PC 回溯到 SVC 指令，提取 8 位系统调用号
+        const uint16_t svc_instr = reinterpret_cast<const uint16_t*>(frame->pc)[-1];
+        const uint8_t  svc_number = static_cast<uint8_t>(svc_instr & 0xFF);
 
-        // 根据不同的 ID 处理不同的系统调用
         switch (svc_number) {
-            case 0x01: // SysCall: 串口输出
-                // 这里我们可以在内核特权模式下调用原本的串口打印
-                uart_puts((const char*)frame->r0); 
+            case 0x01: // SysCall: 串口输出（在内核特权态安全调用）
+                uart_puts(reinterpret_cast<const char*>(frame->r0));
                 break;
             case 0x02: // SysCall: 任务 Yield
                 Scheduler::instance().schedule();
@@ -41,15 +39,23 @@ extern "C" {
     }
 }
 
+// ================================================================
+// SysTick 中断：系统心跳，驱动两件事：
+//   1. tick_update()  — 将到期的休眠任务唤醒（设为 Ready）
+//   2. schedule()     — 每 10ms 触发一次调度：
+//                       * 高优先级任务唤醒后立即抢占低优先级
+//                       * 同级任务轮转时间片
+// ================================================================
 void SysTick_Handler(void) {
     tick_count++;
     Scheduler& sched = Scheduler::instance();
-    
-    // 更新所有处于 Sleeping 状态的线程
+
+    // Step 1: 更新所有休眠任务的倒计时
     sched.tick_update();
-    
-    // 每 10ms 强制进行一次时间片轮转（如果线程没被阻塞的话）
+
+    // Step 2: 周期性调度（含优先级抢占检测）
+    // schedule() 内部会原子地更新 g_current_tcb_ptr / g_next_tcb_ptr 并 pending PendSV
     if (tick_count % 10 == 0) {
-        sched.schedule(); 
+        sched.schedule();
     }
 }

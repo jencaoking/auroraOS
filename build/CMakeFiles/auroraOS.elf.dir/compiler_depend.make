@@ -1980,8 +1980,47 @@ CMakeFiles/auroraOS.elf.dir/apps/kernel.cpp.obj: J:/PROJECT/auroraOS/apps/kernel
   J:/PROJECT/auroraOS/vfs/vfs.hpp
 
 CMakeFiles/auroraOS.elf.dir/apps/shell.cpp.obj: J:/PROJECT/auroraOS/apps/shell.cpp \
+  J:/CODE/arm-gnu-toolchain/arm-none-eabi/include/_ansi.h \
+  J:/CODE/arm-gnu-toolchain/arm-none-eabi/include/_newlib_version.h \
+  J:/CODE/arm-gnu-toolchain/arm-none-eabi/include/ctype.h \
+  J:/CODE/arm-gnu-toolchain/arm-none-eabi/include/inttypes.h \
+  J:/CODE/arm-gnu-toolchain/arm-none-eabi/include/limits.h \
+  J:/CODE/arm-gnu-toolchain/arm-none-eabi/include/machine/_default_types.h \
+  J:/CODE/arm-gnu-toolchain/arm-none-eabi/include/machine/ieeefp.h \
+  J:/CODE/arm-gnu-toolchain/arm-none-eabi/include/newlib.h \
+  J:/CODE/arm-gnu-toolchain/arm-none-eabi/include/sys/_intsup.h \
+  J:/CODE/arm-gnu-toolchain/arm-none-eabi/include/sys/_locale.h \
+  J:/CODE/arm-gnu-toolchain/arm-none-eabi/include/sys/cdefs.h \
+  J:/CODE/arm-gnu-toolchain/arm-none-eabi/include/sys/config.h \
+  J:/CODE/arm-gnu-toolchain/arm-none-eabi/include/sys/features.h \
+  J:/CODE/arm-gnu-toolchain/arm-none-eabi/include/sys/syslimits.h \
+  J:/CODE/arm-gnu-toolchain/lib/gcc/arm-none-eabi/13.2.1/include/limits.h \
+  J:/CODE/arm-gnu-toolchain/lib/gcc/arm-none-eabi/13.2.1/include/stddef.h \
   J:/CODE/arm-gnu-toolchain/lib/gcc/arm-none-eabi/13.2.1/include/stdint-gcc.h \
   J:/CODE/arm-gnu-toolchain/lib/gcc/arm-none-eabi/13.2.1/include/stdint.h \
+  J:/CODE/arm-gnu-toolchain/lib/gcc/arm-none-eabi/13.2.1/include/syslimits.h \
+  J:/PROJECT/auroraOS/3rdparty/lwip/src/include/lwip/api.h \
+  J:/PROJECT/auroraOS/3rdparty/lwip/src/include/lwip/arch.h \
+  J:/PROJECT/auroraOS/3rdparty/lwip/src/include/lwip/debug.h \
+  J:/PROJECT/auroraOS/3rdparty/lwip/src/include/lwip/def.h \
+  J:/PROJECT/auroraOS/3rdparty/lwip/src/include/lwip/err.h \
+  J:/PROJECT/auroraOS/3rdparty/lwip/src/include/lwip/ip4_addr.h \
+  J:/PROJECT/auroraOS/3rdparty/lwip/src/include/lwip/ip6_addr.h \
+  J:/PROJECT/auroraOS/3rdparty/lwip/src/include/lwip/ip_addr.h \
+  J:/PROJECT/auroraOS/3rdparty/lwip/src/include/lwip/mem.h \
+  J:/PROJECT/auroraOS/3rdparty/lwip/src/include/lwip/memp.h \
+  J:/PROJECT/auroraOS/3rdparty/lwip/src/include/lwip/netbuf.h \
+  J:/PROJECT/auroraOS/3rdparty/lwip/src/include/lwip/netif.h \
+  J:/PROJECT/auroraOS/3rdparty/lwip/src/include/lwip/opt.h \
+  J:/PROJECT/auroraOS/3rdparty/lwip/src/include/lwip/pbuf.h \
+  J:/PROJECT/auroraOS/3rdparty/lwip/src/include/lwip/priv/mem_priv.h \
+  J:/PROJECT/auroraOS/3rdparty/lwip/src/include/lwip/priv/memp_priv.h \
+  J:/PROJECT/auroraOS/3rdparty/lwip/src/include/lwip/priv/memp_std.h \
+  J:/PROJECT/auroraOS/3rdparty/lwip/src/include/lwip/stats.h \
+  J:/PROJECT/auroraOS/3rdparty/lwip/src/include/lwip/sys.h \
+  J:/PROJECT/auroraOS/adapter/net/arch/cc.h \
+  J:/PROJECT/auroraOS/adapter/net/arch/sys_arch.h \
+  J:/PROJECT/auroraOS/adapter/net/lwipopts.h \
   J:/PROJECT/auroraOS/apps/elf_loader.hpp \
   J:/PROJECT/auroraOS/apps/shell.hpp \
   J:/PROJECT/auroraOS/config/config.h \

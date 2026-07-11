@@ -84,7 +84,8 @@ bool ElfLoader::load_and_exec(const char* filepath) {
             // Since this runs in Unprivileged mode, we cannot call Scheduler::instance().create_task() if it touches privileged regions.
             // Wait, Scheduler::create_task() just writes to `tasks` array. It doesn't touch NVIC or ICSR! So it is safe to call from Unprivileged mode!
             uint32_t* app_stack = new uint32_t[512];
-            Scheduler::instance().create_task(app_entry, app_stack, 512 * sizeof(uint32_t), false); // Explicitly unprivileged!
+            Scheduler::instance().create_task(app_entry, app_stack, 512 * sizeof(uint32_t),
+                TaskPriority::Low); // 动态加载的 ELF 应用以低优先级运行
             
             // 为精简工程，加载完第一个核心代码段后直接返回成功
             VfsManager::instance().close(fd);

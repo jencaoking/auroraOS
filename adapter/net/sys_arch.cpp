@@ -185,7 +185,8 @@ sys_thread_t sys_thread_new(const char *name, lwip_thread_fn thread, void *arg, 
     // Let's assume lwIP handles it or we don't strictly need it for single netif setup.
     // Actually, tcpip_thread ignores arg or uses it for init done callback, but tcpip_init uses a global struct.
     
-    Scheduler::instance().create_task(reinterpret_cast<void (*)()>(thread), thread_stack, stacksize, true);
+    Scheduler::instance().create_task(reinterpret_cast<void (*)()>(thread), thread_stack, stacksize,
+        TaskPriority::High); // lwIP tcpip_thread 与 Shell 同级（High），通过时间片轮转共存
     
     return Scheduler::instance().get_current_tcb();
 }

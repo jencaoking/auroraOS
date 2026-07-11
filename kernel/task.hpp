@@ -3,30 +3,47 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include "arch_api.hpp"
+#include "arch_api.hpp" // 引入底层架构 HAL 接口
 
-// 1. 增加 Sleeping 状态
+// ============================================================
+// 1. 定义标准 RTOS 优先级阶梯 (数值越大，优先级越高)
+//    遵循 C++ Core Guidelines Enum.3: 使用 enum class 强类型枚举
+// ============================================================
+enum class TaskPriority : uint8_t {
+    Idle     = 0,  // 最低优先级：仅供系统空闲进程使用
+    Low      = 1,  // 低优先级：后台计算、非实时操作
+    Normal   = 2,  // 默认优先级：普通前台业务
+    High     = 3,  // 高优先级：交互 Shell 等
+    Realtime = 4   // 最高硬实时优先级：底层网络帧拦截等
+};
+
 enum class TaskState {
     Ready,
     Running,
-    Sleeping 
+    Sleeping
 };
 
+// TaskControlBlock: POD 结构体，保存任务的完整上下文快照
+// 遵循 C.2: 若需要不变量则使用 class，此处为纯数据故用 struct
 struct TaskControlBlock {
-    uint32_t* stack_ptr;       
-    TaskState state;
-    uint32_t  id;
-    uint32_t  sleep_ticks;     // 记录还需要休眠多少个系统 Tick
-    uint32_t  control_reg;     // 【新增】保存任务的 CONTROL 寄存器状态
+    uint32_t*    stack_ptr;       // 任务当前栈顶指针（由 PendSV 保存/恢复）
+    void         (*entry_point)(); // 任务入口函数（供 start() 引导跳入第一个任务用）
+    TaskState    state;           // 任务状态机
+    uint32_t     id;              // 任务唯一 ID
+    uint32_t     sleep_ticks;     // 剩余休眠 Tick 数
+    TaskPriority priority;        // 调度优先级
 };
 
+// 前向声明：供 PendSV 汇编读取的两个全局 TCB 指针
+// 遵循 I.2: 最小化非 const 全局变量，此处为架构必需
 extern "C" {
-    extern volatile TaskControlBlock* g_current_tcb_ptr;
-    extern volatile TaskControlBlock* g_next_tcb_ptr;
+    extern TaskControlBlock* g_current_tcb_ptr;
+    extern TaskControlBlock* g_next_tcb_ptr;
 }
 
 class Scheduler {
 public:
+    // 单例：遵循 I.3，避免多实例造成调度器状态不一致
     static Scheduler& instance() {
         static Scheduler sched;
         return sched;
@@ -37,100 +54,124 @@ public:
         task_count = 0;
     }
 
-    void create_task(void (*task_entry)(void), uint32_t* stack_space, uint32_t stack_size, bool is_privileged = true) {
+    // 创建任务时指定优先级（默认 Normal），遵循 F.15: 提供具名参数
+    void create_task(void (*task_entry)(void),
+                     uint32_t* stack_space,
+                     uint32_t  stack_size,
+                     TaskPriority prio = TaskPriority::Normal) {
         if (task_count >= MAX_TASKS) return;
 
         TaskControlBlock& tcb = tasks[task_count];
-        tcb.id = task_count;
-        tcb.state = TaskState::Ready;
+        tcb.id          = task_count;
+        tcb.state       = TaskState::Ready;
         tcb.sleep_ticks = 0;
-        
-        // ====================================================================================
-        // 【架构安全声明：名义特权分离 vs 绝对隔离】
-        // ------------------------------------------------------------------------------------
-        // 这里的 is_privileged 参数通过设置 CONTROL 寄存器的 nPRIV 位（Bit 0）将线程降权为用户态。
-        // 用户态下将无法访问系统控制空间（SCS，如 NVIC/SCB），也无法执行 cpsid 等特权指令。
-        //
-        // ⚠️ 局限性警告 (Limitation)：
-        // 目前系统尚未配置 MPU (Memory Protection Unit)。在 Cortex-M 的默认内存映射中，
-        // SRAM 区域（内核数据、堆、栈所在的 0x20000000~ 区域）对非特权模式依然是全尺寸读写的！
-        // 因此，目前用户态代码理论上仍可以越权篡改 Scheduler::tasks[] 等内核数据结构。
-        // 若要实现真正的坚固沙盒，必须配置额外的 MPU Region 将内核内存设为 Privileged-only！
-        // 作为微内核演示项目，目前接受这一限制，特此声明。
-        // ====================================================================================
-        // CONTROL: Bit 1 (SPSEL) = 1 (使用 PSP). Bit 0 (nPRIV) = 0 (特权级) or 1 (非特权级)
-        tcb.control_reg = is_privileged ? 0x02 : 0x03;
+        tcb.priority    = prio;
+        tcb.entry_point = task_entry;
 
+        // 调用 HAL 接口完成 Cortex-M4 栈帧伪造，与具体架构解耦
         tcb.stack_ptr = Arch::init_thread_stack(task_entry, stack_space, stack_size);
         task_count++;
     }
 
-    // 2. 调度算法升级：跳过正在休眠的任务
+    // =========================================================================
+    // 基于优先级的抢占式调度算法 — O(N) 两阶段查找
+    //
+    // 阶段一: 扫描全部就绪任务，找出当前最高优先级 max_prio
+    // 阶段二: 在同属 max_prio 的候选任务中做循环时间片轮转
+    // 阶段三: 若选出的任务与当前不同，通过 HAL 触发 PendSV 硬件上下文切换
+    // =========================================================================
     void schedule() {
         if (task_count <= 1) return;
 
-        __asm__ volatile ("cpsid i" : : : "memory"); // 临界区：屏蔽所有中断
+        // ── 阶段一：寻找最高可运行优先级 ──────────────────────────────────
+        TaskPriority max_prio = TaskPriority::Idle;
+        for (uint32_t i = 0; i < task_count; i++) {
+            if (tasks[i].state != TaskState::Sleeping &&
+                tasks[i].priority > max_prio) {
+                max_prio = tasks[i].priority;
+            }
+        }
 
+        // ── 阶段二：同级优先级循环时间片轮转 ────────────────────────────
         uint32_t next_task = current_task_index;
-        bool found = false;
-
-        // 轮询寻找下一个处于 Ready 或 Running 状态的任务
         for (uint32_t i = 0; i < task_count; i++) {
             next_task = (next_task + 1) % task_count;
-            if (tasks[next_task].state != TaskState::Sleeping) {
-                found = true;
+            if (tasks[next_task].state != TaskState::Sleeping &&
+                tasks[next_task].priority == max_prio) {
                 break;
             }
         }
 
-        if (found && next_task != current_task_index) {
-            // 在触发中断前，必须先把指针更新好，否则 Thread 模式下会立即陷入 PendSV 导致空指针
+        // ── 阶段三：发起上下文切换 ──────────────────────────────────────
+        if (next_task != current_task_index) {
+            Arch::disable_interrupts(); // 临界区：更新 TCB 指针必须原子完成
             g_current_tcb_ptr = &tasks[current_task_index];
             current_task_index = next_task;
             g_next_tcb_ptr = &tasks[current_task_index];
-            
-            // 触发 PendSV 切换上下文
-            Arch::trigger_context_switch();
+            Arch::enable_interrupts();  // 必须先恢复中断，PendSV 才能被硬件响应
+            Arch::trigger_context_switch(); // Pending PendSV 位，等待中断开放后执行
         }
-
-        Arch::enable_interrupts(); // 恢复中断
     }
 
-    // 3. 让当前线程交出 CPU 并休眠指定时间
+    // 主动休眠：将当前任务挂起，立刻调度次高优先级任务接管 CPU
     void sleep(uint32_t ticks) {
-        Arch::disable_interrupts();
+        // 注意：sleep() 仅在任务上下文调用，无需屏蔽中断
+        // SysTick 只会检查 sleeping 状态，不会修改当前任务的字段
         TaskControlBlock* current = get_current_tcb();
         current->sleep_ticks = ticks;
         current->state = TaskState::Sleeping;
-        Arch::enable_interrupts();
-        
-        schedule(); // 立即触发调度，让出 CPU
+        schedule(); // 状态更新后立即让出 CPU
     }
 
-    // 4. 供定时器中断调用的时间刷新函数
+    // 由 SysTick 中断调用：滴答计数器驱动唤醒逻辑
     void tick_update() {
-        Arch::disable_interrupts();
         for (uint32_t i = 0; i < task_count; i++) {
             if (tasks[i].state == TaskState::Sleeping) {
                 if (tasks[i].sleep_ticks > 0) {
                     tasks[i].sleep_ticks--;
                 }
                 if (tasks[i].sleep_ticks == 0) {
-                    tasks[i].state = TaskState::Ready; // 睡醒了，恢复就绪
+                    tasks[i].state = TaskState::Ready;
                 }
             }
         }
-        Arch::enable_interrupts();
     }
 
+    // 遵循 F.16: 返回裸指针仅表示非所有权观察（调度器拥有 TCB 数组）
     TaskControlBlock* get_current_tcb() { return &tasks[current_task_index]; }
+
+    // =========================================================================
+    // start(): 从特权 main 上下文启动调度器，跳入第一个任务
+    // 通过汇编恢复第一个任务的 PSP 栈帧，以 bx lr 形式进入线程模式
+    // 这是调度器唯一一次「无中生有」创建任务上下文的入口
+    // =========================================================================
+    [[noreturn]] void start() {
+        g_current_tcb_ptr = &tasks[current_task_index];
+        g_next_tcb_ptr    = &tasks[current_task_index];
+
+        // 手动恢复第一个任务的 R4-R11（我们在栈帧中预留了 8 个字）
+        // 然后切换到 PSP，开启中断，通过伪造的 LR 值 EXC_RETURN 跳入任务
+        __asm__ volatile (
+            "ldm  %0!, {r4-r11}  \n\t"  // 弹出 R4-R11（init_thread_stack 预留的）
+            "msr  psp, %0        \n\t"  // 将更新后的指针写入 PSP
+            "mov  r0, #2         \n\t"  // CONTROL = 0b10: Thread mode, use PSP
+            "msr  control, r0   \n\t"
+            "isb                 \n\t"  // 指令同步屏障
+            "cpsie i             \n\t"  // 全局开中断
+            "bx   %1             \n\t"  // 跳入任务入口（直接 bx，不保存 LR）
+            : : "r"(g_current_tcb_ptr->stack_ptr),
+                "r"(reinterpret_cast<uint32_t>(tasks[current_task_index].entry_point))
+            : "r0", "r4", "r5", "r6", "r7", "r8", "r9", "r10", "r11", "memory"
+        );
+        __builtin_unreachable();
+    }
 
 private:
     Scheduler() = default;
     static constexpr int MAX_TASKS = 8;
-    TaskControlBlock tasks[MAX_TASKS];
+    TaskControlBlock tasks[MAX_TASKS]{};
     uint32_t current_task_index = 0;
     uint32_t task_count = 0;
 };
 
-#endif
+#endif // TASK_HPP

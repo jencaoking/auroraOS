@@ -64,11 +64,14 @@ void tcpip_init_done(void* arg) {
 
     sys_print("[lwIP] Static IP configured: 192.168.1.100\r\n");
 
-    // 3. 起飞网卡数据泵任务与 UDP Echo 测试任务
-    uint32_t* rx_stack = new uint32_t[512];
+    // 3. 起飞网卡数据泵任务（Normal 优先级：轮询式驱动，每 5ms sleep 一次，无硬实时需求）
+    uint32_t* rx_stack  = new uint32_t[512];
     uint32_t* app_stack = new uint32_t[512];
-    Scheduler::instance().create_task(reinterpret_cast<void (*)()>(ethernetif_input_task), rx_stack, 512 * sizeof(uint32_t), true);
-    Scheduler::instance().create_task(udp_echo_server_task, app_stack, 512 * sizeof(uint32_t), true);
+    Scheduler::instance().create_task(
+        reinterpret_cast<void (*)()>(ethernetif_input_task), rx_stack, 512 * sizeof(uint32_t),
+        TaskPriority::Normal); // Normal：后台网卡轮询，sleep(5ms) 让出 CPU
+    Scheduler::instance().create_task(udp_echo_server_task, app_stack, 512 * sizeof(uint32_t),
+        TaskPriority::Normal); // Normal：业务层 Echo 处理
 }
 
 extern "C" {
@@ -81,11 +84,13 @@ Mutex uart_mutex;
 // 依然保留挂载设备
 extern class UartDevice g_uart_device;
 
-void dummy_task(void) {
-    while (1) {
-        // M4: Idle task must never block via software (sys_sleep),
-        // but it SHOULD yield the hardware to low-power state.
-        Arch::wait_for_interrupt();
+// =========================================================================
+// [核心系统进程] 低功耗空闲任务 (优先级最低，永远保持 Ready 状态)
+// 当无任何业务任务可运行时，CPU 落入此处进入低功耗等待态
+// =========================================================================
+void sys_idle_task(void) {
+    while (true) {
+        Arch::wait_for_interrupt(); // 挂起 CPU 直到下一个中断到来，节省能耗
     }
 }
 
@@ -140,37 +145,32 @@ extern "C" void kernel_main(void) {
     VfsManager::instance().mount("/tmp/log.txt", (VNode*)temp_file);
     VfsManager::instance().mount("/tmp/app.elf", (VNode*)elf_file);
     
-    // 初始化调度器并起飞
+    // 初始化调度器
     Scheduler::instance().init();
 
+    // ── 任务优先级分配表 ──────────────────────────────────────────
+    // sys_idle_task   : Idle     — CPU 兜底进程，永不休眠
+    // shell_task      : High     — 交互终端，响应键盘输入
+    // lwIP net tasks  : Realtime — 网络 RX 数据泵（在 tcpip_init_done 中创建）
+    // udp_echo_task   : Normal   — 业务层 Echo 处理
+    // ─────────────────────────────────────────────────────────────
+    uint32_t* idle_stack  = new uint32_t[128];
     uint32_t* shell_stack = new uint32_t[512];
 
-    extern void shell_task(void);
-    Scheduler::instance().create_task(shell_task, shell_stack, 512 * sizeof(uint32_t), false);
+    // 1. 空闲进程：优先级最低，负责 CPU 低功耗兜底
+    Scheduler::instance().create_task(sys_idle_task, idle_stack, 128 * sizeof(uint32_t),
+        TaskPriority::Idle);
 
-    // 调起 lwIP 协议栈引擎，传递就绪回调
+    // 2. 交互终端：高优先级响应用户键盘
+    extern void shell_task(void);
+    Scheduler::instance().create_task(shell_task, shell_stack, 512 * sizeof(uint32_t),
+        TaskPriority::High);
+
+    // 调起 lwIP 协议栈引擎（内部回调中将以 Realtime 优先级注册网卡 RX 任务）
     sys_print("[lwIP] Initializing TCP/IP Engine...\r\n");
     tcpip_init(tcpip_init_done, nullptr);
 
-    uint32_t* dummy_stack = new uint32_t[128];
-    Scheduler::instance().create_task(dummy_task, dummy_stack, 128 * sizeof(uint32_t), true);
-
-    g_current_tcb_ptr = Scheduler::instance().get_current_tcb();
-
-    volatile uint32_t* syst_ctrl = reinterpret_cast<volatile uint32_t*>(0xE000E010);
-    volatile uint32_t* syst_load = reinterpret_cast<volatile uint32_t*>(0xE000E014);
-    *syst_load = (SYSCLK_FREQ / 1000) - 1;
-    *syst_ctrl = (1 << 2) | (1 << 1) | (1 << 0);
-
-    __asm__ volatile (
-        "msr psp, %0\n\t"
-        "mov r0, #2\n\t"  // 2 = b10: Privileged, use PSP
-        "msr control, r0\n\t"
-        "isb\n\t"
-        "cpsie i\n\t"
-        "bl shell_task\n\t"
-        : : "r"(g_current_tcb_ptr->stack_ptr) : "r0", "memory"
-    );
-
-    while (1) {}
+    // 启动调度器：正确引导第一个任务（通过 PSP/bx 跳入，不破坏栈帧）
+    // 调度器从此接管 CPU，永不返回
+    Scheduler::instance().start();
 }
