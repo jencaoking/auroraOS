@@ -6,19 +6,19 @@
 # compile CXX with J:/CODE/arm-gnu-toolchain/bin/arm-none-eabi-g++.exe
 ASM_DEFINES = 
 
-ASM_INCLUDES = -IJ:\PROJECT\auroraOS -IJ:\PROJECT\auroraOS\config -IJ:\PROJECT\auroraOS\boot -IJ:\PROJECT\auroraOS\kernel -IJ:\PROJECT\auroraOS\syscall -IJ:\PROJECT\auroraOS\vfs -IJ:\PROJECT\auroraOS\apps -IJ:\PROJECT\auroraOS\net -IJ:\PROJECT\auroraOS\adapter\net -IJ:\PROJECT\auroraOS\3rdparty\lwip\src\include
+ASM_INCLUDES = -IJ:\PROJECT\auroraOS -IJ:\PROJECT\auroraOS\config -IJ:\PROJECT\auroraOS\boot -IJ:\PROJECT\auroraOS\kernel -IJ:\PROJECT\auroraOS\syscall -IJ:\PROJECT\auroraOS\vfs -IJ:\PROJECT\auroraOS\apps -IJ:\PROJECT\auroraOS\net -IJ:\PROJECT\auroraOS\adapter\net -IJ:\PROJECT\auroraOS\3rdparty\lwip\src\include -IJ:\PROJECT\auroraOS\arch\arm\cortex-m\cm4 -IJ:\PROJECT\auroraOS\boards\ti\lm3s6965-qb
 
 ASM_FLAGS =  -mcpu=cortex-m4 -mthumb -mfloat-abi=soft -ffreestanding -fno-builtin -fno-common -Wall -Wextra
 
 C_DEFINES = 
 
-C_INCLUDES = -IJ:\PROJECT\auroraOS -IJ:\PROJECT\auroraOS\config -IJ:\PROJECT\auroraOS\boot -IJ:\PROJECT\auroraOS\kernel -IJ:\PROJECT\auroraOS\syscall -IJ:\PROJECT\auroraOS\vfs -IJ:\PROJECT\auroraOS\apps -IJ:\PROJECT\auroraOS\net -IJ:\PROJECT\auroraOS\adapter\net -IJ:\PROJECT\auroraOS\3rdparty\lwip\src\include
+C_INCLUDES = -IJ:\PROJECT\auroraOS -IJ:\PROJECT\auroraOS\config -IJ:\PROJECT\auroraOS\boot -IJ:\PROJECT\auroraOS\kernel -IJ:\PROJECT\auroraOS\syscall -IJ:\PROJECT\auroraOS\vfs -IJ:\PROJECT\auroraOS\apps -IJ:\PROJECT\auroraOS\net -IJ:\PROJECT\auroraOS\adapter\net -IJ:\PROJECT\auroraOS\3rdparty\lwip\src\include -IJ:\PROJECT\auroraOS\arch\arm\cortex-m\cm4 -IJ:\PROJECT\auroraOS\boards\ti\lm3s6965-qb
 
 C_FLAGS =  -mcpu=cortex-m4 -mthumb -mfloat-abi=soft -ffreestanding -fno-builtin -fno-common -Wall -Wextra -O2 -g
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -IJ:\PROJECT\auroraOS -IJ:\PROJECT\auroraOS\config -IJ:\PROJECT\auroraOS\boot -IJ:\PROJECT\auroraOS\kernel -IJ:\PROJECT\auroraOS\syscall -IJ:\PROJECT\auroraOS\vfs -IJ:\PROJECT\auroraOS\apps -IJ:\PROJECT\auroraOS\net -IJ:\PROJECT\auroraOS\adapter\net -IJ:\PROJECT\auroraOS\3rdparty\lwip\src\include
+CXX_INCLUDES = -IJ:\PROJECT\auroraOS -IJ:\PROJECT\auroraOS\config -IJ:\PROJECT\auroraOS\boot -IJ:\PROJECT\auroraOS\kernel -IJ:\PROJECT\auroraOS\syscall -IJ:\PROJECT\auroraOS\vfs -IJ:\PROJECT\auroraOS\apps -IJ:\PROJECT\auroraOS\net -IJ:\PROJECT\auroraOS\adapter\net -IJ:\PROJECT\auroraOS\3rdparty\lwip\src\include -IJ:\PROJECT\auroraOS\arch\arm\cortex-m\cm4 -IJ:\PROJECT\auroraOS\boards\ti\lm3s6965-qb
 
 CXX_FLAGS =  -mcpu=cortex-m4 -mthumb -mfloat-abi=soft -ffreestanding -fno-builtin -fno-common -Wall -Wextra -fno-exceptions -fno-rtti -fno-threadsafe-statics -O2 -g
 

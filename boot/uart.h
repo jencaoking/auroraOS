@@ -3,14 +3,15 @@
 
 #include <stdint.h>
 
-#define UART0_BASE 0x4000C000
-#define UART0_DR   (*(volatile uint32_t *)(UART0_BASE + 0x000))
-#define UART0_FR   (*(volatile uint32_t *)(UART0_BASE + 0x018))
-#define UART0_IBRD (*(volatile uint32_t *)(UART0_BASE + 0x024))
-#define UART0_FBRD (*(volatile uint32_t *)(UART0_BASE + 0x028))
-#define UART0_LCRH (*(volatile uint32_t *)(UART0_BASE + 0x02C))
-#define UART0_CTL  (*(volatile uint32_t *)(UART0_BASE + 0x030))
-#define UART0_IMSC (*(volatile uint32_t *)(UART0_BASE + 0x038))
+#include "board.h"
+
+#define UART0_DR   (*(volatile uint32_t *)(BOARD_UART0_BASE + 0x000))
+#define UART0_FR   (*(volatile uint32_t *)(BOARD_UART0_BASE + 0x018))
+#define UART0_IBRD (*(volatile uint32_t *)(BOARD_UART0_BASE + 0x024))
+#define UART0_FBRD (*(volatile uint32_t *)(BOARD_UART0_BASE + 0x028))
+#define UART0_LCRH (*(volatile uint32_t *)(BOARD_UART0_BASE + 0x02C))
+#define UART0_CTL  (*(volatile uint32_t *)(BOARD_UART0_BASE + 0x030))
+#define UART0_IMSC (*(volatile uint32_t *)(BOARD_UART0_BASE + 0x038))
 
 #define UART_FR_TXFF (1 << 5)
 #define UART_FR_RXFE (1 << 4)

@@ -2,6 +2,8 @@
 #define TASK_HPP
 
 #include <stdint.h>
+#include <stddef.h>
+#include "arch_api.hpp"
 
 // 1. 增加 Sleeping 状态
 enum class TaskState {
@@ -59,14 +61,7 @@ public:
         // CONTROL: Bit 1 (SPSEL) = 1 (使用 PSP). Bit 0 (nPRIV) = 0 (特权级) or 1 (非特权级)
         tcb.control_reg = is_privileged ? 0x02 : 0x03;
 
-        uint32_t* top = stack_space + (stack_size / sizeof(uint32_t));
-        top--; *top = 0x01000000;   
-        top--; *top = reinterpret_cast<uint32_t>(task_entry); 
-        top--; *top = 0xFFFFFFFD;   
-        top -= 5;                   
-        top -= 8;                   
-
-        tcb.stack_ptr = top; 
+        tcb.stack_ptr = Arch::init_thread_stack(task_entry, stack_space, stack_size);
         task_count++;
     }
 
@@ -95,26 +90,26 @@ public:
             g_next_tcb_ptr = &tasks[current_task_index];
             
             // 触发 PendSV 切换上下文
-            *reinterpret_cast<volatile uint32_t*>(0xE000ED04) = (1 << 28);
+            Arch::trigger_context_switch();
         }
 
-        __asm__ volatile ("cpsie i" : : : "memory"); // 恢复中断
+        Arch::enable_interrupts(); // 恢复中断
     }
 
     // 3. 让当前线程交出 CPU 并休眠指定时间
     void sleep(uint32_t ticks) {
-        __asm__ volatile ("cpsid i" : : : "memory");
+        Arch::disable_interrupts();
         TaskControlBlock* current = get_current_tcb();
         current->sleep_ticks = ticks;
         current->state = TaskState::Sleeping;
-        __asm__ volatile ("cpsie i" : : : "memory");
+        Arch::enable_interrupts();
         
         schedule(); // 立即触发调度，让出 CPU
     }
 
     // 4. 供定时器中断调用的时间刷新函数
     void tick_update() {
-        __asm__ volatile ("cpsid i" : : : "memory");
+        Arch::disable_interrupts();
         for (uint32_t i = 0; i < task_count; i++) {
             if (tasks[i].state == TaskState::Sleeping) {
                 if (tasks[i].sleep_ticks > 0) {
@@ -125,7 +120,7 @@ public:
                 }
             }
         }
-        __asm__ volatile ("cpsie i" : : : "memory");
+        Arch::enable_interrupts();
     }
 
     TaskControlBlock* get_current_tcb() { return &tasks[current_task_index]; }

@@ -24,6 +24,8 @@ set(CMAKE_ASM_TARGET_INCLUDE_PATH
   "J:/PROJECT/auroraOS/net"
   "J:/PROJECT/auroraOS/adapter/net"
   "J:/PROJECT/auroraOS/3rdparty/lwip/src/include"
+  "J:/PROJECT/auroraOS/arch/arm/cortex-m/cm4"
+  "J:/PROJECT/auroraOS/boards/ti/lm3s6965-qb"
   )
 
 # The set of dependency files which are needed:

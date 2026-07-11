@@ -17,6 +17,7 @@ extern Mutex uart_mutex;
 #include "lwip/tcpip.h"
 #include "lwip/netif.h"
 #include "lwip/api.h"
+#include "arch_api.hpp"
 
 extern err_t ethernetif_init(struct netif *netif);
 extern void ethernetif_input_task(void);
@@ -84,7 +85,7 @@ void dummy_task(void) {
     while (1) {
         // M4: Idle task must never block via software (sys_sleep),
         // but it SHOULD yield the hardware to low-power state.
-        __asm__ volatile ("wfi");
+        Arch::wait_for_interrupt();
     }
 }
 

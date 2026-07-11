@@ -14,6 +14,9 @@
 # EXTERNAL cache entries
 ########################
 
+//Target Hardware Board
+BOARD:STRING=lm3s6965-qb
+
 //Path to a program.
 CMAKE_ADDR2LINE:FILEPATH=J:/CODE/arm-gnu-toolchain/bin/arm-none-eabi-addr2line.exe
 
@@ -234,6 +237,9 @@ CMAKE_SYSTEM_NAME:UNINITIALIZED=Generic
 
 //Path to a program.
 CMAKE_TAPI:FILEPATH=CMAKE_TAPI-NOTFOUND
+
+//No help, variable specified on the command line.
+CMAKE_TOOLCHAIN_FILE:UNINITIALIZED=../config/toolchain.cmake
 
 //If this value is on, makefiles will be generated without the
 // .SILENT directive, and all commands will be echoed to the console
