@@ -142,28 +142,15 @@ public:
 
     // =========================================================================
     // start(): 从特权 main 上下文启动调度器，跳入第一个任务
-    // 通过汇编恢复第一个任务的 PSP 栈帧，以 bx lr 形式进入线程模式
-    // 这是调度器唯一一次「无中生有」创建任务上下文的入口
+    // 架构相关的 PSP/CONTROL 切换与栈帧恢复已封装在 Arch::start_first_task()
+    // 中，调度器逻辑层不再感知具体异常返回码或内联汇编
     // =========================================================================
     [[noreturn]] void start() {
         g_current_tcb_ptr = &tasks[current_task_index];
         g_next_tcb_ptr    = &tasks[current_task_index];
 
-        // 手动恢复第一个任务的 R4-R11（我们在栈帧中预留了 8 个字）
-        // 然后切换到 PSP，开启中断，通过伪造的 LR 值 EXC_RETURN 跳入任务
-        __asm__ volatile (
-            "ldm  %0!, {r4-r11}  \n\t"  // 弹出 R4-R11（init_thread_stack 预留的）
-            "msr  psp, %0        \n\t"  // 将更新后的指针写入 PSP
-            "mov  r0, #2         \n\t"  // CONTROL = 0b10: Thread mode, use PSP
-            "msr  control, r0   \n\t"
-            "isb                 \n\t"  // 指令同步屏障
-            "cpsie i             \n\t"  // 全局开中断
-            "bx   %1             \n\t"  // 跳入任务入口（直接 bx，不保存 LR）
-            : : "r"(g_current_tcb_ptr->stack_ptr),
-                "r"(reinterpret_cast<uint32_t>(tasks[current_task_index].entry_point))
-            : "r0", "r4", "r5", "r6", "r7", "r8", "r9", "r10", "r11", "memory"
-        );
-        __builtin_unreachable();
+        Arch::start_first_task(g_current_tcb_ptr->stack_ptr,
+                               tasks[current_task_index].entry_point);
     }
 
 private:

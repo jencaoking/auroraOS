@@ -1,11 +1,10 @@
 #include "uart.h"
 
-#define SYSCLK 12000000
-
+// 波特率与系统时钟统一取自 BSP (board.h)，更换板卡时无需改动驱动逻辑
 void uart_init(void)
 {
     UART0_CTL = 0;
-    UART0_IBRD = SYSCLK / (16 * 115200);
+    UART0_IBRD = BOARD_SYSCLK_FREQ / (16 * BOARD_UART_BAUDRATE);
     UART0_FBRD = 0;
     UART0_LCRH = (0x3 << 5);
     UART0_IMSC = 0;

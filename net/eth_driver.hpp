@@ -2,13 +2,12 @@
 #define ETH_DRIVER_HPP
 
 #include "net_device.hpp"
+#include "board.h"
 
 class StellarisEth : public NetDevice {
 private:
-    // LM3S 芯片以太网 MAC 寄存器基地址
-    static constexpr uintptr_t MAC_BASE = 0x40048000;
-    static constexpr uintptr_t SYSCTL_BASE = 0x400FE000;
-
+    // MAC / SYSCTL 基地址统一来自 BSP (boards/<board>/board.h)
+    // 驱动不再硬编码任何物理地址，更换芯片只需替换 board.h
     volatile uint32_t* const mac_ris_;  // 中断状态
     volatile uint32_t* const mac_iack_; // 中断清除
     volatile uint32_t* const mac_rctl_; // 接收控制

@@ -70,7 +70,7 @@ err_t ethernetif_init(struct netif *netif) {
     netif->mtu = 1500;
     netif->flags = NETIF_FLAG_BROADCAST | NETIF_FLAG_ETHARP | NETIF_FLAG_LINK_UP | NETIF_FLAG_UP;
 
-    // 从底层硬件驱动拉取我们设定的 MAC 地址 (52:54:00:12:34:56)
+    // 从底层硬件驱动拉取 MAC 地址（驱动构造时由 board.h 的 BOARD_DEFAULT_MAC* 提供）
     const uint8_t* hw_mac = StellarisEth::instance().get_mac();
     netif->hwaddr_len = 6;
     for (int i = 0; i < 6; i++) netif->hwaddr[i] = hw_mac[i];

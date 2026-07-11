@@ -1,5 +1,6 @@
 #include "uart.h"
 #include "config.h"
+#include "net_config.h"
 #include "interrupts.hpp"
 #include "task.hpp"
 #include "memory.hpp"
@@ -51,18 +52,25 @@ void udp_echo_server_task(void) {
 void tcpip_init_done(void* arg) {
     sys_print("[lwIP] TCP/IP Core Stack Booted Successfully!\r\n");
 
-    // 1. 设置静态 IPv4 地址: 192.168.1.100, 子网掩码: 255.255.255.0, 网关: 192.168.1.1
+    // 1. 从配置层读取 IPv4 参数（IP/掩码/网关统一由 net_config.h 提供）
+    const NetIpv4Config cfg = default_ipv4_config;
     ip4_addr_t ipaddr, netmask, gw;
-    IP4_ADDR(&ipaddr, 192, 168, 1, 100);
-    IP4_ADDR(&netmask, 255, 255, 255, 0);
-    IP4_ADDR(&gw, 192, 168, 1, 1);
+    IP4_ADDR(&ipaddr,  cfg.ip[0],      cfg.ip[1],      cfg.ip[2],      cfg.ip[3]);
+    IP4_ADDR(&netmask, cfg.netmask[0], cfg.netmask[1], cfg.netmask[2], cfg.netmask[3]);
+    IP4_ADDR(&gw,      cfg.gateway[0], cfg.gateway[1], cfg.gateway[2], cfg.gateway[3]);
+
+    if (cfg.use_dhcp) {
+        // 预留 DHCP 接入点：在 lwipopts.h 中开启 LWIP_DHCP 后，
+        // 此处改为 dhcp_start(&g_netif) 并跳过静态 netif_add 参数
+        sys_print("[lwIP] DHCP requested but LWIP_DHCP not enabled, fallback to static\r\n");
+    }
 
     // 2. 将网卡挂载进 lwIP 路由表
     netif_add(&g_netif, &ipaddr, &netmask, &gw, nullptr, ethernetif_init, tcpip_input);
     netif_set_default(&g_netif);
     netif_set_up(&g_netif);
 
-    sys_print("[lwIP] Static IP configured: 192.168.1.100\r\n");
+    sys_print("[lwIP] IPv4 interface configured (static)\r\n");
 
     // 3. 起飞网卡数据泵任务（Normal 优先级：轮询式驱动，每 5ms sleep 一次，无硬实时需求）
     uint32_t* rx_stack  = new uint32_t[512];
