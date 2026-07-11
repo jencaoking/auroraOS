@@ -128,6 +128,54 @@ auroraOS.elf/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/build
 .PHONY : auroraOS.elf/fast
 
+3rdparty/littlefs/lfs.obj: 3rdparty/littlefs/lfs.c.obj
+.PHONY : 3rdparty/littlefs/lfs.obj
+
+# target to build an object file
+3rdparty/littlefs/lfs.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/littlefs/lfs.c.obj
+.PHONY : 3rdparty/littlefs/lfs.c.obj
+
+3rdparty/littlefs/lfs.i: 3rdparty/littlefs/lfs.c.i
+.PHONY : 3rdparty/littlefs/lfs.i
+
+# target to preprocess a source file
+3rdparty/littlefs/lfs.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/littlefs/lfs.c.i
+.PHONY : 3rdparty/littlefs/lfs.c.i
+
+3rdparty/littlefs/lfs.s: 3rdparty/littlefs/lfs.c.s
+.PHONY : 3rdparty/littlefs/lfs.s
+
+# target to generate assembly for a file
+3rdparty/littlefs/lfs.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/littlefs/lfs.c.s
+.PHONY : 3rdparty/littlefs/lfs.c.s
+
+3rdparty/littlefs/lfs_util.obj: 3rdparty/littlefs/lfs_util.c.obj
+.PHONY : 3rdparty/littlefs/lfs_util.obj
+
+# target to build an object file
+3rdparty/littlefs/lfs_util.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/littlefs/lfs_util.c.obj
+.PHONY : 3rdparty/littlefs/lfs_util.c.obj
+
+3rdparty/littlefs/lfs_util.i: 3rdparty/littlefs/lfs_util.c.i
+.PHONY : 3rdparty/littlefs/lfs_util.i
+
+# target to preprocess a source file
+3rdparty/littlefs/lfs_util.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/littlefs/lfs_util.c.i
+.PHONY : 3rdparty/littlefs/lfs_util.c.i
+
+3rdparty/littlefs/lfs_util.s: 3rdparty/littlefs/lfs_util.c.s
+.PHONY : 3rdparty/littlefs/lfs_util.s
+
+# target to generate assembly for a file
+3rdparty/littlefs/lfs_util.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/littlefs/lfs_util.c.s
+.PHONY : 3rdparty/littlefs/lfs_util.c.s
+
 3rdparty/lwip/src/api/api_lib.obj: 3rdparty/lwip/src/api/api_lib.c.obj
 .PHONY : 3rdparty/lwip/src/api/api_lib.obj
 
@@ -1369,6 +1417,12 @@ help:
 	@echo ... edit_cache
 	@echo ... rebuild_cache
 	@echo ... auroraOS.elf
+	@echo ... 3rdparty/littlefs/lfs.obj
+	@echo ... 3rdparty/littlefs/lfs.i
+	@echo ... 3rdparty/littlefs/lfs.s
+	@echo ... 3rdparty/littlefs/lfs_util.obj
+	@echo ... 3rdparty/littlefs/lfs_util.i
+	@echo ... 3rdparty/littlefs/lfs_util.s
 	@echo ... 3rdparty/lwip/src/api/api_lib.obj
 	@echo ... 3rdparty/lwip/src/api/api_lib.i
 	@echo ... 3rdparty/lwip/src/api/api_lib.s

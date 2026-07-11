@@ -60,6 +60,8 @@ if(CONFIG_VFS)
     if(CONFIG_FS_RAMFS)
         list(APPEND SOURCES vfs/ramfs.cpp)
     endif()
+    # Assume LittleFS is used if VFS is enabled for now, or just unconditionally add
+    list(APPEND SOURCES 3rdparty/littlefs/lfs.c 3rdparty/littlefs/lfs_util.c)
 endif()
 
 if(CONFIG_NETWORKING AND CONFIG_NET_LWIP)
@@ -91,6 +93,7 @@ target_include_directories(auroraOS.elf PRIVATE
     ${CMAKE_SOURCE_DIR}/net
     ${CMAKE_SOURCE_DIR}/adapter/net
     ${CMAKE_SOURCE_DIR}/3rdparty/lwip/src/include
+    ${CMAKE_SOURCE_DIR}/3rdparty/littlefs
     ${CMAKE_SOURCE_DIR}/arch/${ARCH_DIR}
     ${CMAKE_SOURCE_DIR}/boards/${BOARD_DIR}
 )
@@ -103,3 +106,5 @@ target_link_options(auroraOS.elf PRIVATE
     -Wl,--gc-sections
     --specs=nosys.specs
 )
+
+target_compile_definitions(auroraOS.elf PRIVATE LFS_NO_DEBUG LFS_NO_WARN LFS_NO_ERROR LFS_NO_ASSERT)

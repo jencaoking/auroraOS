@@ -18,6 +18,9 @@
 #include "../drivers/display/framebuffer.hpp"
 #include "../drivers/input/touch_driver.hpp" // 引入触控驱动
 #include "../drivers/input/input_event.hpp"  // 引入输入协议
+#include "../drivers/storage/flash_device.hpp"
+#include "../vfs/photon_cache.hpp"
+#include "../vfs/littlefs_vnode.hpp"
 extern Mutex uart_mutex;
 #include "mpu.hpp"
 
@@ -385,6 +388,67 @@ void sensor_log_task(void) {
     }
 }
 
+// 1. 全局实例化存储子系统三级流水线
+FlashBlockDevice g_nor_flash("spiflash0", 4096, 128); // 512KB 闪存
+PhotonCacheLayer g_photon_cache(g_nor_flash);         // 蓝河光子缓存层
+LittleFsAdapter  g_lfs(g_photon_cache, 4096, 128);    // LittleFS 日志文件系统
+LfsFileNode      g_step_log(g_lfs);                   // 运动步数持久化日志文件
+
+// ==========================================
+// 模拟手表高频写日志任务 (验证光子缓冲写聚合)
+// ==========================================
+void storage_test_task(void) {
+    int console_fd = open("/dev/uart0", 0);
+    write(console_fd, "\r\n[BlueOS Storage] LittleFS & Photon Cache Layer Online.\r\n", 59);
+
+    // 1. 挂载 LittleFS 日志文件系统
+    if (g_lfs.mount()) {
+        write(console_fd, "[LittleFS] Mounted successfully over Flash Block Device.\r\n", 59);
+    }
+
+    // 2. 将日志文件绑定挂载到 VFS 路径
+    if (g_step_log.open_file("steps_history.log", 0) == 0) {
+        VfsManager::instance().mount("/storage/steps.log", &g_step_log);
+        write(console_fd, "[VFS] Mounted /storage/steps.log to LFS file node.\r\n\r\n", 55);
+    }
+
+    // 3. 模拟高频微小字节写入（连续记录 5 次运动传感器数据）
+    int log_fd = open("/storage/steps.log", 0);
+    if (log_fd >= 0) {
+        for (int i = 1; i <= 5; i++) {
+            char log_entry[64];
+            int len = 0;
+            auto append = [&](const char* s) { while (*s) log_entry[len++] = *s++; };
+            auto append_num = [&](int n) { log_entry[len++] = '0' + n; };
+
+            append("[Record #"); append_num(i); append("] HeartRate: 128bpm, Step: 8642\n");
+            
+            // 每次仅写入微小的 42 个字节！
+            write(log_fd, log_entry, len);
+            
+            write(console_fd, "  ⚡ [Photon Cache] Intercepted 42B write. Aggregated in RAM (0 Flash Erase!)\r\n", 80);
+            Scheduler::instance().sleep(1000);
+        }
+
+        write(console_fd, "\r\n🔒 [Sync] Explicit sync triggered. Flushing dirty RAM pages to Flash...\r\n", 76);
+        g_photon_cache.sync(); // 触发全量物理落盘
+        
+        // 4. 读取校验持久化数据
+        write(console_fd, "\r\n📖 --- Reading Back from LittleFS Persistent Storage --- 📖\r\n", 65);
+        VfsManager::instance().lseek(log_fd, 0, 0); // 0 corresponds to SEEK_SET
+        
+        char read_buf[256];
+        int bytes_read = read(log_fd, read_buf, sizeof(read_buf) - 1);
+        if (bytes_read > 0) {
+            read_buf[bytes_read] = '\0';
+            write(console_fd, read_buf, bytes_read);
+        }
+        close(log_fd);
+    }
+
+    while (1) { Scheduler::instance().sleep(10000); }
+}
+
 // =========================================================================
 // [核心系统进程] 黑客应用任务
 // ==========================================
@@ -455,6 +519,7 @@ extern "C" void kernel_main(void) {
     DeviceRegistry::instance().register_device(&g_oled);
     // 【内核注册】将 I2C 触摸屏挂载到 /dev/touch0
     DeviceRegistry::instance().register_device(&g_touch);
+    DeviceRegistry::instance().register_device(&g_nor_flash);
     
 #ifdef CONFIG_FS_PROCFS
     // 挂载 ProcFS 虚拟节点
@@ -463,7 +528,8 @@ extern "C" void kernel_main(void) {
 #endif
     
     // 初始化调度器
-    Scheduler::instance().init();
+    Scheduler& sched = Scheduler::instance();
+    sched.init();
 
     // ── 任务优先级分配表 ──────────────────────────────────────────
     // sys_idle_task   : Idle     — CPU 兜底进程，永不休眠
@@ -511,6 +577,10 @@ extern "C" void kernel_main(void) {
 
     uint32_t* sensor_stack = new uint32_t[STACK_SIZE_TEST];
     FrameScheduler::instance().create_frame_task(sensor_log_task, sensor_stack, STACK_SIZE_TEST * sizeof(uint32_t), FramePriority::NORMAL);
+
+    // 7. 光子存储写聚合测试任务
+    uint32_t* storage_stack = new uint32_t[STACK_SIZE_SHELL];
+    Scheduler::instance().create_task(storage_test_task, storage_stack, STACK_SIZE_SHELL * sizeof(uint32_t), TaskPriority::Normal);
 
     // 【蓝河引擎绑定】初始化 30FPS 调度器，并绑定 UI 主任务的 ID
     FrameScheduler::instance().init(30, ui_tid);

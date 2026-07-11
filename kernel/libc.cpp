@@ -98,4 +98,69 @@ void sys_print_c(const char* str) {
     sys_print(str);
 }
 
+#include "memory.hpp"
+void* malloc(size_t size) {
+    return KernelHeap::instance().allocate(size);
+}
+
+void free(void* ptr) {
+    KernelHeap::instance().deallocate(ptr);
+}
+
+size_t strcspn(const char *s, const char *reject) {
+    size_t count = 0;
+    while (*s) {
+        const char *r = reject;
+        while (*r) {
+            if (*s == *r) return count;
+            r++;
+        }
+        s++;
+        count++;
+    }
+    return count;
+}
+
+size_t strspn(const char *s, const char *accept) {
+    size_t count = 0;
+    while (*s) {
+        const char *a = accept;
+        bool found = false;
+        while (*a) {
+            if (*s == *a) {
+                found = true;
+                break;
+            }
+            a++;
+        }
+        if (!found) return count;
+        s++;
+        count++;
+    }
+    return count;
+}
+
+char *strcpy(char *dest, const char *src) {
+    char *d = dest;
+    while ((*d++ = *src++) != '\0') {}
+    return dest;
+}
+
+char *strchr(const char *s, int c) {
+    while (*s != (char)c) {
+        if (!*s++) return nullptr;
+    }
+    return const_cast<char*>(s);
+}
+
+int __popcountsi2(int a) {
+    int count = 0;
+    unsigned int x = static_cast<unsigned int>(a);
+    while (x) {
+        count += x & 1;
+        x >>= 1;
+    }
+    return count;
+}
+
 } // extern "C"
