@@ -20,8 +20,17 @@ enum class TaskPriority : uint8_t {
 enum class TaskState {
     Ready,
     Running,
-    Sleeping
+    Sleeping,
+    Blocked_On_Notify
 };
+
+// POSIX 标准信号定义
+constexpr int SIGINT  = 2;  // 中断信号 (Ctrl+C)
+constexpr int SIGKILL = 9;  // 强制终止
+constexpr int SIGALRM = 14; // 定时器超时报警
+constexpr int SIGUSR1 = 10; // 用户自定义信号 1
+
+using SignalHandler = void (*)(int sig);
 
 // TaskControlBlock: POD 结构体，保存任务的完整上下文快照
 // 遵循 C.2: 若需要不变量则使用 class，此处为纯数据故用 struct
@@ -35,6 +44,18 @@ struct TaskControlBlock {
     TaskPriority current_priority;// 动态优先级（用于优先级继承）
     uint32_t     stack_base;      // 栈基址（用于 MPU）
     uint8_t      size_pow2;       // 栈大小的 2 的幂次方（用于 MPU）
+
+    // ========================================================
+    // 1. 【FreeRTOS 任务通知】零开销 TCB 内置字段
+    // ========================================================
+    uint32_t  notify_value;     // 32 位专有通知值
+    bool      notify_pending;   // 是否有未处理的通知
+
+    // ========================================================
+    // 2. 【小米 Vela POSIX 信号】异步中断字段
+    // ========================================================
+    uint32_t      pending_signals;          // 待处理信号位图
+    SignalHandler signal_handlers[16];      // 信号回调处理函数表
 };
 
 // 前向声明：供 PendSV 汇编读取的两个全局 TCB 指针
@@ -80,10 +101,41 @@ public:
         tcb.stack_base = reinterpret_cast<uint32_t>(stack_space);
         tcb.size_pow2 = size_pow2;
 
+        // 初始化任务通知与信号管理
+        tcb.notify_value = 0;
+        tcb.notify_pending = false;
+        tcb.pending_signals = 0;
+        for (int i = 0; i < 16; i++) tcb.signal_handlers[i] = nullptr;
+
         // 调用 HAL 接口完成 Cortex-M4 栈帧伪造，与具体架构解耦
         tcb.stack_ptr = Arch::init_thread_stack(task_entry, stack_space, stack_size);
         task_count++;
         return &tcb;
+    }
+
+    // ========================================================
+    // 【核心改造】调度器在任务切换时，自动检查并分发待处理信号
+    // ========================================================
+    void dispatch_signals(TaskControlBlock* tcb) {
+        if (tcb->pending_signals == 0) return;
+
+        for (int sig = 1; sig < 16; sig++) {
+            if (tcb->pending_signals & (1 << sig)) {
+                // 清除待处理位
+                tcb->pending_signals &= ~(1 << sig);
+
+                // 如果是 SIGKILL，强制无条件终止该线程！
+                if (sig == SIGKILL) {
+                    tcb->state = TaskState::Sleeping; // 简单标记为挂起/销毁
+                    return;
+                }
+
+                // 如果注册了回调，立即在当前线程上下文中执行异步处理
+                if (tcb->signal_handlers[sig]) {
+                    tcb->signal_handlers[sig](sig);
+                }
+            }
+        }
     }
 
     // =========================================================================
@@ -121,6 +173,9 @@ public:
             g_current_tcb_ptr = &tasks[current_task_index];
             current_task_index = next_task;
             g_next_tcb_ptr = &tasks[current_task_index];
+            
+            // 【信号拦截点】切入新任务前，优先处理它的 POSIX 异步信号
+            dispatch_signals(&tasks[current_task_index]);
             Arch::enable_interrupts();  // 必须先恢复中断，PendSV 才能被硬件响应
             Arch::trigger_context_switch(); // Pending PendSV 位，等待中断开放后执行
         }
@@ -156,6 +211,10 @@ public:
     int get_task_count() const { return task_count; }
     TaskControlBlock* get_task(int index) { 
         if (index >= 0 && index < task_count) return &tasks[index]; 
+        return nullptr;
+    }
+    TaskControlBlock* get_task_by_id(uint32_t id) {
+        if (id < task_count) return &tasks[id];
         return nullptr;
     }
 

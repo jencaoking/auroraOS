@@ -11,7 +11,8 @@
 #include "syscall.hpp"
 #include "mutex.hpp"
 #include "../net/eth_driver.hpp"
-
+#include "task_notify.hpp"
+#include "signal.hpp"
 extern Mutex uart_mutex;
 #include "mpu.hpp"
 
@@ -227,6 +228,59 @@ void posix_app_task(void) {
 #endif
 
 // =========================================================================
+// [核心系统进程] 任务通知与 POSIX 信号测试应用
+// ==========================================
+static uint32_t g_receiver_task_id = 0;
+
+void receiver_task(void) {
+    int fd = open("/dev/uart0", 0);
+
+    // 1. 绑定 POSIX SIGUSR1 信号的异步回调
+    signal(SIGUSR1, [](int sig) {
+        int fd = open("/dev/uart0", 0);
+        write(fd, "\r\n>>> [POSIX Signal Handler] SIGUSR1 intercepted asynchronously! <<<\r\n", 71);
+        close(fd);
+    });
+
+    write(fd, "[Receiver] Ready and waiting for zero-overhead Task Notifications...\r\n", 70);
+    close(fd);
+
+    while (true) {
+        // 2. 0 内存开销、0 耗时等待任务通知
+        uint32_t val = TaskNotify::take(); 
+        
+        fd = open("/dev/uart0", 0);
+        write(fd, "[Receiver] Task Notification Received! Value: 0x", 48);
+        
+        // 简单以十六进制打印输出
+        char hex_str[11];
+        for (int i = 7; i >= 0; i--) {
+            int nibble = (val >> (i * 4)) & 0xF;
+            hex_str[7 - i] = nibble < 10 ? ('0' + nibble) : ('A' + nibble - 10);
+        }
+        hex_str[8] = '\r';
+        hex_str[9] = '\n';
+        hex_str[10] = '\0';
+        write(fd, hex_str, 10);
+        close(fd);
+    }
+}
+
+void sender_task(void) {
+    Scheduler::instance().sleep(1500); // 等待接收线程就绪
+
+    while (true) {
+        // 测试 1：发送 FreeRTOS 任务通知
+        TaskNotify::give(g_receiver_task_id, 0xA5A5);
+        Scheduler::instance().sleep(2000);
+
+        // 测试 2：跨线程发送 POSIX 异步软件信号
+        kill(g_receiver_task_id, SIGUSR1);
+        Scheduler::instance().sleep(2000);
+    }
+}
+
+// =========================================================================
 // [核心系统进程] 黑客应用任务
 // ==========================================
 void hacker_app_task(void) {
@@ -337,6 +391,11 @@ extern "C" void kernel_main(void) {
 
     // 4. Hacker App Task (带有 MPU 沙盒隔离保护的测试线程)
     Scheduler::instance().create_task(hacker_app_task, reinterpret_cast<uint32_t*>(hacker_stack), sizeof(hacker_stack), TaskPriority::Low, 10);
+
+    // 5. Task Notify & POSIX Signal Test Tasks
+    TaskControlBlock* rx_tcb = Scheduler::instance().create_task(receiver_task, new uint32_t[STACK_SIZE_TEST], STACK_SIZE_TEST*sizeof(uint32_t), TaskPriority::Normal);
+    if (rx_tcb) g_receiver_task_id = rx_tcb->id;
+    Scheduler::instance().create_task(sender_task, new uint32_t[STACK_SIZE_TEST], STACK_SIZE_TEST*sizeof(uint32_t), TaskPriority::Normal);
 
 #ifdef CONFIG_TIMER_MANAGER
     // 4. 定时器守护进程与测试 App
