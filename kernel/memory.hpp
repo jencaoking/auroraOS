@@ -1,5 +1,5 @@
 #ifndef MEMORY_HPP
-#define AURORA_MEMORY_HPP
+#define MEMORY_HPP
 
 #include <stdint.h>
 #include <stddef.h>

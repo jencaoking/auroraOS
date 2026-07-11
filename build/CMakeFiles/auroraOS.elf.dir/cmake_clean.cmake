@@ -18,9 +18,10 @@ file(REMOVE_RECURSE
   "CMakeFiles/auroraOS.elf.dir/vfs/softbus.cpp.obj.d"
   "CMakeFiles/auroraOS.elf.dir/vfs/vfs.cpp.obj"
   "CMakeFiles/auroraOS.elf.dir/vfs/vfs.cpp.obj.d"
-  "auroraOS.elf"
-  "auroraOS.elf.manifest"
+  "auroraOS.elf.exe"
+  "auroraOS.elf.exe.manifest"
   "auroraOS.elf.pdb"
+  "libauroraOS.elf.dll.a"
 )
 
 # Per-language clean rules from dependency scanning.
