@@ -1859,6 +1859,8 @@ CMakeFiles/auroraOS.elf.dir/adapter/net/ethernetif.cpp.obj: J:/PROJECT/auroraOS/
   J:/PROJECT/auroraOS/3rdparty/lwip/src/include/lwip/stats.h \
   J:/PROJECT/auroraOS/adapter/net/arch/cc.h \
   J:/PROJECT/auroraOS/adapter/net/lwipopts.h \
+  J:/PROJECT/auroraOS/arch/arm/cortex-m/cm4/arch_impl.hpp \
+  J:/PROJECT/auroraOS/kernel/arch_api.hpp \
   J:/PROJECT/auroraOS/kernel/task.hpp \
   J:/PROJECT/auroraOS/net/eth_driver.hpp \
   J:/PROJECT/auroraOS/net/net_device.hpp \
@@ -1893,6 +1895,8 @@ CMakeFiles/auroraOS.elf.dir/adapter/net/sys_arch.cpp.obj: J:/PROJECT/auroraOS/ad
   J:/PROJECT/auroraOS/adapter/net/arch/sys_arch.h \
   J:/PROJECT/auroraOS/adapter/net/lwipopts.h \
   J:/PROJECT/auroraOS/adapter/net/arch/sys_arch.h \
+  J:/PROJECT/auroraOS/arch/arm/cortex-m/cm4/arch_impl.hpp \
+  J:/PROJECT/auroraOS/kernel/arch_api.hpp \
   J:/PROJECT/auroraOS/kernel/memory.hpp \
   J:/PROJECT/auroraOS/kernel/msg_queue.hpp \
   J:/PROJECT/auroraOS/kernel/mutex.hpp \
@@ -1906,6 +1910,8 @@ CMakeFiles/auroraOS.elf.dir/apps/elf_loader.cpp.obj: J:/PROJECT/auroraOS/apps/el
   J:/CODE/arm-gnu-toolchain/lib/gcc/arm-none-eabi/13.2.1/include/stdint.h \
   J:/PROJECT/auroraOS/apps/elf.hpp \
   J:/PROJECT/auroraOS/apps/elf_loader.hpp \
+  J:/PROJECT/auroraOS/arch/arm/cortex-m/cm4/arch_impl.hpp \
+  J:/PROJECT/auroraOS/kernel/arch_api.hpp \
   J:/PROJECT/auroraOS/kernel/memory.hpp \
   J:/PROJECT/auroraOS/kernel/mutex.hpp \
   J:/PROJECT/auroraOS/kernel/task.hpp \
@@ -1960,9 +1966,12 @@ CMakeFiles/auroraOS.elf.dir/apps/kernel.cpp.obj: J:/PROJECT/auroraOS/apps/kernel
   J:/PROJECT/auroraOS/adapter/net/arch/sys_arch.h \
   J:/PROJECT/auroraOS/adapter/net/lwipopts.h \
   J:/PROJECT/auroraOS/apps/shell.hpp \
+  J:/PROJECT/auroraOS/arch/arm/cortex-m/cm4/arch_impl.hpp \
+  J:/PROJECT/auroraOS/boards/ti/lm3s6965-qb/board.h \
   J:/PROJECT/auroraOS/boot/interrupts.hpp \
   J:/PROJECT/auroraOS/boot/uart.h \
   J:/PROJECT/auroraOS/config/config.h \
+  J:/PROJECT/auroraOS/kernel/arch_api.hpp \
   J:/PROJECT/auroraOS/kernel/memory.hpp \
   J:/PROJECT/auroraOS/kernel/mutex.hpp \
   J:/PROJECT/auroraOS/kernel/task.hpp \
@@ -1980,15 +1989,20 @@ CMakeFiles/auroraOS.elf.dir/apps/shell.cpp.obj: J:/PROJECT/auroraOS/apps/shell.c
   J:/PROJECT/auroraOS/vfs/vfs.hpp
 
 CMakeFiles/auroraOS.elf.dir/boot/interrupts.cpp.obj: J:/PROJECT/auroraOS/boot/interrupts.cpp \
+  J:/CODE/arm-gnu-toolchain/lib/gcc/arm-none-eabi/13.2.1/include/stddef.h \
   J:/CODE/arm-gnu-toolchain/lib/gcc/arm-none-eabi/13.2.1/include/stdint-gcc.h \
   J:/CODE/arm-gnu-toolchain/lib/gcc/arm-none-eabi/13.2.1/include/stdint.h \
+  J:/PROJECT/auroraOS/arch/arm/cortex-m/cm4/arch_impl.hpp \
+  J:/PROJECT/auroraOS/boards/ti/lm3s6965-qb/board.h \
   J:/PROJECT/auroraOS/boot/interrupts.hpp \
   J:/PROJECT/auroraOS/boot/uart.h \
+  J:/PROJECT/auroraOS/kernel/arch_api.hpp \
   J:/PROJECT/auroraOS/kernel/task.hpp
 
 CMakeFiles/auroraOS.elf.dir/boot/uart.c.obj: J:/PROJECT/auroraOS/boot/uart.c \
   J:/CODE/arm-gnu-toolchain/lib/gcc/arm-none-eabi/13.2.1/include/stdint-gcc.h \
   J:/CODE/arm-gnu-toolchain/lib/gcc/arm-none-eabi/13.2.1/include/stdint.h \
+  J:/PROJECT/auroraOS/boards/ti/lm3s6965-qb/board.h \
   J:/PROJECT/auroraOS/boot/uart.h
 
 CMakeFiles/auroraOS.elf.dir/kernel/libc.cpp.obj: J:/PROJECT/auroraOS/kernel/libc.cpp \
@@ -2001,6 +2015,8 @@ CMakeFiles/auroraOS.elf.dir/kernel/memory.cpp.obj: J:/PROJECT/auroraOS/kernel/me
   J:/CODE/arm-gnu-toolchain/lib/gcc/arm-none-eabi/13.2.1/include/stddef.h \
   J:/CODE/arm-gnu-toolchain/lib/gcc/arm-none-eabi/13.2.1/include/stdint-gcc.h \
   J:/CODE/arm-gnu-toolchain/lib/gcc/arm-none-eabi/13.2.1/include/stdint.h \
+  J:/PROJECT/auroraOS/arch/arm/cortex-m/cm4/arch_impl.hpp \
+  J:/PROJECT/auroraOS/kernel/arch_api.hpp \
   J:/PROJECT/auroraOS/kernel/memory.hpp \
   J:/PROJECT/auroraOS/kernel/mutex.hpp \
   J:/PROJECT/auroraOS/kernel/task.hpp \
@@ -2010,6 +2026,8 @@ CMakeFiles/auroraOS.elf.dir/net/eth_driver.cpp.obj: J:/PROJECT/auroraOS/net/eth_
   J:/CODE/arm-gnu-toolchain/lib/gcc/arm-none-eabi/13.2.1/include/stddef.h \
   J:/CODE/arm-gnu-toolchain/lib/gcc/arm-none-eabi/13.2.1/include/stdint-gcc.h \
   J:/CODE/arm-gnu-toolchain/lib/gcc/arm-none-eabi/13.2.1/include/stdint.h \
+  J:/PROJECT/auroraOS/arch/arm/cortex-m/cm4/arch_impl.hpp \
+  J:/PROJECT/auroraOS/kernel/arch_api.hpp \
   J:/PROJECT/auroraOS/kernel/mutex.hpp \
   J:/PROJECT/auroraOS/kernel/task.hpp \
   J:/PROJECT/auroraOS/net/eth_driver.hpp \
@@ -2021,9 +2039,13 @@ CMakeFiles/auroraOS.elf.dir/vfs/ramfs.cpp.obj: J:/PROJECT/auroraOS/vfs/ramfs.cpp
   J:/PROJECT/auroraOS/vfs/vfs.hpp
 
 CMakeFiles/auroraOS.elf.dir/vfs/vfs.cpp.obj: J:/PROJECT/auroraOS/vfs/vfs.cpp \
+  J:/CODE/arm-gnu-toolchain/lib/gcc/arm-none-eabi/13.2.1/include/stddef.h \
   J:/CODE/arm-gnu-toolchain/lib/gcc/arm-none-eabi/13.2.1/include/stdint-gcc.h \
   J:/CODE/arm-gnu-toolchain/lib/gcc/arm-none-eabi/13.2.1/include/stdint.h \
+  J:/PROJECT/auroraOS/arch/arm/cortex-m/cm4/arch_impl.hpp \
+  J:/PROJECT/auroraOS/boards/ti/lm3s6965-qb/board.h \
   J:/PROJECT/auroraOS/boot/uart.h \
+  J:/PROJECT/auroraOS/kernel/arch_api.hpp \
   J:/PROJECT/auroraOS/kernel/mutex.hpp \
   J:/PROJECT/auroraOS/kernel/task.hpp \
   J:/PROJECT/auroraOS/syscall/syscall.hpp \
@@ -2328,6 +2350,10 @@ J:/PROJECT/auroraOS/3rdparty/lwip/src/netif/ethernet.c:
 
 J:/PROJECT/auroraOS/adapter/net/ethernetif.cpp:
 
+J:/PROJECT/auroraOS/arch/arm/cortex-m/cm4/arch_impl.hpp:
+
+J:/PROJECT/auroraOS/kernel/arch_api.hpp:
+
 J:/PROJECT/auroraOS/kernel/task.hpp:
 
 J:/PROJECT/auroraOS/net/eth_driver.hpp:
@@ -2345,6 +2371,8 @@ J:/PROJECT/auroraOS/apps/elf.hpp:
 J:/PROJECT/auroraOS/apps/elf_loader.hpp:
 
 J:/PROJECT/auroraOS/vfs/vfs.hpp:
+
+J:/PROJECT/auroraOS/boards/ti/lm3s6965-qb/board.h:
 
 J:/PROJECT/auroraOS/boot/uart.h:
 
