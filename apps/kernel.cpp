@@ -5,6 +5,7 @@
 #include "task.hpp"
 #include "memory.hpp"
 #include "vfs.hpp"
+#include "device.hpp"
 #include "ramfs.hpp"
 #include "shell.hpp" // 引入 Shell
 #include "syscall.hpp"
@@ -93,8 +94,8 @@ extern "C" {
 
 Mutex uart_mutex;
 
-// 依然保留挂载设备
-extern class UartDevice g_uart_device;
+// 声明用于动态创建 UART 设备的函数
+extern Device* create_uart_device();
 
 // =========================================================================
 // [核心系统进程] 低功耗空闲任务 (优先级最低，永远保持 Ready 状态)
@@ -152,8 +153,8 @@ extern "C" void kernel_main(void) {
     RamFile* temp_file = new RamFile(1024);
     RamFile* elf_file = new RamFile(1024);
 
-    // 挂载 /dev/tty0 和 /tmp/log.txt 以及 /tmp/app.elf
-    VfsManager::instance().mount("/dev/tty0", (VNode*)&g_uart_device);
+    // 挂载 设备 和 /tmp 目录下的虚拟文件
+    DeviceRegistry::instance().register_device(create_uart_device());
     VfsManager::instance().mount("/tmp/log.txt", (VNode*)temp_file);
     VfsManager::instance().mount("/tmp/app.elf", (VNode*)elf_file);
     

@@ -38,6 +38,7 @@ set(SOURCES
     boot/interrupts.cpp
     kernel/memory.cpp
     kernel/libc.cpp
+    kernel/posix.cpp
     vfs/vfs.cpp
     vfs/ramfs.cpp
     apps/shell.cpp

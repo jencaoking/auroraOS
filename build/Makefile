@@ -1264,6 +1264,30 @@ kernel/memory.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/kernel/memory.cpp.s
 .PHONY : kernel/memory.cpp.s
 
+kernel/posix.obj: kernel/posix.cpp.obj
+.PHONY : kernel/posix.obj
+
+# target to build an object file
+kernel/posix.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/kernel/posix.cpp.obj
+.PHONY : kernel/posix.cpp.obj
+
+kernel/posix.i: kernel/posix.cpp.i
+.PHONY : kernel/posix.i
+
+# target to preprocess a source file
+kernel/posix.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/kernel/posix.cpp.i
+.PHONY : kernel/posix.cpp.i
+
+kernel/posix.s: kernel/posix.cpp.s
+.PHONY : kernel/posix.s
+
+# target to generate assembly for a file
+kernel/posix.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/kernel/posix.cpp.s
+.PHONY : kernel/posix.cpp.s
+
 net/eth_driver.obj: net/eth_driver.cpp.obj
 .PHONY : net/eth_driver.obj
 
@@ -1487,6 +1511,9 @@ help:
 	@echo ... kernel/memory.obj
 	@echo ... kernel/memory.i
 	@echo ... kernel/memory.s
+	@echo ... kernel/posix.obj
+	@echo ... kernel/posix.i
+	@echo ... kernel/posix.s
 	@echo ... net/eth_driver.obj
 	@echo ... net/eth_driver.i
 	@echo ... net/eth_driver.s

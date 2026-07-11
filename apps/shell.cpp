@@ -1,5 +1,5 @@
 #include "shell.hpp"
-#include "vfs.hpp"
+#include "posix.hpp"
 #include "syscall.hpp"
 #include "elf_loader.hpp"
 #include "config.h"
@@ -28,12 +28,12 @@ static int my_atoi(const char* str) {
 }
 
 void Shell::execute_command(const char* raw_cmd) {
-    int stdout_fd = VfsManager::instance().open("/dev/tty0");
+    int stdout_fd = open("/dev/uart0", 0);
     if (stdout_fd < 0) return;
 
     auto print = [&](const char* str) {
         int len = 0; while(str[len]) len++;
-        VfsManager::instance().write(stdout_fd, str, len); // 修正：移除多余的 0
+        write(stdout_fd, str, len); // 修正：移除多余的 0
     };
 
     // 1. 将只读的 raw_cmd 拷贝到本地缓冲区，以便进行就地字符串切割
@@ -59,7 +59,7 @@ void Shell::execute_command(const char* raw_cmd) {
     }
 
     if (argc == 0) {
-        VfsManager::instance().close(stdout_fd);
+        close(stdout_fd);
         return;
     }
 
@@ -76,17 +76,17 @@ void Shell::execute_command(const char* raw_cmd) {
         print("  udpsend   - Send UDP packet <ip> <port> <msg>\r\n");
     } 
     else if (strings_equal(argv[0], "cat")) {
-        int fd = VfsManager::instance().open("/tmp/log.txt");
+        int fd = open("/tmp/log.txt", 0);
         if (fd >= 0) {
             char buf[64];
-            VfsManager::instance().lseek(fd, 0);
-            int bytes = VfsManager::instance().read(fd, buf, sizeof(buf)-1);
+            lseek(fd, 0, 0); // SEEK_SET
+            int bytes = read(fd, buf, sizeof(buf)-1);
             if (bytes > 0) {
                 buf[bytes] = '\0';
                 print(buf);
                 print("\r\n");
             }
-            VfsManager::instance().close(fd);
+            close(fd);
         } else {
             print("Failed to open /tmp/log.txt\r\n");
         }
@@ -169,11 +169,11 @@ void Shell::execute_command(const char* raw_cmd) {
         print("\r\n");
     }
     
-    VfsManager::instance().close(stdout_fd);
+    close(stdout_fd);
 }
 
 void Shell::run() {
-    int stdin_fd = VfsManager::instance().open("/dev/tty0");
+    int stdin_fd = open("/dev/uart0", 0);
     if (stdin_fd < 0) return;
 
     const char* prompt = "aurora> ";
@@ -181,9 +181,9 @@ void Shell::run() {
 
     while (true) {
         int p_len = 0; while(prompt[p_len]) p_len++;
-        VfsManager::instance().write(stdin_fd, prompt, p_len);
+        write(stdin_fd, prompt, p_len);
 
-        int bytes = VfsManager::instance().read(stdin_fd, cmd_buf, sizeof(cmd_buf) - 1);
+        int bytes = read(stdin_fd, cmd_buf, sizeof(cmd_buf) - 1);
         if (bytes > 0) {
             // 将读取到的内容作为字符串
             cmd_buf[bytes] = '\0';

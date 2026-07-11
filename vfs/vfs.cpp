@@ -1,4 +1,5 @@
 #include "vfs.hpp"
+#include "device.hpp"
 
 bool VfsManager::strings_equal(const char* s1, const char* s2) {
     if (!s1 || !s2) return false;
@@ -72,6 +73,13 @@ void VfsManager::close(int fd) {
     if (fd >= 0 && fd < MAX_OPEN_FILES) fd_table_[fd].used = false;
 }
 
+int VfsManager::ioctl(int fd, int request, void* arg) {
+    if (fd >= 0 && fd < MAX_OPEN_FILES && fd_table_[fd].used) {
+        return fd_table_[fd].vnode->ioctl(request, arg);
+    }
+    return -1;
+}
+
 #include "uart.h"
 #include "mutex.hpp"
 #include "task.hpp"
@@ -79,8 +87,10 @@ void VfsManager::close(int fd) {
 
 extern Mutex uart_mutex;
 
-class UartDevice : public VNode {
+class UartDevice : public CharDevice {
 public:
+    UartDevice() : CharDevice("uart0") {}
+    
     int write(const char* buf, int len, int offset) override {
         (void)offset; // UART is a stream device, ignore offset
         LockGuard lock(uart_mutex);
@@ -122,4 +132,6 @@ public:
     }
 };
 
-UartDevice g_uart_device;
+Device* create_uart_device() {
+    return new UartDevice();
+}
