@@ -1,1 +1,36 @@
 .agent
+
+# Build directories
+build/
+bin/
+
+# Compile artifacts
+*.elf
+*.bin
+*.map
+*.o
+*.obj
+*.d
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
+CMakeCXXCompilerId.cpp
+CMakeCCompilerId.c
+
+# IDEs and editors
+.vscode/
+.idea/
+*.suo
+*.user
+*.userossc
+*.sln
+*.vcproj
+*.vcxproj
+*.filters
+
+# OS temporary files
+.DS_Store
+Thumbs.db
