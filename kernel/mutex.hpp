@@ -7,23 +7,42 @@
 class Mutex {
 private:
     volatile bool locked_ = false;
+    TaskControlBlock* owner_ = nullptr;
 
 public:
     void lock() {
+        TaskControlBlock* current = Scheduler::instance().get_current_tcb();
         while (true) {
-            // 使用 GCC 内置原子操作，在特权和非特权模式下均安全生效
-            if (!__sync_lock_test_and_set(&locked_, true)) {
-                return; // 成功获取锁
+            Arch::disable_interrupts();
+            if (!locked_) {
+                locked_ = true;
+                owner_ = current;
+                Arch::enable_interrupts();
+                return;
             }
             
-            // 锁被占用，非特权态无法直接写 ICSR 触发 PendSV，
-            // 必须通过系统调用安全地让出 CPU
-            sys_yield();
+            // 优先级继承
+            if (owner_ && (int)current->current_priority > (int)owner_->current_priority) {
+                owner_->current_priority = current->current_priority;
+            }
+            Arch::enable_interrupts();
+            
+            // 真正让出 CPU 1ms，防止忙等
+            Scheduler::instance().sleep(1);
         }
     }
 
     void unlock() {
-        __sync_lock_release(&locked_);
+        Arch::disable_interrupts();
+        if (owner_) {
+            owner_->current_priority = owner_->base_priority;
+            owner_ = nullptr;
+        }
+        locked_ = false;
+        Arch::enable_interrupts();
+        
+        // 立即触发一次调度，让可能被阻塞的高优先级任务第一时间运行
+        Scheduler::instance().schedule();
     }
 };
 

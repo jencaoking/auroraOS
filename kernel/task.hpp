@@ -38,8 +38,8 @@ struct TaskControlBlock {
 // 前向声明：供 PendSV 汇编读取的两个全局 TCB 指针
 // 遵循 I.2: 最小化非 const 全局变量，此处为架构必需
 extern "C" {
-    extern TaskControlBlock* g_current_tcb_ptr;
-    extern TaskControlBlock* g_next_tcb_ptr;
+    extern TaskControlBlock* volatile g_current_tcb_ptr;
+    extern TaskControlBlock* volatile g_next_tcb_ptr;
 }
 
 class Scheduler {
@@ -53,6 +53,7 @@ public:
     void init() {
         current_task_index = 0;
         task_count = 0;
+        started_ = false;
     }
 
     // 创建任务时指定优先级（默认 Normal），遵循 F.15: 提供具名参数
@@ -88,7 +89,7 @@ public:
     // 阶段三: 若选出的任务与当前不同，通过 HAL 触发 PendSV 硬件上下文切换
     // =========================================================================
     void schedule() {
-        if (task_count <= 1) return;
+        if (!started_ || task_count <= 1) return;
 
         // ── 阶段一：寻找最高可运行优先级 ──────────────────────────────────
         TaskPriority max_prio = TaskPriority::Idle;
@@ -159,6 +160,7 @@ public:
     // 中，调度器逻辑层不再感知具体异常返回码或内联汇编
     // =========================================================================
     [[noreturn]] void start() {
+        started_ = true;
         g_current_tcb_ptr = &tasks[current_task_index];
         g_next_tcb_ptr    = &tasks[current_task_index];
 
@@ -177,6 +179,7 @@ private:
     TaskControlBlock tasks[MAX_TASKS]{};
     uint32_t current_task_index = 0;
     uint32_t task_count = 0;
+    bool started_ = false;
 };
 
 #endif // TASK_HPP

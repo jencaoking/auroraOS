@@ -12,7 +12,6 @@
 #include "mutex.hpp"
 #include "../net/eth_driver.hpp"
 
-extern void safe_print(const char* msg);
 extern Mutex uart_mutex;
 
 #include "lwip/init.h"
@@ -145,8 +144,8 @@ extern "C" void shell_task(void) {
     Shell::run();
 }
 
-#include "mutex_pi.hpp"
-MutexPI pi_lock;
+#include "mutex.hpp"
+Mutex pi_lock;
 
 void pi_test_low() {
     Scheduler::instance().sleep(500); // 错开系统启动的日志打印期
@@ -244,33 +243,38 @@ extern "C" void kernel_main(void) {
     // lwIP net tasks  : Realtime — 网络 RX 数据泵（在 tcpip_init_done 中创建）
     // udp_echo_task   : Normal   — 业务层 Echo 处理
     // ─────────────────────────────────────────────────────────────
-    uint32_t* idle_stack  = new uint32_t[128];
-    uint32_t* shell_stack = new uint32_t[512];
+    constexpr uint32_t STACK_SIZE_IDLE = 128;
+    constexpr uint32_t STACK_SIZE_SHELL = 512;
+    constexpr uint32_t STACK_SIZE_TEST = 128;
+    constexpr uint32_t STACK_SIZE_DAEMON = 256;
+
+    uint32_t* idle_stack  = new uint32_t[STACK_SIZE_IDLE];
+    uint32_t* shell_stack = new uint32_t[STACK_SIZE_SHELL];
 
     // 1. 空闲进程：优先级最低，负责 CPU 低功耗兜底
-    if (!Scheduler::instance().create_task(sys_idle_task, idle_stack, 128 * sizeof(uint32_t),
+    if (!Scheduler::instance().create_task(sys_idle_task, idle_stack, STACK_SIZE_IDLE * sizeof(uint32_t),
         TaskPriority::Idle)) {
         sys_print("[Kernel] FATAL: failed to spawn sys_idle_task!\r\n");
     }
 
     // 2. 交互终端：高优先级响应用户键盘
     extern void shell_task(void);
-    if (!Scheduler::instance().create_task(shell_task, shell_stack, 512 * sizeof(uint32_t),
+    if (!Scheduler::instance().create_task(shell_task, shell_stack, STACK_SIZE_SHELL * sizeof(uint32_t),
         TaskPriority::High)) {
         sys_print("[Kernel] FATAL: failed to spawn shell_task!\r\n");
     }
 
     // 3. PI Mutex 测试任务
-    Scheduler::instance().create_task(pi_test_low, new uint32_t[128], 128*sizeof(uint32_t), TaskPriority::Low);
-    Scheduler::instance().create_task(pi_test_mid, new uint32_t[128], 128*sizeof(uint32_t), TaskPriority::Normal);
-    Scheduler::instance().create_task(pi_test_high, new uint32_t[128], 128*sizeof(uint32_t), TaskPriority::High);
+    Scheduler::instance().create_task(pi_test_low, new uint32_t[STACK_SIZE_TEST], STACK_SIZE_TEST*sizeof(uint32_t), TaskPriority::Low);
+    Scheduler::instance().create_task(pi_test_mid, new uint32_t[STACK_SIZE_TEST], STACK_SIZE_TEST*sizeof(uint32_t), TaskPriority::Normal);
+    Scheduler::instance().create_task(pi_test_high, new uint32_t[STACK_SIZE_TEST], STACK_SIZE_TEST*sizeof(uint32_t), TaskPriority::High);
 
     // 4. 定时器守护进程与测试 App
-    Scheduler::instance().create_task(timer_daemon_entry, new uint32_t[256], 256*sizeof(uint32_t), TaskPriority::Realtime);
-    Scheduler::instance().create_task(posix_app_task, new uint32_t[256], 256*sizeof(uint32_t), TaskPriority::Low);
+    Scheduler::instance().create_task(timer_daemon_entry, new uint32_t[STACK_SIZE_DAEMON], STACK_SIZE_DAEMON*sizeof(uint32_t), TaskPriority::Realtime);
+    Scheduler::instance().create_task(posix_app_task, new uint32_t[STACK_SIZE_DAEMON], STACK_SIZE_DAEMON*sizeof(uint32_t), TaskPriority::Low);
 
     // 5. 工作队列守护进程 (使用 High 优先级)
-    Scheduler::instance().create_task(workqueue_daemon_entry, new uint32_t[256], 256*sizeof(uint32_t), TaskPriority::High);
+    Scheduler::instance().create_task(workqueue_daemon_entry, new uint32_t[STACK_SIZE_DAEMON], STACK_SIZE_DAEMON*sizeof(uint32_t), TaskPriority::High);
 
     // 起 lwIP 协议栈引擎（内部回调中将以 Realtime 优先级注册网卡 RX 任务）
     sys_print("[lwIP] Initializing TCP/IP Engine...\r\n");

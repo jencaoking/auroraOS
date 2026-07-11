@@ -1,12 +1,15 @@
 #include "interrupts.hpp"
 #include "uart.h"
 #include "task.hpp"
+#include "syscall.hpp"
+#include "timer.hpp"
+#include "work_queue.hpp"
 
 // 供 PendSV 汇编读取的两个全局 TCB 指针
 // 声明为非 volatile：汇编直接使用符号地址，编译器临界区内通过 Arch:: 保护
 extern "C" {
-    TaskControlBlock* g_current_tcb_ptr = nullptr;
-    TaskControlBlock* g_next_tcb_ptr    = nullptr;
+    TaskControlBlock* volatile g_current_tcb_ptr = nullptr;
+    TaskControlBlock* volatile g_next_tcb_ptr    = nullptr;
 }
 
 // 系统 Tick 计数器（全局可见，供 lwIP OSAL 等读取系统时间）
@@ -23,13 +26,13 @@ extern "C" {
         const uint8_t  svc_number = static_cast<uint8_t>(svc_instr & 0xFF);
 
         switch (svc_number) {
-            case 0x01: // SysCall: 串口输出（在内核特权态安全调用）
+            case SYS_PRINT: // SysCall: 串口输出（在内核特权态安全调用）
                 uart_puts(reinterpret_cast<const char*>(frame->r0));
                 break;
-            case 0x02: // SysCall: 任务 Yield
+            case SYS_YIELD: // SysCall: 任务 Yield
                 Scheduler::instance().schedule();
                 break;
-            case 0x03: // SysCall: 任务 Sleep
+            case SYS_SLEEP: // SysCall: 任务 Sleep
                 Scheduler::instance().sleep(frame->r0);
                 break;
             default:
@@ -46,9 +49,6 @@ extern "C" {
 //                       * 高优先级任务唤醒后立即抢占低优先级
 //                       * 同级任务轮转时间片
 // ================================================================
-#include "timer.hpp"
-#include "work_queue.hpp"
-#include "syscall.hpp"
 
 void SysTick_Handler(void) {
     tick_count++;

@@ -27,9 +27,7 @@ int write(int fd, const void* buf, size_t count) {
 }
 
 int ioctl(int fd, int request, void* arg) {
-    // 注意：目前 vfs 还没有实现 ioctl 的转发，我们需要在 VfsManager 中添加 ioctl
-    // 这里简单返回 -1，未来可以在 VfsManager 加上
-    return -1;
+    return VfsManager::instance().ioctl(fd, request, arg);
 }
 
 int lseek(int fd, int offset, int whence) {
