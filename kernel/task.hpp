@@ -55,11 +55,15 @@ public:
     }
 
     // 创建任务时指定优先级（默认 Normal），遵循 F.15: 提供具名参数
-    void create_task(void (*task_entry)(void),
+    // 返回值：成功时返回新任务的 TCB 指针（供调用方获取其真实句柄，
+    // 例如 lwIP sys_thread_new() 需要返回"新创建线程"而非当前线程的句柄）；
+    // 任务表已满（达到 MAX_TASKS）时返回 nullptr，调用方必须检查该返回值，
+    // 不能像过去那样静默吞掉创建失败。
+    TaskControlBlock* create_task(void (*task_entry)(void),
                      uint32_t* stack_space,
                      uint32_t  stack_size,
                      TaskPriority prio = TaskPriority::Normal) {
-        if (task_count >= MAX_TASKS) return;
+        if (task_count >= MAX_TASKS) return nullptr;
 
         TaskControlBlock& tcb = tasks[task_count];
         tcb.id          = task_count;
@@ -71,6 +75,7 @@ public:
         // 调用 HAL 接口完成 Cortex-M4 栈帧伪造，与具体架构解耦
         tcb.stack_ptr = Arch::init_thread_stack(task_entry, stack_space, stack_size);
         task_count++;
+        return &tcb;
     }
 
     // =========================================================================

@@ -84,9 +84,19 @@ bool ElfLoader::load_and_exec(const char* filepath) {
             // Since this runs in Unprivileged mode, we cannot call Scheduler::instance().create_task() if it touches privileged regions.
             // Wait, Scheduler::create_task() just writes to `tasks` array. It doesn't touch NVIC or ICSR! So it is safe to call from Unprivileged mode!
             uint32_t* app_stack = new uint32_t[512];
-            Scheduler::instance().create_task(app_entry, app_stack, 512 * sizeof(uint32_t),
-                TaskPriority::Low); // 动态加载的 ELF 应用以低优先级运行
-            
+            if (!Scheduler::instance().create_task(app_entry, app_stack, 512 * sizeof(uint32_t),
+                TaskPriority::Low)) { // 动态加载的 ELF 应用以低优先级运行
+                // 任务表已满：过去这里不检查返回值，会直接吞掉失败并且仍然
+                // 对调用方返回 true（"加载成功"），但代码段和任务栈其实从未
+                // 被调度执行过。现在如实报告失败，并释放掉这两块已经分配、
+                // 但再也用不上的内存，避免泄漏。
+                sys_print("[ElfLoader] Error: task table full, cannot spawn loaded program!\r\n");
+                delete[] app_stack;
+                delete[] segment_memory;
+                VfsManager::instance().close(fd);
+                return false;
+            }
+
             // 为精简工程，加载完第一个核心代码段后直接返回成功
             VfsManager::instance().close(fd);
             return true;

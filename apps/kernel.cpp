@@ -75,11 +75,15 @@ void tcpip_init_done(void* arg) {
     // 3. 起飞网卡数据泵任务（Normal 优先级：轮询式驱动，每 5ms sleep 一次，无硬实时需求）
     uint32_t* rx_stack  = new uint32_t[512];
     uint32_t* app_stack = new uint32_t[512];
-    Scheduler::instance().create_task(
+    if (!Scheduler::instance().create_task(
         reinterpret_cast<void (*)()>(ethernetif_input_task), rx_stack, 512 * sizeof(uint32_t),
-        TaskPriority::Normal); // Normal：后台网卡轮询，sleep(5ms) 让出 CPU
-    Scheduler::instance().create_task(udp_echo_server_task, app_stack, 512 * sizeof(uint32_t),
-        TaskPriority::Normal); // Normal：业务层 Echo 处理
+        TaskPriority::Normal)) { // Normal：后台网卡轮询，sleep(5ms) 让出 CPU
+        sys_print("[Kernel] ERROR: task table full, failed to spawn ethernetif_input_task!\r\n");
+    }
+    if (!Scheduler::instance().create_task(udp_echo_server_task, app_stack, 512 * sizeof(uint32_t),
+        TaskPriority::Normal)) { // Normal：业务层 Echo 处理
+        sys_print("[Kernel] ERROR: task table full, failed to spawn udp_echo_server_task!\r\n");
+    }
 }
 
 extern "C" {
@@ -166,23 +170,21 @@ extern "C" void kernel_main(void) {
     uint32_t* shell_stack = new uint32_t[512];
 
     // 1. 空闲进程：优先级最低，负责 CPU 低功耗兜底
-    Scheduler::instance().create_task(sys_idle_task, idle_stack, 128 * sizeof(uint32_t),
-        TaskPriority::Idle);
+    if (!Scheduler::instance().create_task(sys_idle_task, idle_stack, 128 * sizeof(uint32_t),
+        TaskPriority::Idle)) {
+        sys_print("[Kernel] FATAL: failed to spawn sys_idle_task!\r\n");
+    }
 
     // 2. 交互终端：高优先级响应用户键盘
     extern void shell_task(void);
-    Scheduler::instance().create_task(shell_task, shell_stack, 512 * sizeof(uint32_t),
-        TaskPriority::High);
+    if (!Scheduler::instance().create_task(shell_task, shell_stack, 512 * sizeof(uint32_t),
+        TaskPriority::High)) {
+        sys_print("[Kernel] FATAL: failed to spawn shell_task!\r\n");
+    }
 
     // 调起 lwIP 协议栈引擎（内部回调中将以 Realtime 优先级注册网卡 RX 任务）
     sys_print("[lwIP] Initializing TCP/IP Engine...\r\n");
     tcpip_init(tcpip_init_done, nullptr);
-
-    // 初始化 SysTick 硬件定时器，产生 1ms 心跳中断
-    volatile uint32_t* syst_ctrl = reinterpret_cast<volatile uint32_t*>(0xE000E010);
-    volatile uint32_t* syst_load = reinterpret_cast<volatile uint32_t*>(0xE000E014);
-    *syst_load = (SYSCLK_FREQ / 1000) - 1; // 1ms 计数周期
-    *syst_ctrl = (1 << 2) | (1 << 1) | (1 << 0); // 使用内核时钟，开启中断，使能定时器
 
     // 启动调度器：正确引导第一个任务（通过 PSP/bx 跳入，不破坏栈帧）
     // 调度器从此接管 CPU，永不返回

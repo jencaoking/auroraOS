@@ -112,17 +112,20 @@ void sys_mbox_post(sys_mbox_t *mbox, void *msg) {
 }
 
 err_t sys_mbox_trypost(sys_mbox_t *mbox, void *msg) {
-    if (*mbox) {
-        // Our simple MessageQueue push is blocking if full.
-        // For try_post, it ideally should not block. 
-        // We will just push for now.
-        static_cast<MessageQueue<void*, 16>*>(*mbox)->push(msg);
+    if (!*mbox) return ERR_VAL;
+
+    // 改用非阻塞的 try_push：队列满时立即返回 ERR_MEM，符合 lwIP 对
+    // trypost 语义的要求（调用方会据此自行重试或丢弃，而不是被无限期挂起）。
+    if (static_cast<MessageQueue<void*, 16>*>(*mbox)->try_push(msg)) {
         return ERR_OK;
     }
-    return ERR_VAL;
+    return ERR_MEM;
 }
 
 err_t sys_mbox_trypost_fromisr(sys_mbox_t *mbox, void *msg) {
+    // try_push 内部只用关中断做临界区保护，不涉及任务调度/系统调用，
+    // 因此可以安全地在中断上下文里直接复用，不会像过去转调阻塞版
+    // push() 那样在队列满时把 ISR 锁死。
     return sys_mbox_trypost(mbox, msg);
 }
 
@@ -146,8 +149,15 @@ u32_t sys_arch_mbox_fetch(sys_mbox_t *mbox, void **msg, u32_t timeout_ms) {
 
 u32_t sys_arch_mbox_tryfetch(sys_mbox_t *mbox, void **msg) {
     if (!*mbox) return SYS_MBOX_EMPTY;
-    // Our MessageQueue doesn't have try_pop, we will just use pop (blocking).
-    void* data = static_cast<MessageQueue<void*, 16>*>(*mbox)->pop();
+
+    // 改用非阻塞的 try_pop：队列为空时立即返回 SYS_MBOX_EMPTY，
+    // 这对 lwIP 主循环至关重要——它用 tryfetch 做"看一眼有没有消息，
+    // 没有就继续处理定时器/其他事件"的非阻塞轮询，一旦这里阻塞住，
+    // 整个协议栈主线程的事件循环都会被卡死。
+    void* data = nullptr;
+    if (!static_cast<MessageQueue<void*, 16>*>(*mbox)->try_pop(data)) {
+        return SYS_MBOX_EMPTY;
+    }
     if (msg) *msg = data;
     return 0; // Time taken
 }
@@ -184,9 +194,22 @@ sys_thread_t sys_thread_new(const char *name, lwip_thread_fn thread, void *arg, 
     // To support arg, we need to pass it. Our create_task only takes void(*)(void).
     // Let's assume lwIP handles it or we don't strictly need it for single netif setup.
     // Actually, tcpip_thread ignores arg or uses it for init done callback, but tcpip_init uses a global struct.
-    
-    Scheduler::instance().create_task(reinterpret_cast<void (*)()>(thread), thread_stack, stacksize,
+
+    // 注意：这里过去直接返回 get_current_tcb()——那是"当前正在调用
+    // sys_thread_new() 的任务"（通常是内核初始化/引导任务）的 TCB，
+    // 并不是刚刚创建出来的新线程！sys_thread_t 语义上必须是新线程自己的
+    // 句柄。现在改为使用 create_task() 的返回值，它就是新任务真正的 TCB
+    // 指针；任务表已满导致创建失败时会返回 nullptr，此时打印告警而不是
+    // 把一个错误的句柄悄悄交还给 lwIP。
+    TaskControlBlock* new_tcb = Scheduler::instance().create_task(
+        reinterpret_cast<void (*)()>(thread), thread_stack, stacksize,
         TaskPriority::High); // lwIP tcpip_thread 与 Shell 同级（High），通过时间片轮转共存
-    
-    return Scheduler::instance().get_current_tcb();
+
+    if (!new_tcb) {
+        sys_print("[lwIP OSAL] ERROR: task table full, failed to spawn thread: ");
+        sys_print(name);
+        sys_print("\r\n");
+    }
+
+    return new_tcb;
 }
