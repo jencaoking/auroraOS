@@ -11,10 +11,15 @@ StellarisEth::StellarisEth()
       mac_tctl_(reinterpret_cast<uint32_t*>(BOARD_ETH_MAC_BASE + 0x00C)),
       mac_data_(reinterpret_cast<uint32_t*>(BOARD_ETH_MAC_BASE + 0x018)),
       mac_ia0_(reinterpret_cast<uint32_t*>(BOARD_ETH_MAC_BASE + 0x01C)),
-      mac_ia1_(reinterpret_cast<uint32_t*>(BOARD_ETH_MAC_BASE + 0x020)),
-      mac_address_{BOARD_DEFAULT_MAC0, BOARD_DEFAULT_MAC1, BOARD_DEFAULT_MAC2,
-                   BOARD_DEFAULT_MAC3, BOARD_DEFAULT_MAC4, BOARD_DEFAULT_MAC5} {
-    // MAC 地址由 BSP (board.h) 提供，硬件过滤寄存器在 init() 中写入
+      mac_ia1_(reinterpret_cast<uint32_t*>(BOARD_ETH_MAC_BASE + 0x020)) {
+    // MAC 地址由 BSP (board.h) 提供，写入基类 protected 成员
+    // (C++ 不允许在派生类初始化列表中初始化基类成员，故在函数体内赋值)
+    mac_address_[0] = BOARD_DEFAULT_MAC0;
+    mac_address_[1] = BOARD_DEFAULT_MAC1;
+    mac_address_[2] = BOARD_DEFAULT_MAC2;
+    mac_address_[3] = BOARD_DEFAULT_MAC3;
+    mac_address_[4] = BOARD_DEFAULT_MAC4;
+    mac_address_[5] = BOARD_DEFAULT_MAC5;
 }
 
 bool StellarisEth::init() {

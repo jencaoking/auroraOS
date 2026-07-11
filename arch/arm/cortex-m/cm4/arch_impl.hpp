@@ -2,6 +2,7 @@
 #define ARCH_IMPL_HPP
 
 #include <stdint.h>
+#include "board.h"  // BOARD_SYSCLK_FREQ — 计算 SysTick 重载值
 
 namespace Arch {
     // =====================================================================
@@ -11,6 +12,15 @@ namespace Arch {
     constexpr uint32_t  ICSR_PENDSVSET = (1UL << 28);  // 触发 PendSV 切换位
     constexpr uint32_t  EXC_RETURN_PSP = 0xFFFFFFFDU;  // 异常返回：使用 PSP 线程栈
     constexpr uint32_t  XPSR_THUMB     = 0x01000000U;  // Thumb 指令集状态位
+
+    // ── SysTick 定时器寄存器 (ARMv7-M Reference Manual B3.3) ──────────
+    constexpr uintptr_t SYST_CSR_ADDR  = 0xE000E010U;  // Control & Status
+    constexpr uintptr_t SYST_RVR_ADDR  = 0xE000E014U;  // Reload Value
+    constexpr uintptr_t SYST_CVR_ADDR  = 0xE000E015U;  // Current Value
+    // SYST_CSR 位域: [2]=CLKSOURCE(1=CPU时钟) [1]=TICKINT [0]=ENABLE
+    constexpr uint32_t  SYST_CSR_ENABLE    = (1UL << 0);
+    constexpr uint32_t  SYST_CSR_TICKINT   = (1UL << 1);
+    constexpr uint32_t  SYST_CSR_CLKSOURCE = (1UL << 2);
 
     // =====================================================================
     // 底层内联汇编控制
@@ -25,6 +35,29 @@ namespace Arch {
 
     inline void wait_for_interrupt() {
         __asm__ volatile ("wfi" : : : "memory");
+    }
+
+    // =====================================================================
+    // SysTick 初始化：配置周期性系统心跳定时器
+    //
+    // hz = 期望的每秒中断次数（如 1000 → 每 1ms 一次中断）
+    // 重载值 = (CPU 主频 / hz) - 1
+    //
+    // 配置时序（安全要求：必须在全局开中断 cpsie i 之前调用）：
+    //   1. 先写 CSR=0 禁用 SysTick，防止配置过程中误触发中断
+    //   2. 写 RVR 设定重载周期
+    //   3. 写 CVR=0 清零当前计数器（同时清除 COUNTFLAG）
+    //   4. 写 CSR 启用：CLKSOURCE=CPU时钟 + TICKINT=开中断 + ENABLE=启动
+    // =====================================================================
+    inline void systick_init(uint32_t hz) {
+        volatile uint32_t* syst_csr = reinterpret_cast<volatile uint32_t*>(SYST_CSR_ADDR);
+        volatile uint32_t* syst_rvr = reinterpret_cast<volatile uint32_t*>(SYST_RVR_ADDR);
+        volatile uint32_t* syst_cvr = reinterpret_cast<volatile uint32_t*>(SYST_CVR_ADDR);
+
+        *syst_csr = 0;                                        // 1. 禁用 SysTick
+        *syst_rvr = (BOARD_SYSCLK_FREQ / hz) - 1;           // 2. 设定重载周期
+        *syst_cvr = 0;                                       // 3. 清零当前值
+        *syst_csr = SYST_CSR_CLKSOURCE | SYST_CSR_TICKINT | SYST_CSR_ENABLE; // 4. 启动
     }
 
     inline void trigger_context_switch() {

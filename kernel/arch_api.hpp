@@ -15,6 +15,11 @@ namespace Arch {
     void enable_interrupts();
     void wait_for_interrupt();
 
+    // ── 系统节拍定时器 ────────────────────────────────────────────
+    // 配置 SysTick 产生周期性中断（系统心跳），hz = 每秒中断次数
+    // 必须在全局开中断 (cpsie i) 之前调用：先禁用再配置，避免配置中途触发中断
+    void systick_init(uint32_t hz);
+
     // ── 上下文切换 ────────────────────────────────────────────────
     // 触发软中断请求调度器做硬件级上下文切换 (Cortex-M 上即 pending PendSV)
     void trigger_context_switch();

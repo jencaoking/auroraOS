@@ -149,6 +149,11 @@ public:
         g_current_tcb_ptr = &tasks[current_task_index];
         g_next_tcb_ptr    = &tasks[current_task_index];
 
+        // 配置 SysTick 系统心跳（1000Hz → 每 1ms 一次中断）
+        // 必须在 start_first_task() 内部的 cpsie i 之前完成：
+        // 此时全局中断仍关闭，配置安全；开中断后 SysTick 立即开始产生周期心跳
+        Arch::systick_init(1000);
+
         Arch::start_first_task(g_current_tcb_ptr->stack_ptr,
                                tasks[current_task_index].entry_point);
     }

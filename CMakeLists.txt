@@ -71,5 +71,7 @@ target_link_options(auroraOS.elf PRIVATE
     -T ${CMAKE_SOURCE_DIR}/config/linker.ld
     -nostartfiles
     -nostdlib
+    -nodefaultlibs
+    -Wl,--gc-sections
     --specs=nosys.specs
 )
