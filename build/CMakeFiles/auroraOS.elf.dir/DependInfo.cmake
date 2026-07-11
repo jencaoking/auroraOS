@@ -21,6 +21,7 @@ set(CMAKE_ASM_TARGET_INCLUDE_PATH
   "J:/PROJECT/auroraOS/syscall"
   "J:/PROJECT/auroraOS/vfs"
   "J:/PROJECT/auroraOS/apps"
+  "J:/PROJECT/auroraOS/net"
   )
 
 # The set of dependency files which are needed:
@@ -31,6 +32,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "J:/PROJECT/auroraOS/apps/shell.cpp" "CMakeFiles/auroraOS.elf.dir/apps/shell.cpp.obj" "gcc" "CMakeFiles/auroraOS.elf.dir/apps/shell.cpp.obj.d"
   "J:/PROJECT/auroraOS/boot/interrupts.cpp" "CMakeFiles/auroraOS.elf.dir/boot/interrupts.cpp.obj" "gcc" "CMakeFiles/auroraOS.elf.dir/boot/interrupts.cpp.obj.d"
   "J:/PROJECT/auroraOS/kernel/memory.cpp" "CMakeFiles/auroraOS.elf.dir/kernel/memory.cpp.obj" "gcc" "CMakeFiles/auroraOS.elf.dir/kernel/memory.cpp.obj.d"
+  "J:/PROJECT/auroraOS/net/eth_driver.cpp" "CMakeFiles/auroraOS.elf.dir/net/eth_driver.cpp.obj" "gcc" "CMakeFiles/auroraOS.elf.dir/net/eth_driver.cpp.obj.d"
   "J:/PROJECT/auroraOS/vfs/ramfs.cpp" "CMakeFiles/auroraOS.elf.dir/vfs/ramfs.cpp.obj" "gcc" "CMakeFiles/auroraOS.elf.dir/vfs/ramfs.cpp.obj.d"
   "J:/PROJECT/auroraOS/vfs/vfs.cpp" "CMakeFiles/auroraOS.elf.dir/vfs/vfs.cpp.obj" "gcc" "CMakeFiles/auroraOS.elf.dir/vfs/vfs.cpp.obj.d"
   )

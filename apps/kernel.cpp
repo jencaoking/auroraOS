@@ -8,6 +8,68 @@
 #include "shell.hpp" // 引入 Shell
 #include "syscall.hpp"
 #include "mutex.hpp"
+#include "../net/eth_driver.hpp"
+
+extern void safe_print(const char* msg);
+extern Mutex uart_mutex;
+
+// ==========================================
+// L2 数据链路层监听后台任务
+// ==========================================
+void net_rx_task(void) {
+    uint8_t rx_buffer[1514]; // 标准以太网最大 MTU 缓冲区
+    
+    // 1. 初始化物理以太网卡
+    StellarisEth::instance().init();
+
+    // 2. 手动伪造并发出一串 raw L2 广播测试帧！
+    uint8_t test_frame[] = {
+        0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 目的 MAC: 全局广播 (Broadcast)
+        0x52, 0x54, 0x00, 0x12, 0x34, 0x56, // 源 MAC: 本机 auroraOS
+        0x88, 0xB5,                         // 协议类型: 0x88B5 (实验性/自定义以太网协议)
+        'a', 'u', 'r', 'o', 'r', 'a', 'O', 'S', '_', 'N', 'E', 'T', '_', 'A', 'C', 'T', 'I', 'V', 'E', '!'
+    };
+    
+    sys_print("[NetTask] Sending L2 Broadcast Test Packet to QEMU Virtual Switch...\r\n");
+    StellarisEth::instance().send_frame(test_frame, sizeof(test_frame));
+
+    // 3. 持续轮询监听网卡 FIFO 的来包
+    while (true) {
+        int bytes = StellarisEth::instance().receive_frame(rx_buffer, sizeof(rx_buffer));
+        if (bytes > 0) {
+            sys_print("\r\n>>> [NetTask] Ethernet Frame Received! Bytes: ");
+            
+            // 简单转成十进制数字字符串打印
+            char num_str[16]; int idx = 0, temp = bytes;
+            if (temp == 0) num_str[idx++] = '0';
+            while (temp > 0) { num_str[idx++] = (temp % 10) + '0'; temp /= 10; }
+            char out_str[16];
+            int out_idx = 0;
+            while (--idx >= 0) { out_str[out_idx++] = num_str[idx]; }
+            out_str[out_idx] = '\0';
+            sys_print(out_str);
+            sys_print("\r\n");
+
+            // 解析以太网头部
+            EthernetHeader* hdr = reinterpret_cast<EthernetHeader*>(rx_buffer);
+            sys_print("    |-- Type: 0x");
+            
+            // 打印两字节 16 进制协议类型
+            const char hex_chars[] = "0123456789ABCDEF";
+            char hex_str[5];
+            hex_str[0] = hex_chars[(hdr->eth_type >> 4) & 0x0F];
+            hex_str[1] = hex_chars[hdr->eth_type & 0x0F];
+            hex_str[2] = (hdr->eth_type >> 12) & 0x0F ? hex_chars[(hdr->eth_type >> 12) & 0x0F] : '0';
+            hex_str[3] = hex_chars[(hdr->eth_type >> 8) & 0x0F];
+            hex_str[4] = '\0';
+            sys_print(hex_str);
+            sys_print("\r\n");
+        }
+
+        // 没包时优雅让出 CPU，不占算力
+        Scheduler::instance().sleep(20);
+    }
+}
 
 extern "C" {
     extern uint32_t _heap_start;
@@ -82,9 +144,12 @@ extern "C" void kernel_main(void) {
     Scheduler& sched = Scheduler::instance();
     sched.init();
 
-    uint32_t* shell_stack = new uint32_t[512]; // 稍微给大一点栈空间
-    // 【修改点】创建任务时，指定 is_privileged = false
+    uint32_t* shell_stack = new uint32_t[512];
+    uint32_t* net_stack   = new uint32_t[512]; // 为网络任务独立申请栈
+
+    extern void shell_task(void);
     sched.create_task(shell_task, shell_stack, 512 * sizeof(uint32_t), false);
+    sched.create_task(net_rx_task, net_stack, 512 * sizeof(uint32_t), false); // [新增] 调起网络后台
 
     uint32_t* dummy_stack = new uint32_t[128];
     sched.create_task(dummy_task, dummy_stack, 128 * sizeof(uint32_t), false);

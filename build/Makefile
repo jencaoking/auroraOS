@@ -280,6 +280,30 @@ kernel/memory.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/kernel/memory.cpp.s
 .PHONY : kernel/memory.cpp.s
 
+net/eth_driver.obj: net/eth_driver.cpp.obj
+.PHONY : net/eth_driver.obj
+
+# target to build an object file
+net/eth_driver.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/net/eth_driver.cpp.obj
+.PHONY : net/eth_driver.cpp.obj
+
+net/eth_driver.i: net/eth_driver.cpp.i
+.PHONY : net/eth_driver.i
+
+# target to preprocess a source file
+net/eth_driver.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/net/eth_driver.cpp.i
+.PHONY : net/eth_driver.cpp.i
+
+net/eth_driver.s: net/eth_driver.cpp.s
+.PHONY : net/eth_driver.s
+
+# target to generate assembly for a file
+net/eth_driver.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/net/eth_driver.cpp.s
+.PHONY : net/eth_driver.cpp.s
+
 vfs/ramfs.obj: vfs/ramfs.cpp.obj
 .PHONY : vfs/ramfs.obj
 
@@ -356,6 +380,9 @@ help:
 	@echo ... kernel/memory.obj
 	@echo ... kernel/memory.i
 	@echo ... kernel/memory.s
+	@echo ... net/eth_driver.obj
+	@echo ... net/eth_driver.i
+	@echo ... net/eth_driver.s
 	@echo ... vfs/ramfs.obj
 	@echo ... vfs/ramfs.i
 	@echo ... vfs/ramfs.s

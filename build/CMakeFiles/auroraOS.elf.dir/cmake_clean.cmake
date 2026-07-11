@@ -12,14 +12,15 @@ file(REMOVE_RECURSE
   "CMakeFiles/auroraOS.elf.dir/boot/uart.c.obj.d"
   "CMakeFiles/auroraOS.elf.dir/kernel/memory.cpp.obj"
   "CMakeFiles/auroraOS.elf.dir/kernel/memory.cpp.obj.d"
+  "CMakeFiles/auroraOS.elf.dir/net/eth_driver.cpp.obj"
+  "CMakeFiles/auroraOS.elf.dir/net/eth_driver.cpp.obj.d"
   "CMakeFiles/auroraOS.elf.dir/vfs/ramfs.cpp.obj"
   "CMakeFiles/auroraOS.elf.dir/vfs/ramfs.cpp.obj.d"
   "CMakeFiles/auroraOS.elf.dir/vfs/vfs.cpp.obj"
   "CMakeFiles/auroraOS.elf.dir/vfs/vfs.cpp.obj.d"
-  "auroraOS.elf.exe"
-  "auroraOS.elf.exe.manifest"
+  "auroraOS.elf"
+  "auroraOS.elf.manifest"
   "auroraOS.elf.pdb"
-  "libauroraOS.elf.dll.a"
 )
 
 # Per-language clean rules from dependency scanning.

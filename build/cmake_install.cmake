@@ -29,12 +29,12 @@ endif()
 
 # Is this installation the result of a crosscompile?
 if(NOT DEFINED CMAKE_CROSSCOMPILING)
-  set(CMAKE_CROSSCOMPILING "FALSE")
+  set(CMAKE_CROSSCOMPILING "TRUE")
 endif()
 
 # Set path to fallback-tool for dependency-resolution.
 if(NOT DEFINED CMAKE_OBJDUMP)
-  set(CMAKE_OBJDUMP "J:/CODE/MINGW64/bin/objdump.exe")
+  set(CMAKE_OBJDUMP "J:/CODE/arm-gnu-toolchain/bin/arm-none-eabi-objdump.exe")
 endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT

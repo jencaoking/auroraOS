@@ -17,8 +17,8 @@ int RamFile::read(char* buf, int len, int offset) {
         bytes_to_read = file_size_ - offset;
     }
 
-    if (bytes_to_read > 0) {
-        __builtin_memcpy(buf, data_ + offset, bytes_to_read);
+    for (int i = 0; i < bytes_to_read; i++) {
+        buf[i] = data_[offset + i];
     }
     return bytes_to_read;
 }
@@ -31,8 +31,8 @@ int RamFile::write(const char* buf, int len, int offset) {
         bytes_to_write = capacity_ - offset;
     }
 
-    if (bytes_to_write > 0) {
-        __builtin_memcpy(data_ + offset, buf, bytes_to_write);
+    for (int i = 0; i < bytes_to_write; i++) {
+        data_[offset + i] = buf[i];
     }
 
     // 动态更新文件逻辑大小

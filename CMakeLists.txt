@@ -16,6 +16,7 @@ set(SOURCES
     apps/shell.cpp
     apps/elf_loader.cpp
     apps/kernel.cpp
+    net/eth_driver.cpp
 )
 
 add_executable(auroraOS.elf ${SOURCES}
@@ -29,6 +30,7 @@ target_include_directories(auroraOS.elf PRIVATE
     ${CMAKE_SOURCE_DIR}/syscall
     ${CMAKE_SOURCE_DIR}/vfs
     ${CMAKE_SOURCE_DIR}/apps
+    ${CMAKE_SOURCE_DIR}/net
 )
 
 target_link_options(auroraOS.elf PRIVATE
