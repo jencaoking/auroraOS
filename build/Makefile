@@ -184,6 +184,30 @@ kernel.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/kernel.cpp.s
 .PHONY : kernel.cpp.s
 
+memory.obj: memory.cpp.obj
+.PHONY : memory.obj
+
+# target to build an object file
+memory.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/memory.cpp.obj
+.PHONY : memory.cpp.obj
+
+memory.i: memory.cpp.i
+.PHONY : memory.i
+
+# target to preprocess a source file
+memory.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/memory.cpp.i
+.PHONY : memory.cpp.i
+
+memory.s: memory.cpp.s
+.PHONY : memory.s
+
+# target to generate assembly for a file
+memory.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/memory.cpp.s
+.PHONY : memory.cpp.s
+
 uart.obj: uart.c.obj
 .PHONY : uart.obj
 
@@ -224,6 +248,9 @@ help:
 	@echo ... kernel.obj
 	@echo ... kernel.i
 	@echo ... kernel.s
+	@echo ... memory.obj
+	@echo ... memory.i
+	@echo ... memory.s
 	@echo ... uart.obj
 	@echo ... uart.i
 	@echo ... uart.s

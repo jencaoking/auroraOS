@@ -4,6 +4,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/auroraOS.elf.dir/interrupts.cpp.obj.d"
   "CMakeFiles/auroraOS.elf.dir/kernel.cpp.obj"
   "CMakeFiles/auroraOS.elf.dir/kernel.cpp.obj.d"
+  "CMakeFiles/auroraOS.elf.dir/memory.cpp.obj"
+  "CMakeFiles/auroraOS.elf.dir/memory.cpp.obj.d"
   "CMakeFiles/auroraOS.elf.dir/uart.c.obj"
   "CMakeFiles/auroraOS.elf.dir/uart.c.obj.d"
   "auroraOS.elf"

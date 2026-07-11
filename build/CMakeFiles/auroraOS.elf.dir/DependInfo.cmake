@@ -22,6 +22,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "J:/PROJECT/auroraOS/uart.c" "CMakeFiles/auroraOS.elf.dir/uart.c.obj" "gcc" "CMakeFiles/auroraOS.elf.dir/uart.c.obj.d"
   "J:/PROJECT/auroraOS/interrupts.cpp" "CMakeFiles/auroraOS.elf.dir/interrupts.cpp.obj" "gcc" "CMakeFiles/auroraOS.elf.dir/interrupts.cpp.obj.d"
   "J:/PROJECT/auroraOS/kernel.cpp" "CMakeFiles/auroraOS.elf.dir/kernel.cpp.obj" "gcc" "CMakeFiles/auroraOS.elf.dir/kernel.cpp.obj.d"
+  "J:/PROJECT/auroraOS/memory.cpp" "CMakeFiles/auroraOS.elf.dir/memory.cpp.obj" "gcc" "CMakeFiles/auroraOS.elf.dir/memory.cpp.obj.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

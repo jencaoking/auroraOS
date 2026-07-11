@@ -3,4 +3,5 @@ CMakeFiles/auroraOS.elf.dir/kernel.cpp.obj: \
  J:/CODE/arm-gnu-toolchain/lib/gcc/arm-none-eabi/13.2.1/include/stdint.h \
  J:/CODE/arm-gnu-toolchain/lib/gcc/arm-none-eabi/13.2.1/include/stdint-gcc.h \
  J:\PROJECT\auroraOS\config.h J:\PROJECT\auroraOS\interrupts.hpp \
- J:\PROJECT\auroraOS\task.hpp
+ J:\PROJECT\auroraOS\task.hpp J:\PROJECT\auroraOS\memory.hpp \
+ J:/CODE/arm-gnu-toolchain/lib/gcc/arm-none-eabi/13.2.1/include/stddef.h

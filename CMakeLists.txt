@@ -11,6 +11,7 @@ set(SOURCES
     uart.c
     kernel.cpp
     interrupts.cpp
+    memory.cpp
 )
 
 add_executable(auroraOS.elf ${SOURCES}
