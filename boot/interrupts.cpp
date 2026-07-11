@@ -53,6 +53,3 @@ void SysTick_Handler(void) {
         sched.schedule(); 
     }
 }
-
-}
-

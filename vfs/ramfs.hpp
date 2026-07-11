@@ -11,6 +11,9 @@ private:
     int file_size_;
 
 public:
+    // TODO: Currently, RamFile has a fixed physical capacity allocated at creation.
+    // In a real VFS, write() should dynamically reallocate (e.g. realloc) and expand the buffer 
+    // if the offset + len exceeds the current physical capacity.
     // 初始化时在堆上开辟指定容量的内存
     RamFile(int capacity = 512);
     ~RamFile();
