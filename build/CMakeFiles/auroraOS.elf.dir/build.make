@@ -130,26 +130,11 @@ CMakeFiles/auroraOS.elf.dir/kernel/memory.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/auroraOS.elf.dir/kernel/memory.cpp.s"
 	J:\CODE\MINGW64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S J:\PROJECT\auroraOS\kernel\memory.cpp -o CMakeFiles\auroraOS.elf.dir\kernel\memory.cpp.s
 
-CMakeFiles/auroraOS.elf.dir/vfs/softbus.cpp.obj: CMakeFiles/auroraOS.elf.dir/flags.make
-CMakeFiles/auroraOS.elf.dir/vfs/softbus.cpp.obj: CMakeFiles/auroraOS.elf.dir/includes_CXX.rsp
-CMakeFiles/auroraOS.elf.dir/vfs/softbus.cpp.obj: J:/PROJECT/auroraOS/vfs/softbus.cpp
-CMakeFiles/auroraOS.elf.dir/vfs/softbus.cpp.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/auroraOS.elf.dir/vfs/softbus.cpp.obj"
-	J:\CODE\MINGW64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/vfs/softbus.cpp.obj -MF CMakeFiles\auroraOS.elf.dir\vfs\softbus.cpp.obj.d -o CMakeFiles\auroraOS.elf.dir\vfs\softbus.cpp.obj -c J:\PROJECT\auroraOS\vfs\softbus.cpp
-
-CMakeFiles/auroraOS.elf.dir/vfs/softbus.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/auroraOS.elf.dir/vfs/softbus.cpp.i"
-	J:\CODE\MINGW64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E J:\PROJECT\auroraOS\vfs\softbus.cpp > CMakeFiles\auroraOS.elf.dir\vfs\softbus.cpp.i
-
-CMakeFiles/auroraOS.elf.dir/vfs/softbus.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/auroraOS.elf.dir/vfs/softbus.cpp.s"
-	J:\CODE\MINGW64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S J:\PROJECT\auroraOS\vfs\softbus.cpp -o CMakeFiles\auroraOS.elf.dir\vfs\softbus.cpp.s
-
 CMakeFiles/auroraOS.elf.dir/vfs/vfs.cpp.obj: CMakeFiles/auroraOS.elf.dir/flags.make
 CMakeFiles/auroraOS.elf.dir/vfs/vfs.cpp.obj: CMakeFiles/auroraOS.elf.dir/includes_CXX.rsp
 CMakeFiles/auroraOS.elf.dir/vfs/vfs.cpp.obj: J:/PROJECT/auroraOS/vfs/vfs.cpp
 CMakeFiles/auroraOS.elf.dir/vfs/vfs.cpp.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/auroraOS.elf.dir/vfs/vfs.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/auroraOS.elf.dir/vfs/vfs.cpp.obj"
 	J:\CODE\MINGW64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/vfs/vfs.cpp.obj -MF CMakeFiles\auroraOS.elf.dir\vfs\vfs.cpp.obj.d -o CMakeFiles\auroraOS.elf.dir\vfs\vfs.cpp.obj -c J:\PROJECT\auroraOS\vfs\vfs.cpp
 
 CMakeFiles/auroraOS.elf.dir/vfs/vfs.cpp.i: cmake_force
@@ -164,7 +149,7 @@ CMakeFiles/auroraOS.elf.dir/vfs/ramfs.cpp.obj: CMakeFiles/auroraOS.elf.dir/flags
 CMakeFiles/auroraOS.elf.dir/vfs/ramfs.cpp.obj: CMakeFiles/auroraOS.elf.dir/includes_CXX.rsp
 CMakeFiles/auroraOS.elf.dir/vfs/ramfs.cpp.obj: J:/PROJECT/auroraOS/vfs/ramfs.cpp
 CMakeFiles/auroraOS.elf.dir/vfs/ramfs.cpp.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/auroraOS.elf.dir/vfs/ramfs.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/auroraOS.elf.dir/vfs/ramfs.cpp.obj"
 	J:\CODE\MINGW64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/vfs/ramfs.cpp.obj -MF CMakeFiles\auroraOS.elf.dir\vfs\ramfs.cpp.obj.d -o CMakeFiles\auroraOS.elf.dir\vfs\ramfs.cpp.obj -c J:\PROJECT\auroraOS\vfs\ramfs.cpp
 
 CMakeFiles/auroraOS.elf.dir/vfs/ramfs.cpp.i: cmake_force
@@ -179,7 +164,7 @@ CMakeFiles/auroraOS.elf.dir/apps/shell.cpp.obj: CMakeFiles/auroraOS.elf.dir/flag
 CMakeFiles/auroraOS.elf.dir/apps/shell.cpp.obj: CMakeFiles/auroraOS.elf.dir/includes_CXX.rsp
 CMakeFiles/auroraOS.elf.dir/apps/shell.cpp.obj: J:/PROJECT/auroraOS/apps/shell.cpp
 CMakeFiles/auroraOS.elf.dir/apps/shell.cpp.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/auroraOS.elf.dir/apps/shell.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/auroraOS.elf.dir/apps/shell.cpp.obj"
 	J:\CODE\MINGW64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/apps/shell.cpp.obj -MF CMakeFiles\auroraOS.elf.dir\apps\shell.cpp.obj.d -o CMakeFiles\auroraOS.elf.dir\apps\shell.cpp.obj -c J:\PROJECT\auroraOS\apps\shell.cpp
 
 CMakeFiles/auroraOS.elf.dir/apps/shell.cpp.i: cmake_force
@@ -194,7 +179,7 @@ CMakeFiles/auroraOS.elf.dir/apps/elf_loader.cpp.obj: CMakeFiles/auroraOS.elf.dir
 CMakeFiles/auroraOS.elf.dir/apps/elf_loader.cpp.obj: CMakeFiles/auroraOS.elf.dir/includes_CXX.rsp
 CMakeFiles/auroraOS.elf.dir/apps/elf_loader.cpp.obj: J:/PROJECT/auroraOS/apps/elf_loader.cpp
 CMakeFiles/auroraOS.elf.dir/apps/elf_loader.cpp.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/auroraOS.elf.dir/apps/elf_loader.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/auroraOS.elf.dir/apps/elf_loader.cpp.obj"
 	J:\CODE\MINGW64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/apps/elf_loader.cpp.obj -MF CMakeFiles\auroraOS.elf.dir\apps\elf_loader.cpp.obj.d -o CMakeFiles\auroraOS.elf.dir\apps\elf_loader.cpp.obj -c J:\PROJECT\auroraOS\apps\elf_loader.cpp
 
 CMakeFiles/auroraOS.elf.dir/apps/elf_loader.cpp.i: cmake_force
@@ -209,7 +194,7 @@ CMakeFiles/auroraOS.elf.dir/apps/kernel.cpp.obj: CMakeFiles/auroraOS.elf.dir/fla
 CMakeFiles/auroraOS.elf.dir/apps/kernel.cpp.obj: CMakeFiles/auroraOS.elf.dir/includes_CXX.rsp
 CMakeFiles/auroraOS.elf.dir/apps/kernel.cpp.obj: J:/PROJECT/auroraOS/apps/kernel.cpp
 CMakeFiles/auroraOS.elf.dir/apps/kernel.cpp.obj: CMakeFiles/auroraOS.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/auroraOS.elf.dir/apps/kernel.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/auroraOS.elf.dir/apps/kernel.cpp.obj"
 	J:\CODE\MINGW64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/auroraOS.elf.dir/apps/kernel.cpp.obj -MF CMakeFiles\auroraOS.elf.dir\apps\kernel.cpp.obj.d -o CMakeFiles\auroraOS.elf.dir\apps\kernel.cpp.obj -c J:\PROJECT\auroraOS\apps\kernel.cpp
 
 CMakeFiles/auroraOS.elf.dir/apps/kernel.cpp.i: cmake_force
@@ -226,7 +211,6 @@ auroraOS_elf_OBJECTS = \
 "CMakeFiles/auroraOS.elf.dir/boot/uart.c.obj" \
 "CMakeFiles/auroraOS.elf.dir/boot/interrupts.cpp.obj" \
 "CMakeFiles/auroraOS.elf.dir/kernel/memory.cpp.obj" \
-"CMakeFiles/auroraOS.elf.dir/vfs/softbus.cpp.obj" \
 "CMakeFiles/auroraOS.elf.dir/vfs/vfs.cpp.obj" \
 "CMakeFiles/auroraOS.elf.dir/vfs/ramfs.cpp.obj" \
 "CMakeFiles/auroraOS.elf.dir/apps/shell.cpp.obj" \
@@ -240,7 +224,6 @@ auroraOS.elf.exe: CMakeFiles/auroraOS.elf.dir/boot/boot.S.obj
 auroraOS.elf.exe: CMakeFiles/auroraOS.elf.dir/boot/uart.c.obj
 auroraOS.elf.exe: CMakeFiles/auroraOS.elf.dir/boot/interrupts.cpp.obj
 auroraOS.elf.exe: CMakeFiles/auroraOS.elf.dir/kernel/memory.cpp.obj
-auroraOS.elf.exe: CMakeFiles/auroraOS.elf.dir/vfs/softbus.cpp.obj
 auroraOS.elf.exe: CMakeFiles/auroraOS.elf.dir/vfs/vfs.cpp.obj
 auroraOS.elf.exe: CMakeFiles/auroraOS.elf.dir/vfs/ramfs.cpp.obj
 auroraOS.elf.exe: CMakeFiles/auroraOS.elf.dir/apps/shell.cpp.obj
@@ -250,7 +233,7 @@ auroraOS.elf.exe: CMakeFiles/auroraOS.elf.dir/build.make
 auroraOS.elf.exe: CMakeFiles/auroraOS.elf.dir/linkLibs.rsp
 auroraOS.elf.exe: CMakeFiles/auroraOS.elf.dir/objects1.rsp
 auroraOS.elf.exe: CMakeFiles/auroraOS.elf.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Linking CXX executable auroraOS.elf.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=J:\PROJECT\auroraOS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Linking CXX executable auroraOS.elf.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\auroraOS.elf.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

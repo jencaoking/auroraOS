@@ -14,8 +14,6 @@ file(REMOVE_RECURSE
   "CMakeFiles/auroraOS.elf.dir/kernel/memory.cpp.obj.d"
   "CMakeFiles/auroraOS.elf.dir/vfs/ramfs.cpp.obj"
   "CMakeFiles/auroraOS.elf.dir/vfs/ramfs.cpp.obj.d"
-  "CMakeFiles/auroraOS.elf.dir/vfs/softbus.cpp.obj"
-  "CMakeFiles/auroraOS.elf.dir/vfs/softbus.cpp.obj.d"
   "CMakeFiles/auroraOS.elf.dir/vfs/vfs.cpp.obj"
   "CMakeFiles/auroraOS.elf.dir/vfs/vfs.cpp.obj.d"
   "auroraOS.elf.exe"

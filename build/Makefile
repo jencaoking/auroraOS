@@ -304,30 +304,6 @@ vfs/ramfs.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/vfs/ramfs.cpp.s
 .PHONY : vfs/ramfs.cpp.s
 
-vfs/softbus.obj: vfs/softbus.cpp.obj
-.PHONY : vfs/softbus.obj
-
-# target to build an object file
-vfs/softbus.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/vfs/softbus.cpp.obj
-.PHONY : vfs/softbus.cpp.obj
-
-vfs/softbus.i: vfs/softbus.cpp.i
-.PHONY : vfs/softbus.i
-
-# target to preprocess a source file
-vfs/softbus.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/vfs/softbus.cpp.i
-.PHONY : vfs/softbus.cpp.i
-
-vfs/softbus.s: vfs/softbus.cpp.s
-.PHONY : vfs/softbus.s
-
-# target to generate assembly for a file
-vfs/softbus.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/vfs/softbus.cpp.s
-.PHONY : vfs/softbus.cpp.s
-
 vfs/vfs.obj: vfs/vfs.cpp.obj
 .PHONY : vfs/vfs.obj
 
@@ -383,9 +359,6 @@ help:
 	@echo ... vfs/ramfs.obj
 	@echo ... vfs/ramfs.i
 	@echo ... vfs/ramfs.s
-	@echo ... vfs/softbus.obj
-	@echo ... vfs/softbus.i
-	@echo ... vfs/softbus.s
 	@echo ... vfs/vfs.obj
 	@echo ... vfs/vfs.i
 	@echo ... vfs/vfs.s

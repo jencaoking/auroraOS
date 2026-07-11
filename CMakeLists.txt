@@ -11,7 +11,6 @@ set(SOURCES
     boot/uart.c
     boot/interrupts.cpp
     kernel/memory.cpp
-    vfs/softbus.cpp
     vfs/vfs.cpp
     vfs/ramfs.cpp
     apps/shell.cpp

@@ -32,7 +32,6 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "J:/PROJECT/auroraOS/boot/interrupts.cpp" "CMakeFiles/auroraOS.elf.dir/boot/interrupts.cpp.obj" "gcc" "CMakeFiles/auroraOS.elf.dir/boot/interrupts.cpp.obj.d"
   "J:/PROJECT/auroraOS/kernel/memory.cpp" "CMakeFiles/auroraOS.elf.dir/kernel/memory.cpp.obj" "gcc" "CMakeFiles/auroraOS.elf.dir/kernel/memory.cpp.obj.d"
   "J:/PROJECT/auroraOS/vfs/ramfs.cpp" "CMakeFiles/auroraOS.elf.dir/vfs/ramfs.cpp.obj" "gcc" "CMakeFiles/auroraOS.elf.dir/vfs/ramfs.cpp.obj.d"
-  "J:/PROJECT/auroraOS/vfs/softbus.cpp" "CMakeFiles/auroraOS.elf.dir/vfs/softbus.cpp.obj" "gcc" "CMakeFiles/auroraOS.elf.dir/vfs/softbus.cpp.obj.d"
   "J:/PROJECT/auroraOS/vfs/vfs.cpp" "CMakeFiles/auroraOS.elf.dir/vfs/vfs.cpp.obj" "gcc" "CMakeFiles/auroraOS.elf.dir/vfs/vfs.cpp.obj.d"
   )
 
