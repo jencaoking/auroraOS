@@ -3,14 +3,21 @@
 # Build directories
 build/
 bin/
+out/
 
 # Compile artifacts
 *.elf
 *.bin
+*.hex
 *.map
 *.o
 *.obj
 *.d
+*.i
+*.s
+*.sym
+*.gcno
+*.gcda
 
 # CMake generated files
 CMakeCache.txt
@@ -19,6 +26,13 @@ Makefile
 cmake_install.cmake
 CMakeCXXCompilerId.cpp
 CMakeCCompilerId.c
+CTestTestfile.cmake
+*.cmake
+
+# Ninja build files
+.ninja*
+rules.ninja
+compile_commands.json
 
 # IDEs and editors
 .vscode/
@@ -30,7 +44,18 @@ CMakeCCompilerId.c
 *.vcproj
 *.vcxproj
 *.filters
+*~
+*.swp
+*.swo
 
 # OS temporary files
 .DS_Store
 Thumbs.db
+
+# Debug symbols
+*.dSYM/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
