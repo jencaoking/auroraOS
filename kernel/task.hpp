@@ -167,7 +167,11 @@ public:
         // 配置 SysTick 系统心跳（1000Hz → 每 1ms 一次中断）
         // 必须在 start_first_task() 内部的 cpsie i 之前完成：
         // 此时全局中断仍关闭，配置安全；开中断后 SysTick 立即开始产生周期心跳
+#ifdef CONFIG_TICK_RATE_HZ
+        Arch::systick_init(CONFIG_TICK_RATE_HZ);
+#else
         Arch::systick_init(1000);
+#endif
 
         Arch::start_first_task(g_current_tcb_ptr->stack_ptr,
                                tasks[current_task_index].entry_point);
@@ -175,7 +179,11 @@ public:
 
 private:
     Scheduler() = default;
+#ifdef CONFIG_MAX_TASKS
+    static constexpr int MAX_TASKS = CONFIG_MAX_TASKS;
+#else
     static constexpr int MAX_TASKS = 16;
+#endif
     TaskControlBlock tasks[MAX_TASKS]{};
     uint32_t current_task_index = 0;
     uint32_t task_count = 0;

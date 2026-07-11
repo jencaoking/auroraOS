@@ -14,6 +14,7 @@
 
 extern Mutex uart_mutex;
 
+#ifdef CONFIG_NET_LWIP
 #include "lwip/init.h"
 #include "lwip/tcpip.h"
 #include "lwip/netif.h"
@@ -24,7 +25,9 @@ extern err_t ethernetif_init(struct netif *netif);
 extern void ethernetif_input_task(void);
 
 struct netif g_netif;
+#endif // CONFIG_NET_LWIP
 
+#ifdef CONFIG_NET_LWIP
 // ==========================================
 // 业务层测试：基于 lwIP Netconn API 的 UDP Echo 服务器
 // ==========================================
@@ -85,6 +88,7 @@ void tcpip_init_done(void* arg) {
         sys_print("[Kernel] ERROR: task table full, failed to spawn udp_echo_server_task!\r\n");
     }
 }
+#endif // CONFIG_NET_LWIP
 
 extern "C" {
     extern uint32_t _heap_start;
@@ -182,11 +186,14 @@ void pi_test_high() {
 #include "posix.hpp"
 #include "work_queue.hpp"
 
+#ifdef CONFIG_WORK_QUEUE
 // 工作队列守护线程的入口包裹函数
 void workqueue_daemon_entry(void) {
     WorkQueue::instance().worker_task();
 }
+#endif
 
+#ifdef CONFIG_TIMER_MANAGER
 // 定时器守护线程的入口包裹函数
 void timer_daemon_entry(void) {
     TimerManager::instance().daemon_task();
@@ -216,23 +223,30 @@ void posix_app_task(void) {
     }
     while (1) { Scheduler::instance().sleep(10000); } 
 }
+#endif
 
 extern "C" void kernel_main(void) {
     uart_init();
     KernelHeap::instance().init(&_heap_start, &_heap_end);
     VfsManager::instance().init();
 
+#ifdef CONFIG_FS_RAMFS
     RamFile* temp_file = new RamFile(1024);
     RamFile* elf_file = new RamFile(1024);
-
-    // 挂载 设备 和 /tmp 目录下的虚拟文件
-    DeviceRegistry::instance().register_device(new UartDevice("uart0"));
     VfsManager::instance().mount("/tmp/log.txt", (VNode*)temp_file);
     VfsManager::instance().mount("/tmp/app.elf", (VNode*)elf_file);
+#endif
+
+#ifdef CONFIG_DEVICE_UART
+    // 挂载 设备 和 /tmp 目录下的虚拟文件
+    DeviceRegistry::instance().register_device(new UartDevice("uart0"));
+#endif
     
+#ifdef CONFIG_FS_PROCFS
     // 挂载 ProcFS 虚拟节点
     VfsManager::instance().mount("/proc/meminfo", new MemInfoNode());
     VfsManager::instance().mount("/proc/taskinfo", new TaskInfoNode());
+#endif
     
     // 初始化调度器
     Scheduler::instance().init();
@@ -269,16 +283,22 @@ extern "C" void kernel_main(void) {
     Scheduler::instance().create_task(pi_test_mid, new uint32_t[STACK_SIZE_TEST], STACK_SIZE_TEST*sizeof(uint32_t), TaskPriority::Normal);
     Scheduler::instance().create_task(pi_test_high, new uint32_t[STACK_SIZE_TEST], STACK_SIZE_TEST*sizeof(uint32_t), TaskPriority::High);
 
+#ifdef CONFIG_TIMER_MANAGER
     // 4. 定时器守护进程与测试 App
     Scheduler::instance().create_task(timer_daemon_entry, new uint32_t[STACK_SIZE_DAEMON], STACK_SIZE_DAEMON*sizeof(uint32_t), TaskPriority::Realtime);
     Scheduler::instance().create_task(posix_app_task, new uint32_t[STACK_SIZE_DAEMON], STACK_SIZE_DAEMON*sizeof(uint32_t), TaskPriority::Low);
+#endif
 
+#ifdef CONFIG_WORK_QUEUE
     // 5. 工作队列守护进程 (使用 High 优先级)
     Scheduler::instance().create_task(workqueue_daemon_entry, new uint32_t[STACK_SIZE_DAEMON], STACK_SIZE_DAEMON*sizeof(uint32_t), TaskPriority::High);
+#endif
 
+#ifdef CONFIG_NET_LWIP
     // 起 lwIP 协议栈引擎（内部回调中将以 Realtime 优先级注册网卡 RX 任务）
     sys_print("[lwIP] Initializing TCP/IP Engine...\r\n");
     tcpip_init(tcpip_init_done, nullptr);
+#endif
 
     // 启动调度器：正确引导第一个任务（通过 PSP/bx 跳入，不破坏栈帧）
     // 调度器从此接管 CPU，永不返回

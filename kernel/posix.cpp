@@ -8,32 +8,60 @@
 extern "C" {
 
 int open(const char* path, int flags) {
-    // 目前 VfsManager::open 没有处理 flags 参数，暂时忽略
     (void)flags;
+#ifdef CONFIG_VFS
     return VfsManager::instance().open(path);
+#else
+    return -1;
+#endif
 }
 
 int close(int fd) {
+#ifdef CONFIG_VFS
     VfsManager::instance().close(fd);
     return 0;
+#else
+    (void)fd;
+    return -1;
+#endif
 }
 
 int read(int fd, void* buf, size_t count) {
+#ifdef CONFIG_VFS
     return VfsManager::instance().read(fd, static_cast<char*>(buf), count);
+#else
+    (void)fd; (void)buf; (void)count;
+    return -1;
+#endif
 }
 
 int write(int fd, const void* buf, size_t count) {
+#ifdef CONFIG_VFS
     return VfsManager::instance().write(fd, static_cast<const char*>(buf), count);
+#else
+    (void)fd; (void)buf; (void)count;
+    return -1;
+#endif
 }
 
 int ioctl(int fd, int request, void* arg) {
+#ifdef CONFIG_VFS
     return VfsManager::instance().ioctl(fd, request, arg);
+#else
+    (void)fd; (void)request; (void)arg;
+    return -1;
+#endif
 }
 
 int lseek(int fd, int offset, int whence) {
     (void)whence;
+#ifdef CONFIG_VFS
     VfsManager::instance().lseek(fd, offset);
     return offset;
+#else
+    (void)fd; (void)offset;
+    return -1;
+#endif
 }
 
 void sleep(uint32_t seconds) {

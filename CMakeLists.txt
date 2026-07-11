@@ -2,9 +2,27 @@ cmake_minimum_required(VERSION 3.20)
 project(auroraOS C CXX ASM)
 
 # =====================================================================
-# 1. 动态板级与架构自动映射 (命令行传入: cmake .. -DBOARD=lm3s6965-qb)
+# 0. Kconfig Integration
 # =====================================================================
-set(BOARD "lm3s6965-qb" CACHE STRING "Target Hardware Board")
+execute_process(
+    COMMAND python ${CMAKE_SOURCE_DIR}/scripts/genconfig.py
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    RESULT_VARIABLE GENCONFIG_RESULT
+)
+if(NOT GENCONFIG_RESULT EQUAL 0)
+    message(FATAL_ERROR "genconfig.py failed! Please ensure kconfiglib is installed and Kconfig exists.")
+endif()
+
+include(${CMAKE_SOURCE_DIR}/config/autoconf.cmake)
+
+# =====================================================================
+# 1. 动态板级与架构自动映射
+# =====================================================================
+if(DEFINED CONFIG_BOARD)
+    set(BOARD ${CONFIG_BOARD})
+else()
+    set(BOARD "lm3s6965-qb" CACHE STRING "Target Hardware Board")
+endif()
 
 if(BOARD STREQUAL "lm3s6965-qb")
     set(BOARD_DIR "ti/lm3s6965-qb")
@@ -21,16 +39,9 @@ message(STATUS "  Target Arch  : ${ARCH_DIR}")
 message(STATUS "---------------------------------------------")
 
 set(CPU_FLAGS "-mcpu=cortex-m4 -mthumb -mfloat-abi=soft -ffreestanding -fno-builtin -fno-common -Wall -Wextra")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CPU_FLAGS} -O2 -g")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CPU_FLAGS} -fno-exceptions -fno-rtti -fno-threadsafe-statics -O2 -g")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CPU_FLAGS} -O2 -g -include autoconf.h")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CPU_FLAGS} -fno-exceptions -fno-rtti -fno-threadsafe-statics -O2 -g -include autoconf.h")
 set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} ${CPU_FLAGS}")
-
-file(GLOB LWIP_SOURCES 
-    "3rdparty/lwip/src/api/*.c"
-    "3rdparty/lwip/src/core/*.c"
-    "3rdparty/lwip/src/core/ipv4/*.c"
-    "3rdparty/lwip/src/netif/ethernet.c"
-)
 
 set(SOURCES
     boot/boot.S
@@ -39,16 +50,32 @@ set(SOURCES
     kernel/memory.cpp
     kernel/libc.cpp
     kernel/posix.cpp
-    vfs/vfs.cpp
-    vfs/ramfs.cpp
     apps/shell.cpp
     apps/elf_loader.cpp
     apps/kernel.cpp
-    net/eth_driver.cpp
-    adapter/net/sys_arch.cpp
-    adapter/net/ethernetif.cpp
-    ${LWIP_SOURCES}
 )
+
+if(CONFIG_VFS)
+    list(APPEND SOURCES vfs/vfs.cpp)
+    if(CONFIG_FS_RAMFS)
+        list(APPEND SOURCES vfs/ramfs.cpp)
+    endif()
+endif()
+
+if(CONFIG_NETWORKING AND CONFIG_NET_LWIP)
+    file(GLOB LWIP_SOURCES 
+        "3rdparty/lwip/src/api/*.c"
+        "3rdparty/lwip/src/core/*.c"
+        "3rdparty/lwip/src/core/ipv4/*.c"
+        "3rdparty/lwip/src/netif/ethernet.c"
+    )
+    list(APPEND SOURCES
+        net/eth_driver.cpp
+        adapter/net/sys_arch.cpp
+        adapter/net/ethernetif.cpp
+        ${LWIP_SOURCES}
+    )
+endif()
 
 add_executable(auroraOS.elf ${SOURCES}
     kernel/task.hpp)

@@ -1,0 +1,102 @@
+mainmenu "auroraOS Configuration"
+
+config BOARD
+    string "Target Hardware Board"
+    default "lm3s6965-qb"
+    help
+      The target hardware board for auroraOS.
+
+menu "System Core Configuration"
+
+config SCHEDULER
+    bool "Enable Task Scheduler"
+    default y
+    help
+      Enable the preemptive priority-based task scheduler.
+
+config MAX_TASKS
+    int "Maximum number of tasks"
+    default 16
+    help
+      The maximum number of tasks the scheduler can manage.
+
+config TICK_RATE_HZ
+    int "System Tick Rate (Hz)"
+    default 1000
+    help
+      The frequency of the system tick interrupt in Hz.
+
+endmenu
+
+menu "File Systems"
+
+config VFS
+    bool "Virtual File System (VFS)"
+    default y
+    help
+      Enable the Virtual File System layer.
+
+config FS_RAMFS
+    bool "RAM File System (RamFS)"
+    depends on VFS
+    default y
+    help
+      Enable the RamFS.
+
+config FS_PROCFS
+    bool "Process File System (ProcFS)"
+    depends on VFS
+    default y
+    help
+      Enable the ProcFS for system information.
+
+endmenu
+
+menu "Device Drivers"
+
+config DEVICE_UART
+    bool "UART Driver"
+    default y
+    help
+      Enable UART character device driver.
+
+config TIMER_MANAGER
+    bool "Software Timer Manager"
+    default y
+    help
+      Enable the software timer daemon.
+
+config WORK_QUEUE
+    bool "Work Queue"
+    default y
+    help
+      Enable the background work queue for deferring ISR work.
+
+endmenu
+
+menu "Networking"
+
+config NETWORKING
+    bool "Networking Support"
+    default y
+    help
+      Enable networking subsystem.
+
+config NET_LWIP
+    bool "LwIP Stack"
+    depends on NETWORKING
+    default y
+    help
+      Enable the LwIP network stack.
+
+config NET_DEFAULT_IP
+    string "Default IP Address"
+    depends on NET_LWIP
+    default "10.0.2.15"
+
+config NET_DEFAULT_MAC
+    string "Default MAC Address"
+    depends on NET_LWIP
+    default "00:11:22:33:44:55"
+
+endmenu
