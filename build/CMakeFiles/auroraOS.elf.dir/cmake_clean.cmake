@@ -1,5 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/auroraOS.elf.dir/boot.S.obj"
+  "CMakeFiles/auroraOS.elf.dir/elf_loader.cpp.obj"
+  "CMakeFiles/auroraOS.elf.dir/elf_loader.cpp.obj.d"
   "CMakeFiles/auroraOS.elf.dir/interrupts.cpp.obj"
   "CMakeFiles/auroraOS.elf.dir/interrupts.cpp.obj.d"
   "CMakeFiles/auroraOS.elf.dir/kernel.cpp.obj"

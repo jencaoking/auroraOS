@@ -26,12 +26,7 @@ void dummy_task(void) {
 }
 
 extern "C" void shell_task(void) {
-    // 【隔离验证测试】
-    // 尝试在非特权态访问系统控制空间 (SCB) 的 ICSR 寄存器以触发 PendSV
-    // 如果隔离生效，这行代码会立即触发 BusFault 或 HardFault 异常
-    volatile uint32_t* scb_icsr = (volatile uint32_t*)0xE000ED04;
-    *scb_icsr = (1 << 28); 
-    
+    // 1. 预设之前写的 log.txt
     int fd = VfsManager::instance().open("/tmp/log.txt");
     if (fd >= 0) {
         const char* secret = "Hello from auroraOS RamFS! You found the hidden message.";
@@ -40,7 +35,31 @@ extern "C" void shell_task(void) {
         VfsManager::instance().close(fd);
     }
 
-    // 夺取前台控制权，启动命令行
+    // 2. 【极其硬核】我们在内存中手写构建一个真实的 100 字节 ARM Thumb 可执行 ELF 文件！
+    // 它包含了一个正常的 Elf32_Ehdr, Elf32_Phdr 以及一段执行 SVC #0x01 系统调用的机器码！
+    static const unsigned char mini_arm_elf[] = {
+        // --- 1. Elf32_Ehdr (52 Bytes) ---
+        0x7f, 'E', 'L', 'F', 0x01, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x02, 0x00, 0x28, 0x00, 0x01, 0x00, 0x00, 0x00, 0x54, 0x00, 0x00, 0x00, 0x34, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x34, 0x00, 0x20, 0x00, 0x01, 0x00, 0x28, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        // --- 2. Elf32_Phdr (32 Bytes) ---
+        0x01, 0x00, 0x00, 0x00, 0x54, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x18, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00,
+        // --- 3. 真实机器码 payload (24 Bytes) ---
+        // 汇编意义：将 PC+4 处的数据字符串地址放入 R0，然后执行 SVC #0x01，最后死循环休眠
+        0x01, 0xa0, 0x01, 0xdf, 0xfe, 0xe7, 0x00, 0x00, 
+        // 字符串内容: "DYNAMIC ELF OK!"
+        'D', 'Y', 'N', 'A', 'M', 'I', 'C', ' ', 'E', 'L', 'F', ' ', 'O', 'K', '!', '\r', '\n', '\0'
+    };
+
+    int elf_fd = VfsManager::instance().open("/tmp/app.elf");
+    if (elf_fd >= 0) {
+        VfsManager::instance().write(elf_fd, reinterpret_cast<const char*>(mini_arm_elf), sizeof(mini_arm_elf));
+        VfsManager::instance().close(elf_fd);
+    }
+
+    // 3. 启动命令行终端
     Shell::run();
 }
 
@@ -50,10 +69,12 @@ extern "C" void kernel_main(void) {
     VfsManager::instance().init();
 
     RamFile* temp_file = new RamFile(1024);
+    RamFile* elf_file = new RamFile(1024);
 
-    // 挂载 /dev/tty0 和 /tmp/log.txt
+    // 挂载 /dev/tty0 和 /tmp/log.txt 以及 /tmp/app.elf
     VfsManager::instance().mount("/dev/tty0", (VNode*)&g_uart_device);
     VfsManager::instance().mount("/tmp/log.txt", (VNode*)temp_file);
+    VfsManager::instance().mount("/tmp/app.elf", (VNode*)elf_file);
     
     // 初始化调度器并起飞
     Scheduler& sched = Scheduler::instance();

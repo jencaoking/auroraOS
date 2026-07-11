@@ -20,6 +20,7 @@ set(CMAKE_ASM_TARGET_INCLUDE_PATH
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "J:/PROJECT/auroraOS/uart.c" "CMakeFiles/auroraOS.elf.dir/uart.c.obj" "gcc" "CMakeFiles/auroraOS.elf.dir/uart.c.obj.d"
+  "J:/PROJECT/auroraOS/elf_loader.cpp" "CMakeFiles/auroraOS.elf.dir/elf_loader.cpp.obj" "gcc" "CMakeFiles/auroraOS.elf.dir/elf_loader.cpp.obj.d"
   "J:/PROJECT/auroraOS/interrupts.cpp" "CMakeFiles/auroraOS.elf.dir/interrupts.cpp.obj" "gcc" "CMakeFiles/auroraOS.elf.dir/interrupts.cpp.obj.d"
   "J:/PROJECT/auroraOS/kernel.cpp" "CMakeFiles/auroraOS.elf.dir/kernel.cpp.obj" "gcc" "CMakeFiles/auroraOS.elf.dir/kernel.cpp.obj.d"
   "J:/PROJECT/auroraOS/memory.cpp" "CMakeFiles/auroraOS.elf.dir/memory.cpp.obj" "gcc" "CMakeFiles/auroraOS.elf.dir/memory.cpp.obj.d"

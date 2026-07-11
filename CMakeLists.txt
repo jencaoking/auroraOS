@@ -16,6 +16,7 @@ set(SOURCES
     vfs.cpp
     ramfs.cpp
     shell.cpp
+    elf_loader.cpp
 )
 
 add_executable(auroraOS.elf ${SOURCES}

@@ -136,6 +136,30 @@ boot.S.obj:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/boot.S.obj
 .PHONY : boot.S.obj
 
+elf_loader.obj: elf_loader.cpp.obj
+.PHONY : elf_loader.obj
+
+# target to build an object file
+elf_loader.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/elf_loader.cpp.obj
+.PHONY : elf_loader.cpp.obj
+
+elf_loader.i: elf_loader.cpp.i
+.PHONY : elf_loader.i
+
+# target to preprocess a source file
+elf_loader.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/elf_loader.cpp.i
+.PHONY : elf_loader.cpp.i
+
+elf_loader.s: elf_loader.cpp.s
+.PHONY : elf_loader.s
+
+# target to generate assembly for a file
+elf_loader.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/elf_loader.cpp.s
+.PHONY : elf_loader.cpp.s
+
 interrupts.obj: interrupts.cpp.obj
 .PHONY : interrupts.obj
 
@@ -338,6 +362,9 @@ help:
 	@echo ... rebuild_cache
 	@echo ... auroraOS.elf
 	@echo ... boot.obj
+	@echo ... elf_loader.obj
+	@echo ... elf_loader.i
+	@echo ... elf_loader.s
 	@echo ... interrupts.obj
 	@echo ... interrupts.i
 	@echo ... interrupts.s
