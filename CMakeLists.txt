@@ -7,19 +7,27 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CPU_FLAGS} -fno-exceptions -fno-rtti -
 set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} ${CPU_FLAGS}")
 
 set(SOURCES
-    boot.S
-    uart.c
-    kernel.cpp
-    interrupts.cpp
-    memory.cpp
-    softbus.cpp
-    vfs.cpp
-    ramfs.cpp
-    shell.cpp
-    elf_loader.cpp
+    boot/boot.S
+    boot/uart.c
+    boot/interrupts.cpp
+    kernel/memory.cpp
+    vfs/softbus.cpp
+    vfs/vfs.cpp
+    vfs/ramfs.cpp
+    apps/shell.cpp
+    apps/elf_loader.cpp
+    apps/kernel.cpp
 )
 
 add_executable(auroraOS.elf ${SOURCES}
-    task.hpp)
+    kernel/task.hpp)
 
-target_include_directories(auroraOS.elf PRIVATE ${CMAKE_SOURCE_DIR})
+target_include_directories(auroraOS.elf PRIVATE 
+    ${CMAKE_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/config
+    ${CMAKE_SOURCE_DIR}/boot
+    ${CMAKE_SOURCE_DIR}/kernel
+    ${CMAKE_SOURCE_DIR}/syscall
+    ${CMAKE_SOURCE_DIR}/vfs
+    ${CMAKE_SOURCE_DIR}/apps
+)

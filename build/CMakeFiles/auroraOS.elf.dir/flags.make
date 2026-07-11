@@ -6,19 +6,19 @@
 # compile CXX with J:/CODE/arm-gnu-toolchain/bin/arm-none-eabi-g++.exe
 ASM_DEFINES = 
 
-ASM_INCLUDES = -IJ:\PROJECT\auroraOS
+ASM_INCLUDES = -IJ:\PROJECT\auroraOS -IJ:\PROJECT\auroraOS\config -IJ:\PROJECT\auroraOS\boot -IJ:\PROJECT\auroraOS\kernel -IJ:\PROJECT\auroraOS\syscall -IJ:\PROJECT\auroraOS\vfs -IJ:\PROJECT\auroraOS\apps
 
 ASM_FLAGS =  -mcpu=cortex-m4 -mthumb -mfloat-abi=soft -ffreestanding -fno-builtin -fno-common -Wall -Wextra
 
 C_DEFINES = 
 
-C_INCLUDES = -IJ:\PROJECT\auroraOS
+C_INCLUDES = -IJ:\PROJECT\auroraOS -IJ:\PROJECT\auroraOS\config -IJ:\PROJECT\auroraOS\boot -IJ:\PROJECT\auroraOS\kernel -IJ:\PROJECT\auroraOS\syscall -IJ:\PROJECT\auroraOS\vfs -IJ:\PROJECT\auroraOS\apps
 
 C_FLAGS = -mcpu=cortex-m4 -mthumb -mfloat-abi=soft -ffreestanding -fno-builtin -fno-common -mcpu=cortex-m4 -mthumb -mfloat-abi=soft -ffreestanding -fno-builtin -fno-common -Wall -Wextra -O2 -g
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -IJ:\PROJECT\auroraOS
+CXX_INCLUDES = -IJ:\PROJECT\auroraOS -IJ:\PROJECT\auroraOS\config -IJ:\PROJECT\auroraOS\boot -IJ:\PROJECT\auroraOS\kernel -IJ:\PROJECT\auroraOS\syscall -IJ:\PROJECT\auroraOS\vfs -IJ:\PROJECT\auroraOS\apps
 
 CXX_FLAGS =  -mcpu=cortex-m4 -mthumb -mfloat-abi=soft -ffreestanding -fno-builtin -fno-common -Wall -Wextra -fno-exceptions -fno-rtti -fno-threadsafe-statics -O2 -g
 

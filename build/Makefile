@@ -128,229 +128,229 @@ auroraOS.elf/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/build
 .PHONY : auroraOS.elf/fast
 
-boot.obj: boot.S.obj
-.PHONY : boot.obj
+apps/elf_loader.obj: apps/elf_loader.cpp.obj
+.PHONY : apps/elf_loader.obj
 
 # target to build an object file
-boot.S.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/boot.S.obj
-.PHONY : boot.S.obj
+apps/elf_loader.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/apps/elf_loader.cpp.obj
+.PHONY : apps/elf_loader.cpp.obj
 
-elf_loader.obj: elf_loader.cpp.obj
-.PHONY : elf_loader.obj
-
-# target to build an object file
-elf_loader.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/elf_loader.cpp.obj
-.PHONY : elf_loader.cpp.obj
-
-elf_loader.i: elf_loader.cpp.i
-.PHONY : elf_loader.i
+apps/elf_loader.i: apps/elf_loader.cpp.i
+.PHONY : apps/elf_loader.i
 
 # target to preprocess a source file
-elf_loader.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/elf_loader.cpp.i
-.PHONY : elf_loader.cpp.i
+apps/elf_loader.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/apps/elf_loader.cpp.i
+.PHONY : apps/elf_loader.cpp.i
 
-elf_loader.s: elf_loader.cpp.s
-.PHONY : elf_loader.s
+apps/elf_loader.s: apps/elf_loader.cpp.s
+.PHONY : apps/elf_loader.s
 
 # target to generate assembly for a file
-elf_loader.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/elf_loader.cpp.s
-.PHONY : elf_loader.cpp.s
+apps/elf_loader.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/apps/elf_loader.cpp.s
+.PHONY : apps/elf_loader.cpp.s
 
-interrupts.obj: interrupts.cpp.obj
-.PHONY : interrupts.obj
+apps/kernel.obj: apps/kernel.cpp.obj
+.PHONY : apps/kernel.obj
 
 # target to build an object file
-interrupts.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/interrupts.cpp.obj
-.PHONY : interrupts.cpp.obj
+apps/kernel.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/apps/kernel.cpp.obj
+.PHONY : apps/kernel.cpp.obj
 
-interrupts.i: interrupts.cpp.i
-.PHONY : interrupts.i
+apps/kernel.i: apps/kernel.cpp.i
+.PHONY : apps/kernel.i
 
 # target to preprocess a source file
-interrupts.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/interrupts.cpp.i
-.PHONY : interrupts.cpp.i
+apps/kernel.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/apps/kernel.cpp.i
+.PHONY : apps/kernel.cpp.i
 
-interrupts.s: interrupts.cpp.s
-.PHONY : interrupts.s
+apps/kernel.s: apps/kernel.cpp.s
+.PHONY : apps/kernel.s
 
 # target to generate assembly for a file
-interrupts.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/interrupts.cpp.s
-.PHONY : interrupts.cpp.s
+apps/kernel.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/apps/kernel.cpp.s
+.PHONY : apps/kernel.cpp.s
 
-kernel.obj: kernel.cpp.obj
-.PHONY : kernel.obj
+apps/shell.obj: apps/shell.cpp.obj
+.PHONY : apps/shell.obj
 
 # target to build an object file
-kernel.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/kernel.cpp.obj
-.PHONY : kernel.cpp.obj
+apps/shell.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/apps/shell.cpp.obj
+.PHONY : apps/shell.cpp.obj
 
-kernel.i: kernel.cpp.i
-.PHONY : kernel.i
+apps/shell.i: apps/shell.cpp.i
+.PHONY : apps/shell.i
 
 # target to preprocess a source file
-kernel.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/kernel.cpp.i
-.PHONY : kernel.cpp.i
+apps/shell.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/apps/shell.cpp.i
+.PHONY : apps/shell.cpp.i
 
-kernel.s: kernel.cpp.s
-.PHONY : kernel.s
+apps/shell.s: apps/shell.cpp.s
+.PHONY : apps/shell.s
 
 # target to generate assembly for a file
-kernel.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/kernel.cpp.s
-.PHONY : kernel.cpp.s
+apps/shell.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/apps/shell.cpp.s
+.PHONY : apps/shell.cpp.s
 
-memory.obj: memory.cpp.obj
-.PHONY : memory.obj
+boot/boot.obj: boot/boot.S.obj
+.PHONY : boot/boot.obj
 
 # target to build an object file
-memory.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/memory.cpp.obj
-.PHONY : memory.cpp.obj
+boot/boot.S.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/boot/boot.S.obj
+.PHONY : boot/boot.S.obj
 
-memory.i: memory.cpp.i
-.PHONY : memory.i
-
-# target to preprocess a source file
-memory.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/memory.cpp.i
-.PHONY : memory.cpp.i
-
-memory.s: memory.cpp.s
-.PHONY : memory.s
-
-# target to generate assembly for a file
-memory.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/memory.cpp.s
-.PHONY : memory.cpp.s
-
-ramfs.obj: ramfs.cpp.obj
-.PHONY : ramfs.obj
+boot/interrupts.obj: boot/interrupts.cpp.obj
+.PHONY : boot/interrupts.obj
 
 # target to build an object file
-ramfs.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/ramfs.cpp.obj
-.PHONY : ramfs.cpp.obj
+boot/interrupts.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/boot/interrupts.cpp.obj
+.PHONY : boot/interrupts.cpp.obj
 
-ramfs.i: ramfs.cpp.i
-.PHONY : ramfs.i
+boot/interrupts.i: boot/interrupts.cpp.i
+.PHONY : boot/interrupts.i
 
 # target to preprocess a source file
-ramfs.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/ramfs.cpp.i
-.PHONY : ramfs.cpp.i
+boot/interrupts.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/boot/interrupts.cpp.i
+.PHONY : boot/interrupts.cpp.i
 
-ramfs.s: ramfs.cpp.s
-.PHONY : ramfs.s
+boot/interrupts.s: boot/interrupts.cpp.s
+.PHONY : boot/interrupts.s
 
 # target to generate assembly for a file
-ramfs.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/ramfs.cpp.s
-.PHONY : ramfs.cpp.s
+boot/interrupts.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/boot/interrupts.cpp.s
+.PHONY : boot/interrupts.cpp.s
 
-shell.obj: shell.cpp.obj
-.PHONY : shell.obj
+boot/uart.obj: boot/uart.c.obj
+.PHONY : boot/uart.obj
 
 # target to build an object file
-shell.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/shell.cpp.obj
-.PHONY : shell.cpp.obj
+boot/uart.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/boot/uart.c.obj
+.PHONY : boot/uart.c.obj
 
-shell.i: shell.cpp.i
-.PHONY : shell.i
+boot/uart.i: boot/uart.c.i
+.PHONY : boot/uart.i
 
 # target to preprocess a source file
-shell.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/shell.cpp.i
-.PHONY : shell.cpp.i
+boot/uart.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/boot/uart.c.i
+.PHONY : boot/uart.c.i
 
-shell.s: shell.cpp.s
-.PHONY : shell.s
+boot/uart.s: boot/uart.c.s
+.PHONY : boot/uart.s
 
 # target to generate assembly for a file
-shell.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/shell.cpp.s
-.PHONY : shell.cpp.s
+boot/uart.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/boot/uart.c.s
+.PHONY : boot/uart.c.s
 
-softbus.obj: softbus.cpp.obj
-.PHONY : softbus.obj
+kernel/memory.obj: kernel/memory.cpp.obj
+.PHONY : kernel/memory.obj
 
 # target to build an object file
-softbus.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/softbus.cpp.obj
-.PHONY : softbus.cpp.obj
+kernel/memory.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/kernel/memory.cpp.obj
+.PHONY : kernel/memory.cpp.obj
 
-softbus.i: softbus.cpp.i
-.PHONY : softbus.i
+kernel/memory.i: kernel/memory.cpp.i
+.PHONY : kernel/memory.i
 
 # target to preprocess a source file
-softbus.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/softbus.cpp.i
-.PHONY : softbus.cpp.i
+kernel/memory.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/kernel/memory.cpp.i
+.PHONY : kernel/memory.cpp.i
 
-softbus.s: softbus.cpp.s
-.PHONY : softbus.s
+kernel/memory.s: kernel/memory.cpp.s
+.PHONY : kernel/memory.s
 
 # target to generate assembly for a file
-softbus.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/softbus.cpp.s
-.PHONY : softbus.cpp.s
+kernel/memory.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/kernel/memory.cpp.s
+.PHONY : kernel/memory.cpp.s
 
-uart.obj: uart.c.obj
-.PHONY : uart.obj
+vfs/ramfs.obj: vfs/ramfs.cpp.obj
+.PHONY : vfs/ramfs.obj
 
 # target to build an object file
-uart.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/uart.c.obj
-.PHONY : uart.c.obj
+vfs/ramfs.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/vfs/ramfs.cpp.obj
+.PHONY : vfs/ramfs.cpp.obj
 
-uart.i: uart.c.i
-.PHONY : uart.i
+vfs/ramfs.i: vfs/ramfs.cpp.i
+.PHONY : vfs/ramfs.i
 
 # target to preprocess a source file
-uart.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/uart.c.i
-.PHONY : uart.c.i
+vfs/ramfs.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/vfs/ramfs.cpp.i
+.PHONY : vfs/ramfs.cpp.i
 
-uart.s: uart.c.s
-.PHONY : uart.s
+vfs/ramfs.s: vfs/ramfs.cpp.s
+.PHONY : vfs/ramfs.s
 
 # target to generate assembly for a file
-uart.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/uart.c.s
-.PHONY : uart.c.s
+vfs/ramfs.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/vfs/ramfs.cpp.s
+.PHONY : vfs/ramfs.cpp.s
 
-vfs.obj: vfs.cpp.obj
-.PHONY : vfs.obj
+vfs/softbus.obj: vfs/softbus.cpp.obj
+.PHONY : vfs/softbus.obj
 
 # target to build an object file
-vfs.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/vfs.cpp.obj
-.PHONY : vfs.cpp.obj
+vfs/softbus.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/vfs/softbus.cpp.obj
+.PHONY : vfs/softbus.cpp.obj
 
-vfs.i: vfs.cpp.i
-.PHONY : vfs.i
+vfs/softbus.i: vfs/softbus.cpp.i
+.PHONY : vfs/softbus.i
 
 # target to preprocess a source file
-vfs.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/vfs.cpp.i
-.PHONY : vfs.cpp.i
+vfs/softbus.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/vfs/softbus.cpp.i
+.PHONY : vfs/softbus.cpp.i
 
-vfs.s: vfs.cpp.s
-.PHONY : vfs.s
+vfs/softbus.s: vfs/softbus.cpp.s
+.PHONY : vfs/softbus.s
 
 # target to generate assembly for a file
-vfs.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/vfs.cpp.s
-.PHONY : vfs.cpp.s
+vfs/softbus.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/vfs/softbus.cpp.s
+.PHONY : vfs/softbus.cpp.s
+
+vfs/vfs.obj: vfs/vfs.cpp.obj
+.PHONY : vfs/vfs.obj
+
+# target to build an object file
+vfs/vfs.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/vfs/vfs.cpp.obj
+.PHONY : vfs/vfs.cpp.obj
+
+vfs/vfs.i: vfs/vfs.cpp.i
+.PHONY : vfs/vfs.i
+
+# target to preprocess a source file
+vfs/vfs.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/vfs/vfs.cpp.i
+.PHONY : vfs/vfs.cpp.i
+
+vfs/vfs.s: vfs/vfs.cpp.s
+.PHONY : vfs/vfs.s
+
+# target to generate assembly for a file
+vfs/vfs.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/vfs/vfs.cpp.s
+.PHONY : vfs/vfs.cpp.s
 
 # Help Target
 help:
@@ -361,34 +361,34 @@ help:
 	@echo ... edit_cache
 	@echo ... rebuild_cache
 	@echo ... auroraOS.elf
-	@echo ... boot.obj
-	@echo ... elf_loader.obj
-	@echo ... elf_loader.i
-	@echo ... elf_loader.s
-	@echo ... interrupts.obj
-	@echo ... interrupts.i
-	@echo ... interrupts.s
-	@echo ... kernel.obj
-	@echo ... kernel.i
-	@echo ... kernel.s
-	@echo ... memory.obj
-	@echo ... memory.i
-	@echo ... memory.s
-	@echo ... ramfs.obj
-	@echo ... ramfs.i
-	@echo ... ramfs.s
-	@echo ... shell.obj
-	@echo ... shell.i
-	@echo ... shell.s
-	@echo ... softbus.obj
-	@echo ... softbus.i
-	@echo ... softbus.s
-	@echo ... uart.obj
-	@echo ... uart.i
-	@echo ... uart.s
-	@echo ... vfs.obj
-	@echo ... vfs.i
-	@echo ... vfs.s
+	@echo ... apps/elf_loader.obj
+	@echo ... apps/elf_loader.i
+	@echo ... apps/elf_loader.s
+	@echo ... apps/kernel.obj
+	@echo ... apps/kernel.i
+	@echo ... apps/kernel.s
+	@echo ... apps/shell.obj
+	@echo ... apps/shell.i
+	@echo ... apps/shell.s
+	@echo ... boot/boot.obj
+	@echo ... boot/interrupts.obj
+	@echo ... boot/interrupts.i
+	@echo ... boot/interrupts.s
+	@echo ... boot/uart.obj
+	@echo ... boot/uart.i
+	@echo ... boot/uart.s
+	@echo ... kernel/memory.obj
+	@echo ... kernel/memory.i
+	@echo ... kernel/memory.s
+	@echo ... vfs/ramfs.obj
+	@echo ... vfs/ramfs.i
+	@echo ... vfs/ramfs.s
+	@echo ... vfs/softbus.obj
+	@echo ... vfs/softbus.i
+	@echo ... vfs/softbus.s
+	@echo ... vfs/vfs.obj
+	@echo ... vfs/vfs.i
+	@echo ... vfs/vfs.s
 .PHONY : help
 
 
