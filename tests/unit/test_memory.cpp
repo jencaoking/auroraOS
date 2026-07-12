@@ -81,21 +81,25 @@ TEST_F(HeapTest, AllocateThenFree) {
 }
 
 // ---------------------------------------------------------------------------
-// 4. Adjacent free blocks are coalesced after successive frees
+// 4. Adjacent free blocks are coalesced during next OOM allocate()
 // ---------------------------------------------------------------------------
 TEST_F(HeapTest, AllocateCoalesce) {
-    void* const a = KernelHeap::instance().allocate(64);
-    void* const b = KernelHeap::instance().allocate(64);
+    void* const a = KernelHeap::instance().allocate(1000);
+    void* const b = KernelHeap::instance().allocate(1000);
     ASSERT_NE(a, nullptr);
     ASSERT_NE(b, nullptr);
 
     const std::size_t free_after_two = KernelHeap::instance().get_free_memory();
 
-    // Free both — coalesce should merge the two blocks back into one.
+    // Free both — they won't coalesce instantly, but total free memory increases
     KernelHeap::instance().deallocate(a);
     KernelHeap::instance().deallocate(b);
 
     EXPECT_GT(KernelHeap::instance().get_free_memory(), free_after_two);
+    
+    // This large allocation forces lazy coalescing in allocate()
+    void* const c = KernelHeap::instance().allocate(2000);
+    EXPECT_NE(c, nullptr);
 }
 
 // ---------------------------------------------------------------------------

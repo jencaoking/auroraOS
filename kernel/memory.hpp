@@ -62,6 +62,18 @@ public:
         size = (size + 3) & ~3;
         size_t required_space = size + sizeof(BlockHeader);
 
+        void* result = try_allocate_internal(size_orig, required_space);
+        if (result != nullptr) return result;
+
+        // OOM detected! Try lazy defragmentation (coalesce adjacent free blocks)
+        defragment_internal();
+        
+        // Try allocating one more time
+        return try_allocate_internal(size_orig, required_space);
+    }
+
+private:
+    void* try_allocate_internal(size_t size_orig, size_t required_space) {
         BlockHeader* current = head_block;
         while (current != nullptr) {
             if (current->is_free && current->size >= required_space) {
@@ -89,6 +101,23 @@ public:
             current = current->next;
         }
         return nullptr; // OOM: 内存不足
+    }
+
+    void defragment_internal() {
+        BlockHeader* current = head_block;
+        while (current != nullptr && current->next != nullptr) {
+            if (current->is_free && current->next->is_free) {
+                current->size += current->next->size;
+                current->next = current->next->next;
+            } else {
+                current = current->next;
+            }
+        }
+    }
+public:
+    void defragment() {
+        LockGuard lock(heap_mutex_);
+        defragment_internal();
     }
 
     // 释放内存
@@ -119,17 +148,7 @@ public:
         target->is_free = true;
         target->requested_size = 0;
         total_free_memory += target->size;
-
-        // 整理内存：自动合并连续的空闲块 (Coalesce Free Blocks)
-        BlockHeader* current = head_block;
-        while (current != nullptr && current->next != nullptr) {
-            if (current->is_free && current->next->is_free) {
-                current->size += current->next->size;
-                current->next = current->next->next;
-            } else {
-                current = current->next;
-            }
-        }
+        // O(1) deallocation: lazy coalescing happens during allocate()
     }
 
     // 获取已分配内存块的原始请求大小

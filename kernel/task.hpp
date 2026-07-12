@@ -347,6 +347,9 @@ public:
         if (id < task_count) return &tasks[id];
         return nullptr;
     }
+    
+    // Testing hook
+    void set_started(bool s) { started_ = s; }
 
     // =========================================================================
     // start(): 从特权 main 上下文启动调度器，跳入第一个任务

@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "task.hpp"
 #include "task_notify.hpp"
+#include "arch_api.hpp"
 
 // ========================================================
 // 我们现已统一使用 kernel/task.hpp 中的 TaskPriority。
@@ -23,8 +24,8 @@ private:
     bool     in_active_render_window_;
     uint32_t render_task_id_;         // 绑定的表盘 UI 主任务 TID
 
-    inline void disable_interrupts() { __asm__ volatile ("cpsid i" : : : "memory"); }
-    inline void enable_interrupts()  { __asm__ volatile ("cpsie i" : : : "memory"); }
+    inline void disable_interrupts() { Arch::disable_interrupts(); }
+    inline void enable_interrupts()  { Arch::enable_interrupts(); }
 
     FrameSchedulerV2() : current_fps_(30), frame_period_ticks_(33), current_frame_tick_(0), 
                          in_active_render_window_(true), render_task_id_(0) {}

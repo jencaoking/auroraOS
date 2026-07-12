@@ -41,7 +41,6 @@ public:
                 }
                 elapsed++;
             }
-            // 真正让出 CPU 1ms，防止忙等
             Scheduler::instance().sleep(1);
         }
     }

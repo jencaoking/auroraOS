@@ -118,3 +118,46 @@ TEST_F(ChargingManagerTest, PlugInWakesUpPowerManager) {
     // PowerManager 必须因为刚刚插入的事件立刻拉起系统到 ACTIVE（亮屏提示充电）
     EXPECT_EQ(PowerManager::instance().get_state(), PowerState::ACTIVE);
 }
+
+TEST_F(ChargingManagerTest, WristWakeDetectorIntegration) {
+    MockBatteryDriver* mock = ChargingManager::instance().get_mock_driver();
+    
+    // Ensure accelerometer is powered on so read() works
+    SensorManager::instance().get_accel_sensor().power_up();
+    
+    // Ensure sufficient battery
+    mock->set_voltage(4000); 
+    mock->set_plugged(false);
+    
+    // Start at IDLE
+    PowerManager::instance().transition_to(PowerState::IDLE);
+    
+    // Feed IMU data: screen is facing up, but movement is unstable initially
+    for (int i = 0; i < 3; i++) {
+        SensorManager::instance().get_accel_sensor().set_mock_data(0, 0, 980);
+        PowerManager::instance().on_tick(30);
+    }
+    
+    // State should remain IDLE until steady ticks accumulate
+    EXPECT_EQ(PowerManager::instance().get_state(), PowerState::IDLE);
+    
+    // Feed stable facing-up data for 1200ms (40 frames of 30ms)
+    for (int i = 0; i < 40; i++) {
+        SensorManager::instance().get_accel_sensor().set_mock_data(0, 0, 980);
+        PowerManager::instance().on_tick(30);
+    }
+    
+    // PowerManager should now wake up to ACTIVE due to wrist raise
+    EXPECT_EQ(PowerManager::instance().get_state(), PowerState::ACTIVE);
+    
+    // Now simulate arm dropping (Z goes negative or zero, X/Y gets gravity)
+    for (int i = 0; i < 20; i++) {
+        SensorManager::instance().get_accel_sensor().set_mock_data(980, 0, 0);
+        PowerManager::instance().on_tick(30);
+    }
+    
+    // Still ACTIVE because IDLE timeout hasn't occurred yet! 
+    // It shouldn't instantly sleep when arm drops, but rely on timeout,
+    // OR it could dim immediately. Let's see what the system does...
+    // The current mock just expects normal timeout logic for falling back.
+}

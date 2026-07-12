@@ -88,6 +88,7 @@ set(TEST_SOURCES
     unit/test_power.cpp
     unit/test_lua_vm.cpp
     unit/test_mutex.cpp
+    unit/test_memory_pool.cpp
 )
 
 # ---------------------------------------------------------------------------

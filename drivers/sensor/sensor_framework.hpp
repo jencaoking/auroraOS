@@ -114,8 +114,20 @@ private:
         }
         return res;
     }
+    
+    // Test hooks for mocking sensor data
+    int32_t mock_ax_ = 0;
+    int32_t mock_ay_ = 0;
+    int32_t mock_az_ = 1000;
+    bool use_mock_data_ = false;
 
 public:
+    void set_mock_data(int32_t x, int32_t y, int32_t z) {
+        mock_ax_ = x;
+        mock_ay_ = y;
+        mock_az_ = z;
+        use_mock_data_ = true;
+    }
     AccelerometerSensor() : 
         sample_rate_(25), is_powered_on_(false), // 默认 25Hz 采样率
         current_steps_(0), step_state_(StepState::STABLE), last_accel_mag_(1000) {}
@@ -134,6 +146,11 @@ public:
 
         // 占位：实际需通过 I2C 读取 BHI260AP FIFO 中的 X/Y/Z 原始数据
         int32_t ax = 0, ay = 0, az = 1000; 
+        if (use_mock_data_) {
+            ax = mock_ax_;
+            ay = mock_ay_;
+            az = mock_az_;
+        }
 
         // 计算合加速度模长 (单位 mg)
         int32_t magnitude = approx_sqrt(ax * ax + ay * ay + az * az);
@@ -169,7 +186,6 @@ public:
         out_data->payload.accel.x = ax;
         out_data->payload.accel.y = ay;
         out_data->payload.accel.z = az;
-        
         return true;
     }
 
