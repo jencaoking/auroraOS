@@ -16,7 +16,7 @@
 # =============================================================================
 
 cmake_minimum_required(VERSION 3.20)
-project(aurora_tests LANGUAGES CXX)
+project(aurora_tests LANGUAGES CXX C)
 
 # ---------------------------------------------------------------------------
 # 1. Language standard — C++17 to match the kernel codebase
@@ -54,8 +54,21 @@ set(AURORA_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/..")
 #    kernel/memory.cpp defines operator new/delete — we exclude it to avoid
 #    overriding the host allocator; KernelHeap is tested via its header only.
 # ---------------------------------------------------------------------------
+file(GLOB LUA_SOURCES "${AURORA_ROOT}/3rdparty/lua/*.c")
+list(REMOVE_ITEM LUA_SOURCES 
+    "${AURORA_ROOT}/3rdparty/lua/lua.c" 
+    "${AURORA_ROOT}/3rdparty/lua/luac.c"
+    "${AURORA_ROOT}/3rdparty/lua/loslib.c"
+    "${AURORA_ROOT}/3rdparty/lua/liolib.c"
+    "${AURORA_ROOT}/3rdparty/lua/lmathlib.c"
+    "${AURORA_ROOT}/3rdparty/lua/loadlib.c"
+    "${AURORA_ROOT}/3rdparty/lua/lstrlib.c"
+    "${AURORA_ROOT}/3rdparty/lua/linit.c"
+)
+
 set(AURORA_SOURCES_UNDER_TEST
     "${AURORA_ROOT}/vfs/vfs.cpp"
+    ${LUA_SOURCES}
 )
 
 # Stub .cpp files that provide linker-level definitions for symbols declared
@@ -73,6 +86,7 @@ set(TEST_SOURCES
     unit/test_vfs.cpp
     unit/test_renderer2d.cpp
     unit/test_power.cpp
+    unit/test_lua_vm.cpp
 )
 
 # ---------------------------------------------------------------------------
