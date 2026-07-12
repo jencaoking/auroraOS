@@ -35,74 +35,97 @@ bool ElfLoader::load_and_exec(const char* filepath) {
         return false;
     }
 
+    if (ehdr.e_phentsize != sizeof(Elf32_Phdr)) {
+        sys_print("[ElfLoader] Error: Invalid Program Header size!\r\n");
+        VfsManager::instance().close(fd);
+        return false;
+    }
+
     sys_print("[ElfLoader] Valid ARM ELF detected. Parsing Segments...\r\n");
 
-    // 2. 遍历所有的程序段 (Program Headers)，寻找需要加载的代码和数据
+    // 第一遍遍历：计算所有 PT_LOAD 段在内存中的跨度
     Elf32_Phdr phdr;
+    uint32_t min_vaddr = 0xFFFFFFFF;
+    uint32_t max_vaddr = 0;
+    bool has_loadable_segment = false;
+
     for (int i = 0; i < ehdr.e_phnum; i++) {
-        // 定位到第 i 个程序段头部
         VfsManager::instance().lseek(fd, ehdr.e_phoff + i * ehdr.e_phentsize, 0);
         VfsManager::instance().read(fd, reinterpret_cast<char*>(&phdr), sizeof(phdr));
 
-        // 我们只关心 PT_LOAD 可加载段 (包含了 .text 代码和 .data 变量)
         if (phdr.p_type == PT_LOAD && phdr.p_memsz > 0) {
-            // 向我们在第三步写的内核堆 (KernelHeap) 申请一块干净的动态内存
-            char* segment_memory = new char[phdr.p_memsz];
-            if (!segment_memory) {
-                sys_print("[ElfLoader] Out of Memory while allocating segment!\r\n");
+            has_loadable_segment = true;
+            if (phdr.p_vaddr < min_vaddr) min_vaddr = phdr.p_vaddr;
+            if (phdr.p_vaddr + phdr.p_memsz > max_vaddr) max_vaddr = phdr.p_vaddr + phdr.p_memsz;
+            
+            // 安全检查：防止畸形 ELF 导致缓冲区溢出
+            if (phdr.p_filesz > phdr.p_memsz) {
+                sys_print("[ElfLoader] Error: p_filesz > p_memsz!\r\n");
                 VfsManager::instance().close(fd);
                 return false;
             }
-
-            // 从文件中读取二进制指令及初始数据到分配的内存中
-            VfsManager::instance().lseek(fd, phdr.p_offset, 0);
-            VfsManager::instance().read(fd, segment_memory, phdr.p_filesz);
-
-            // 如果 p_memsz > p_filesz，说明多出来的部分是 .bss 段（未初始化变量），必须清零
-            for (uint32_t b = phdr.p_filesz; b < phdr.p_memsz; b++) {
-                segment_memory[b] = 0;
-            }
-
-            // 计算我们在内存中的真实入口地址：
-            uintptr_t raw_entry;
-            if (ehdr.e_entry >= phdr.p_vaddr && ehdr.e_entry < phdr.p_vaddr + phdr.p_memsz) {
-                raw_entry = reinterpret_cast<uintptr_t>(segment_memory) + (ehdr.e_entry - phdr.p_vaddr);
-            } else {
-                // 兼容手写 ELF：e_entry 可能是文件偏移而不是虚拟地址
-                raw_entry = reinterpret_cast<uintptr_t>(segment_memory) + (ehdr.e_entry - phdr.p_offset);
-            }
-            
-            // 【硬核必杀技】Cortex-M 架构必须运行在 Thumb 状态，地址最低位一定要置 1！
-            uintptr_t thumb_entry = raw_entry | 0x01;
-            
-            // 强转成 C++ 函数指针
-            void (*app_entry)(void) = reinterpret_cast<void (*)()>(thumb_entry);
-
-            sys_print("[ElfLoader] Spawning Dynamic Task from RAM...\r\n");
-
-            // 3. 为这个全新程序开辟任务栈，并将其实例化为内核的动态任务！
-            // Since this runs in Unprivileged mode, we cannot call Scheduler::instance().create_task() if it touches privileged regions.
-            // Wait, Scheduler::create_task() just writes to `tasks` array. It doesn't touch NVIC or ICSR! So it is safe to call from Unprivileged mode!
-            uint32_t* app_stack = new uint32_t[512];
-            if (!Scheduler::instance().create_task(app_entry, app_stack, 512 * sizeof(uint32_t),
-                TaskPriority::Low)) { // 动态加载的 ELF 应用以低优先级运行
-                // 任务表已满：过去这里不检查返回值，会直接吞掉失败并且仍然
-                // 对调用方返回 true（"加载成功"），但代码段和任务栈其实从未
-                // 被调度执行过。现在如实报告失败，并释放掉这两块已经分配、
-                // 但再也用不上的内存，避免泄漏。
-                sys_print("[ElfLoader] Error: task table full, cannot spawn loaded program!\r\n");
-                delete[] app_stack;
-                delete[] segment_memory;
-                VfsManager::instance().close(fd);
-                return false;
-            }
-
-            // 为精简工程，加载完第一个核心代码段后直接返回成功
-            VfsManager::instance().close(fd);
-            return true;
         }
     }
 
+    if (!has_loadable_segment) {
+        sys_print("[ElfLoader] Error: No loadable segments found!\r\n");
+        VfsManager::instance().close(fd);
+        return false;
+    }
+
+    // 分配整块连续内存容纳所有段
+    uint32_t total_memsz = max_vaddr - min_vaddr;
+    char* segment_memory = new char[total_memsz];
+    if (!segment_memory) {
+        sys_print("[ElfLoader] Out of Memory while allocating segment!\r\n");
+        VfsManager::instance().close(fd);
+        return false;
+    }
+
+    // 第二遍遍历：实际加载数据
+    for (int i = 0; i < ehdr.e_phnum; i++) {
+        VfsManager::instance().lseek(fd, ehdr.e_phoff + i * ehdr.e_phentsize, 0);
+        VfsManager::instance().read(fd, reinterpret_cast<char*>(&phdr), sizeof(phdr));
+
+        if (phdr.p_type == PT_LOAD && phdr.p_memsz > 0) {
+            uint32_t offset_in_mem = phdr.p_vaddr - min_vaddr;
+            
+            VfsManager::instance().lseek(fd, phdr.p_offset, 0);
+            VfsManager::instance().read(fd, segment_memory + offset_in_mem, phdr.p_filesz);
+
+            // 清零 BSS 区域
+            for (uint32_t b = phdr.p_filesz; b < phdr.p_memsz; b++) {
+                segment_memory[offset_in_mem + b] = 0;
+            }
+        }
+    }
+
+    // 计算我们在内存中的真实入口地址
+    uintptr_t raw_entry;
+    if (ehdr.e_entry >= min_vaddr && ehdr.e_entry < max_vaddr) {
+        raw_entry = reinterpret_cast<uintptr_t>(segment_memory) + (ehdr.e_entry - min_vaddr);
+    } else {
+        sys_print("[ElfLoader] Error: e_entry out of bounds!\r\n");
+        delete[] segment_memory;
+        VfsManager::instance().close(fd);
+        return false;
+    }
+    
+    // 【硬核必杀技】Cortex-M 架构必须运行在 Thumb 状态，地址最低位一定要置 1！
+    uintptr_t thumb_entry = raw_entry | 0x01;
+    void (*app_entry)(void) = reinterpret_cast<void (*)()>(thumb_entry);
+
+    sys_print("[ElfLoader] Spawning Dynamic Task from RAM...\r\n");
+
+    uint32_t* app_stack = new uint32_t[512];
+    if (!Scheduler::instance().create_task(app_entry, app_stack, 512 * sizeof(uint32_t), TaskPriority::Low)) {
+        sys_print("[ElfLoader] Error: task table full, cannot spawn loaded program!\r\n");
+        delete[] app_stack;
+        delete[] segment_memory;
+        VfsManager::instance().close(fd);
+        return false;
+    }
+
     VfsManager::instance().close(fd);
-    return false;
+    return true;
 }

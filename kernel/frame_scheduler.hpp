@@ -75,8 +75,8 @@ public:
     }
 
     // 5. 任务创建辅助接口：自动将任务归类到蓝河优先级
-    uint32_t create_frame_task(void (*entry)(void), uint32_t* stack, uint32_t stack_size, FramePriority prio) {
-        Scheduler::instance().create_task(entry, stack, stack_size, static_cast<TaskPriority>(prio));
+    uint32_t create_frame_task(void (*entry)(void), uint32_t* stack, uint32_t stack_size, TaskPriority prio) {
+        Scheduler::instance().create_task(entry, stack, stack_size, prio);
         return Scheduler::instance().get_task_count() - 1; // 返回当前注册的 TID
     }
 
@@ -84,7 +84,7 @@ public:
     bool is_task_allowed(uint8_t task_priority) const {
         // 如果当前处于“帧内 (Intra-Frame)”渲染期，且任务优先级低于 CRITICAL/HIGH，无情屏蔽！
         if (in_active_render_window_) {
-            if (task_priority < static_cast<uint8_t>(FramePriority::HIGH)) {
+            if (task_priority < static_cast<uint8_t>(TaskPriority::High)) {
                 return false; // 非关键任务不得抢占 UI 渲染算力
             }
         }

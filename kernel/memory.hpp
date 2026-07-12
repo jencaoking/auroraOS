@@ -86,6 +86,20 @@ public:
         BlockHeader* target = reinterpret_cast<BlockHeader*>(
             reinterpret_cast<uintptr_t>(ptr) - sizeof(BlockHeader)
         );
+
+        // 边界检查：防止越界/非法指针
+        uintptr_t target_addr = reinterpret_cast<uintptr_t>(target);
+        uintptr_t heap_start = reinterpret_cast<uintptr_t>(head_block);
+        uintptr_t heap_end = heap_start + total_size;
+        if (target_addr < heap_start || target_addr >= heap_end) {
+            return; // 非法指针，拒绝释放
+        }
+
+        // 双重释放检查
+        if (target->is_free) {
+            return; // Double-free detected
+        }
+
         target->is_free = true;
         total_free_memory += target->size;
 
@@ -99,6 +113,23 @@ public:
                 current = current->next;
             }
         }
+    }
+
+    // 获取已分配内存块的大小（包含头部）
+    size_t get_block_size(void* ptr) {
+        if (!ptr) return 0;
+        LockGuard lock(heap_mutex_);
+        BlockHeader* target = reinterpret_cast<BlockHeader*>(
+            reinterpret_cast<uintptr_t>(ptr) - sizeof(BlockHeader)
+        );
+        // 边界检查
+        uintptr_t target_addr = reinterpret_cast<uintptr_t>(target);
+        uintptr_t heap_start = reinterpret_cast<uintptr_t>(head_block);
+        uintptr_t heap_end = heap_start + total_size;
+        if (target_addr < heap_start || target_addr >= heap_end || target->is_free) {
+            return 0; 
+        }
+        return target->size - sizeof(BlockHeader);
     }
 };
 

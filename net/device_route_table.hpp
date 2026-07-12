@@ -75,7 +75,9 @@ public:
             int fd = open("/dev/uart0", 0);
             if (fd >= 0) {
                 char msg[256]; int len = 0;
-                auto append = [&](const char* s) { while (*s) msg[len++] = *s++; };
+                auto append = [&](const char* s) { 
+                    while (*s && len < (int)sizeof(msg) - 1) msg[len++] = *s++; 
+                };
                 
                 append("\r\n\xF0\x9F\x93\xB1 [Super Terminal] NEW Device Registered!\r\n");
                 append("   => ID: "); append(dev_id);

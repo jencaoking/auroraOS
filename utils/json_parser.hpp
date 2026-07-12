@@ -7,9 +7,13 @@ class JsonParser {
 private:
     const char* raw_json_;
 
-    // 内部微型辅助：查找字符
+    // 内部微型辅助：查找字符，跳过转义字符
     const char* find_char(const char* str, char c) const {
         while (*str) {
+            if (*str == '\\' && *(str + 1) != '\0') {
+                str += 2; // 跳过转义序列
+                continue;
+            }
             if (*str == c) return str;
             str++;
         }
@@ -67,10 +71,17 @@ public:
         int val_len = val_end - val_start;
         if (val_len >= max_len) val_len = max_len - 1;
         
+        // 拷贝时处理转义字符
+        int out_idx = 0;
         for (int j = 0; j < val_len; j++) {
-            out_buf[j] = val_start[j];
+            if (val_start[j] == '\\' && j + 1 < val_len) {
+                j++; // 跳过斜杠，直接拷贝被转义的字符
+            }
+            if (out_idx < max_len - 1) {
+                out_buf[out_idx++] = val_start[j];
+            }
         }
-        out_buf[val_len] = '\0';
+        out_buf[out_idx] = '\0';
         return true;
     }
 
@@ -78,6 +89,8 @@ public:
     // 极速提取原始文本 (用于直接截取数组，如提取 ["display","touch"])
     // ========================================================
     bool get_raw_value(const char* key, char* out_buf, int max_len) const {
+        if (!raw_json_ || !key || !out_buf || max_len <= 0) return false;
+
         char search_key[32];
         int i = 0; search_key[i++] = '"'; while (*key && i < 30) search_key[i++] = *key++; search_key[i++] = '"'; search_key[i] = '\0';
 

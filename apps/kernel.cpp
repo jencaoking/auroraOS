@@ -638,10 +638,10 @@ extern "C" void kernel_main(void) {
 
     // 6. 蓝河 Frame-Aware Scheduler 任务注册
     uint32_t* ui_stack = new uint32_t[STACK_SIZE_TEST];
-    uint32_t ui_tid = FrameScheduler::instance().create_frame_task(ui_render_task, ui_stack, STACK_SIZE_TEST * sizeof(uint32_t), FramePriority::CRITICAL);
+    uint32_t ui_tid = FrameScheduler::instance().create_frame_task(ui_render_task, ui_stack, STACK_SIZE_TEST * sizeof(uint32_t), TaskPriority::Realtime);
 
     uint32_t* sensor_stack = new uint32_t[STACK_SIZE_TEST];
-    FrameScheduler::instance().create_frame_task(sensor_log_task, sensor_stack, STACK_SIZE_TEST * sizeof(uint32_t), FramePriority::NORMAL);
+    FrameScheduler::instance().create_frame_task(sensor_log_task, sensor_stack, STACK_SIZE_TEST * sizeof(uint32_t), TaskPriority::Normal);
 
     // 7. 光子存储写聚合测试任务
     uint32_t* storage_stack = new uint32_t[STACK_SIZE_SHELL];
@@ -653,7 +653,7 @@ extern "C" void kernel_main(void) {
     // Lua 虚拟机需要较大的栈
     uint32_t* lua_stack = new uint32_t[2048];
     uint32_t tid_lua = FrameScheduler::instance().create_frame_task(
-        lua_app_task, lua_stack, 2048 * sizeof(uint32_t), FramePriority::CRITICAL
+        lua_app_task, lua_stack, 2048 * sizeof(uint32_t), TaskPriority::Realtime
     );
     g_lua_app.tid = tid_lua;
 

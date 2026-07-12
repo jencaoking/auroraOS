@@ -65,7 +65,7 @@ bool StellarisEth::init() {
 // 从网卡硬件 FIFO 读取以太网帧
 int StellarisEth::receive_frame(uint8_t* buffer, int max_len) {
     // 检查是否有数据帧到达 (读取 MAC_RIS 的 Bit 0: RXINT)
-    if ((*mac_ris_ & 0x01) == 0) {
+    if ((*mac_ris_ & MAC_RIS_RXINT) == 0) {
         return 0; // FIFO 为空
     }
 
@@ -73,19 +73,28 @@ int StellarisEth::receive_frame(uint8_t* buffer, int max_len) {
     uint32_t frame_len = *mac_data_;
     if (frame_len > static_cast<uint32_t>(max_len) || frame_len == 0) {
         // 数据帧异常，清除接收中断标志并丢弃
-        *mac_iack_ = 0x01;
+        *mac_iack_ = MAC_IACK_RXINT;
         return 0;
     }
 
-    // 按 4 字节 (Word) 从 FIFO 循环读取并填入缓冲区
+    // 按 4 字节 (Word) 从 FIFO 读取并填入缓冲区
     uint32_t* dest_words = reinterpret_cast<uint32_t*>(buffer);
-    int words_to_read = (frame_len + 3) / 4;
+    int words_to_read = frame_len / 4;
     for (int i = 0; i < words_to_read; i++) {
         dest_words[i] = *mac_data_;
     }
+    
+    int remaining_bytes = frame_len % 4;
+    if (remaining_bytes > 0) {
+        uint32_t last_word = *mac_data_;
+        uint8_t* last_bytes = reinterpret_cast<uint8_t*>(&last_word);
+        for (int i = 0; i < remaining_bytes; i++) {
+            buffer[words_to_read * 4 + i] = last_bytes[i];
+        }
+    }
 
     // 清除硬件接收中断标志位
-    *mac_iack_ = 0x01;
+    *mac_iack_ = MAC_IACK_RXINT;
     return static_cast<int>(frame_len);
 }
 
@@ -95,11 +104,15 @@ bool StellarisEth::send_frame(const uint8_t* buffer, int len) {
 
     // Stellaris 发送 FIFO 要求先写入两字节的长度，再写入数据
     // 为兼容 32 位对齐写，我们先将长度和前两字节拼凑在一起写入
-    *mac_data_ = (len & 0xFFFF) | ((buffer[0] << 16) & 0xFF0000) | ((buffer[1] << 24) & 0xFF000000);
+    uint32_t first_word = (len & 0xFFFF);
+    if (len >= 1) first_word |= ((static_cast<uint32_t>(buffer[0]) << 16) & 0xFF0000);
+    if (len >= 2) first_word |= ((static_cast<uint32_t>(buffer[1]) << 24) & 0xFF000000);
+    *mac_data_ = first_word;
 
     // 把余下的数据按字写入 FIFO
     const uint8_t* remaining_data = buffer + 2;
     int remaining_len = len - 2;
+    if (remaining_len <= 0) return true;
     int words_to_write = (remaining_len + 3) / 4;
     
     for (int i = 0; i < words_to_write; i++) {

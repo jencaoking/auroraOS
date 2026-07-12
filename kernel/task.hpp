@@ -23,7 +23,8 @@ enum class TaskState {
     Ready,
     Running,
     Sleeping,
-    Blocked_On_Notify
+    Blocked_On_Notify,
+    Terminated
 };
 
 // POSIX 标准信号定义
@@ -119,22 +120,19 @@ public:
     // 【核心改造】调度器在任务切换时，自动检查并分发待处理信号
     // ========================================================
     void dispatch_signals(TaskControlBlock* tcb) {
-        if (tcb->pending_signals == 0) return;
-
-        for (int sig = 1; sig < 16; sig++) {
-            if (tcb->pending_signals & (1 << sig)) {
-                // 清除待处理位
-                tcb->pending_signals &= ~(1 << sig);
-
-                // 如果是 SIGKILL，强制无条件终止该线程！
-                if (sig == SIGKILL) {
-                    tcb->state = TaskState::Sleeping; // 简单标记为挂起/销毁
-                    return;
+        if (!tcb || tcb->pending_signals == 0) return;
+        
+        for (int i = 0; i < 16; i++) {
+            if (tcb->pending_signals & (1 << i)) {
+                tcb->pending_signals &= ~(1 << i); // 清除标志位
+                
+                if (i == SIGKILL) {
+                    tcb->state = TaskState::Terminated;
+                    continue; // 终止后不再执行其它处理函数
                 }
 
-                // 如果注册了回调，立即在当前线程上下文中执行异步处理
-                if (tcb->signal_handlers[sig]) {
-                    tcb->signal_handlers[sig](sig);
+                if (tcb->signal_handlers[i]) {
+                    tcb->signal_handlers[i](i);
                 }
             }
         }
@@ -153,7 +151,7 @@ public:
         // ── 阶段一：寻找最高可运行优先级 ──────────────────────────────────
         TaskPriority max_prio = TaskPriority::Idle;
         for (uint32_t i = 0; i < task_count; i++) {
-            if (tasks[i].state != TaskState::Sleeping && tasks[i].state != TaskState::Blocked_On_Notify) {
+            if (tasks[i].state != TaskState::Sleeping && tasks[i].state != TaskState::Blocked_On_Notify && tasks[i].state != TaskState::Terminated) {
                 // 【蓝河帧感知拦截】如果属于帧间非关键任务，但在本帧的 UI 渲染还没结束时，强行跳过！
                 if (!frame_scheduler_is_task_allowed(static_cast<uint8_t>(tasks[i].current_priority))) {
                     continue;
@@ -169,7 +167,7 @@ public:
         uint32_t next_task = current_task_index;
         for (uint32_t i = 0; i < task_count; i++) {
             next_task = (next_task + 1) % task_count;
-            if (tasks[next_task].state != TaskState::Sleeping && tasks[next_task].state != TaskState::Blocked_On_Notify &&
+            if (tasks[next_task].state != TaskState::Sleeping && tasks[next_task].state != TaskState::Blocked_On_Notify && tasks[next_task].state != TaskState::Terminated &&
                 tasks[next_task].current_priority == max_prio) {
                 // 【蓝河帧感知拦截】同级查找也需校验
                 if (frame_scheduler_is_task_allowed(static_cast<uint8_t>(tasks[next_task].current_priority))) {
@@ -180,13 +178,15 @@ public:
 
         // ── 阶段三：发起上下文切换 ──────────────────────────────────────
         if (next_task != current_task_index) {
+            // 【信号拦截点】切入新任务前，优先处理它的 POSIX 异步信号
+            // 注意：必须在关中断之前执行，防止信号处理函数过长导致中断延迟过高
+            dispatch_signals(&tasks[next_task]);
+
             Arch::disable_interrupts(); // 临界区：更新 TCB 指针必须原子完成
             g_current_tcb_ptr = &tasks[current_task_index];
             current_task_index = next_task;
             g_next_tcb_ptr = &tasks[current_task_index];
             
-            // 【信号拦截点】切入新任务前，优先处理它的 POSIX 异步信号
-            dispatch_signals(&tasks[current_task_index]);
             Arch::enable_interrupts();  // 必须先恢复中断，PendSV 才能被硬件响应
             Arch::trigger_context_switch(); // Pending PendSV 位，等待中断开放后执行
         }

@@ -51,7 +51,7 @@ public:
         broadcast_addr.sin_addr.s_addr = lwip_htonl(INADDR_BROADCAST); // 255.255.255.255
 
         // 构建超级终端设备凭证 (JSON/RPC 风格)
-        const char* beacon_payload = "{\"event\":\"beacon\",\"device_id\":\"aurora_watch_01\",\"cap\":[\"display\",\"touch\"]}";
+        const char* beacon_payload = "{\"event\":\"beacon\",\"device_id\":\"aurora_watch_01\",\"cap\":[\"display\",\"touch\"],\"auth\":\"aurora_token_xyz\"}";
         
         lwip_sendto(udp_socket_, beacon_payload, strlen(beacon_payload), 0,
                     (struct sockaddr*)&broadcast_addr, sizeof(broadcast_addr));
@@ -93,13 +93,16 @@ public:
                 // 只处理 "event":"beacon" 的心跳报文
                 if (parser.get_string("event", event_type, 32) && strcmp(event_type, "beacon") == 0) {
                     
-                    if (parser.get_string("device_id", device_id, 32) && 
-                        parser.get_raw_value("cap", cap_array, 64)) {
-                        
-                        // 全部提取成功！将其扔给超级终端路由表进行智能注册
+                    char auth_token[32] = {0};
+                    if (parser.get_string("auth", auth_token, 32) && strcmp(auth_token, "aurora_token_xyz") == 0) {
+                        if (parser.get_string("device_id", device_id, 32) && 
+                            parser.get_raw_value("cap", cap_array, 64)) {
+                            
+                            // 全部提取成功！将其扔给超级终端路由表进行智能注册
                         DeviceRouteTable::instance().register_or_update_device(
                             ip_str, device_id, cap_array, simulated_tick
                         );
+                        }
                     }
                 }
             }

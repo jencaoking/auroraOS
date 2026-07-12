@@ -88,14 +88,14 @@ extern "C" void miband_kernel_main(void) {
     
     // UI 线程栈 (分配 1024 uint32_t = 4KB，应对复杂的界面状态机)
     uint32_t* ui_stack = new uint32_t[1024];
-    uint32_t ui_tid = sched.create_task(ui_render_task, ui_stack, 1024 * sizeof(uint32_t), static_cast<TaskPriority>(FramePriority::CRITICAL))->id;
+    uint32_t ui_tid = sched.create_task(ui_render_task, ui_stack, 1024 * sizeof(uint32_t), TaskPriority::Realtime)->id;
     
     // 将 UI 线程绑定到动态帧调度器
     FrameSchedulerV2::instance().init(30, ui_tid);
 
     // 传感器与 BLE 线程栈 (分配 512 uint32_t = 2KB，处理浮点数和网络封包)
     uint32_t* daemon_stack = new uint32_t[512];
-    sched.create_task(sensor_ble_daemon_task, daemon_stack, 512 * sizeof(uint32_t), static_cast<TaskPriority>(FramePriority::HIGH));
+    sched.create_task(sensor_ble_daemon_task, daemon_stack, 512 * sizeof(uint32_t), TaskPriority::High);
 
     // Idle 线程栈 (极简 128 uint32_t = 0.5KB)
     uint32_t* idle_stack = new uint32_t[128];

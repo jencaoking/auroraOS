@@ -181,7 +181,11 @@ void* realloc(void* ptr, size_t size) {
     }
     void* new_ptr = malloc(size);
     if (new_ptr) {
-        memcpy(new_ptr, ptr, size);
+        size_t old_size = KernelHeap::instance().get_block_size(ptr);
+        size_t copy_size = (old_size < size) ? old_size : size;
+        if (copy_size > 0) {
+            memcpy(new_ptr, ptr, copy_size);
+        }
         free(ptr);
     }
     return new_ptr;

@@ -25,6 +25,9 @@
 #define MAC_TCTL_PADEN (1 << 1)
 #define MAC_TCTL_CRC   (1 << 2)
 
+#define MAC_RIS_RXINT  (1 << 0)
+#define MAC_IACK_RXINT (1 << 0)
+
 class StellarisEth : public NetDevice {
 private:
     // MAC / SYSCTL 基地址统一来自 BSP (boards/<board>/board.h)

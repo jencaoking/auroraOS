@@ -6,14 +6,13 @@
 #include "task_notify.hpp"
 
 // ========================================================
-// 适配手环特性的全局任务优先级定义
+// 我们现已统一使用 kernel/task.hpp 中的 TaskPriority。
+// 映射关系：
+// CRITICAL -> Realtime (最高优，UI 渲染、触控与手势识别)
+// HIGH     -> High     (传感器后台采样、BLE 协议栈心跳)
+// NORMAL   -> Normal   (运动算法复杂运算、文件系统日志落盘)
+// LOW      -> Low      (极低优内存清理与垃圾回收)
 // ========================================================
-enum class FramePriority : uint8_t {
-    CRITICAL = 200, // UI 渲染、触控与手势识别 (仅亮屏时活跃)
-    HIGH     = 150, // 传感器后台采样、BLE 协议栈心跳 (息屏深睡期唯一允许执行的级别)
-    NORMAL   = 100, // 运动算法复杂运算、文件系统日志落盘
-    LOW      = 50   // 极低优内存清理与垃圾回收
-};
 
 class FrameSchedulerV2 {
 private:
@@ -103,14 +102,14 @@ public:
     bool is_task_allowed(uint8_t task_priority) const {
         // 1. 息屏深度睡眠保护：仅放行传感器采集和蓝牙通信 (HIGH 级及以上)
         if (current_fps_ == 0) {
-            if (task_priority < static_cast<uint8_t>(FramePriority::HIGH)) {
+            if (task_priority < static_cast<uint8_t>(TaskPriority::High)) {
                 return false; 
             }
         }
 
         // 2. 亮屏渲染特权保护：帧内绝对优先绘制，拒绝低优先级的数学与日志运算干扰
         if (in_active_render_window_) {
-            if (task_priority < static_cast<uint8_t>(FramePriority::HIGH)) {
+            if (task_priority < static_cast<uint8_t>(TaskPriority::High)) {
                 return false;
             }
         }

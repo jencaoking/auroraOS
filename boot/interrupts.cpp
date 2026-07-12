@@ -55,7 +55,19 @@ extern "C" {
     void MemManage_Handler(void) {
         uart_puts("\r\n[MemManage_Handler] Memory Protection Violation Detected! \r\n");
         uart_puts("Access Denied! Offending thread terminated by kernel.\r\n");
-        while (1) {} // 简单处理：挂起系统。未来可升级为销毁当前 TCB 并触发调度
+        
+        // 【系统审查修复】：不要挂起整个系统，直接销毁违规线程，并将 CPU 让给其它存活任务
+        TaskControlBlock* current = Scheduler::instance().get_current_tcb();
+        if (current) {
+            current->state = TaskState::Terminated; // 或者直接发送 SIGKILL
+        }
+        
+        // 强制触发一次调度，让出 CPU
+        Scheduler::instance().schedule();
+        
+        // 因为是从异常上下文调用 schedule()，在 PendSV 处理前我们必须死循环等待，
+        // PendSV 发生后，由于当前线程已终止，它将永远不会再被调度回来。
+        while (1) {} 
     }
 
     void HardFault_Handler(void) {
