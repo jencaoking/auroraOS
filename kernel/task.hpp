@@ -255,7 +255,7 @@ public:
 
     int get_task_count() const { return task_count; }
     TaskControlBlock* get_task(int index) { 
-        if (index >= 0 && index < task_count) return &tasks[index]; 
+        if (index >= 0 && static_cast<uint32_t>(index) < task_count) return &tasks[index]; 
         return nullptr;
     }
     TaskControlBlock* get_task_by_id(uint32_t id) {

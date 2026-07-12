@@ -5,9 +5,9 @@ class VNode {
 public:
     virtual ~VNode() = default;
     // 增加 offset 参数
-    virtual int read(char* buf, int len, int offset) { return -1; }
-    virtual int write(const char* buf, int len, int offset) { return -1; }
-    virtual int ioctl(int request, void* arg) { return -1; }
+    virtual int read(char* buf, int len, int offset) { (void)buf; (void)len; (void)offset; return -1; }
+    virtual int write(const char* buf, int len, int offset) { (void)buf; (void)len; (void)offset; return -1; }
+    virtual int ioctl(int request, void* arg) { (void)request; (void)arg; return -1; }
     virtual int get_size() const { return 0; }
 };
 
