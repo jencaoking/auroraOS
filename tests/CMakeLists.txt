@@ -87,6 +87,7 @@ set(TEST_SOURCES
     unit/test_renderer2d.cpp
     unit/test_power.cpp
     unit/test_lua_vm.cpp
+    unit/test_mutex.cpp
 )
 
 # ---------------------------------------------------------------------------
