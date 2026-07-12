@@ -228,6 +228,8 @@ auroraOS/
 │   │   └── gesture_recognizer.hpp # 手势识别（miband 分支）
 │   ├── sensor/
 │   │   └── sensor_framework.hpp #  传感器框架（Zephyr 风格 channel API）
+│   ├── power/
+│   │   └── charging_manager.hpp # 充电管理驱动与锂电池电量插值算法
 │   └── storage/
 │       └── flash_device.hpp   #   Flash 块设备抽象
 ├── adapter/net/               # lwIP OSAL 适配层
@@ -595,7 +597,7 @@ python scripts/genconfig.py
 - [x] irq_save/restore 扩展
 - [x] 消息队列优先级 (紧急插队 push_urgent)
 
-### Phase 2: 手表原型（6-12 个月）— 🚧 75% 完成
+### Phase 2: 手表原型（6-12 个月）— 🎉 100% 完成
 
 - [x] 帧缓冲 + 脏区域渲染（FrameBuffer）
 - [x] OLED 驱动框架（OledDriver）
@@ -609,8 +611,8 @@ python scripts/genconfig.py
 - [x] BLE 协议栈架构（miband 分支）
 - [x] BleStack 底层并发与挂死防范加固
 - [x] 2D 绘图引擎（Renderer2D：直线/圆/弧/三角形/圆角矩形/文本/混色）
-- [ ] Tickless 真实硬件唤醒定时器
-- [ ] 充电管理驱动
+- [x] Tickless 真实硬件唤醒定时器
+- [x] 充电管理驱动
 
 ### Phase 3: 手表智能化（12-18 个月）— 📅 部分提前
 
