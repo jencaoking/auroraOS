@@ -25,13 +25,12 @@ private:
     // 系统 API 绑定 1：暴露获取心率的 C++ 函数给 Lua
     // ========================================================
     static int api_get_heart_rate(lua_State* L) {
-        extern HealthSensor g_health_sensor;
-        SensorDevice* hr_sensor = &g_health_sensor;
+        extern HeartRateSensor g_health_sensor;
+        SensorDriver* hr_sensor = &g_health_sensor;
         if (hr_sensor) {
-            hr_sensor->sample_fetch();
-            SensorValue val;
-            hr_sensor->channel_get(SensorChannel::HEART_RATE, &val);
-            lua_pushinteger(L, val.val1); // 将心率值压入 Lua 栈返回
+            SensorData val;
+            hr_sensor->read(&val);
+            lua_pushinteger(L, val.payload.bpm); // 将心率值压入 Lua 栈返回
             return 1;
         }
         lua_pushinteger(L, 0);

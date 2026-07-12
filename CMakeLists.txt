@@ -137,6 +137,9 @@ if(BOARD STREQUAL "lm3s6965-qb")
         ${CMAKE_SOURCE_DIR}/adapter/net
         ${CMAKE_SOURCE_DIR}/3rdparty/lwip/src/include
         ${CMAKE_SOURCE_DIR}/3rdparty/littlefs
+        ${CMAKE_SOURCE_DIR}/drivers/display
+        ${CMAKE_SOURCE_DIR}/drivers/sensor
+        ${CMAKE_SOURCE_DIR}/drivers/input
         ${CMAKE_SOURCE_DIR}/arch/${ARCH_DIR}
         ${CMAKE_SOURCE_DIR}/boards/${BOARD_DIR}
     )
