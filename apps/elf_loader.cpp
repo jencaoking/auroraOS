@@ -54,6 +54,13 @@ bool ElfLoader::load_and_exec(const char* filepath) {
         VfsManager::instance().read(fd, reinterpret_cast<char*>(&phdr), sizeof(phdr));
 
         if (phdr.p_type == PT_LOAD && phdr.p_memsz > 0) {
+            // [安全加固 1] 检查段地址加法回绕溢出
+            if (phdr.p_vaddr + phdr.p_memsz < phdr.p_vaddr) {
+                sys_print("[ElfLoader] Error: Integer overflow in segment addresses!\r\n");
+                VfsManager::instance().close(fd);
+                return false;
+            }
+
             has_loadable_segment = true;
             if (phdr.p_vaddr < min_vaddr) min_vaddr = phdr.p_vaddr;
             if (phdr.p_vaddr + phdr.p_memsz > max_vaddr) max_vaddr = phdr.p_vaddr + phdr.p_memsz;
@@ -75,6 +82,14 @@ bool ElfLoader::load_and_exec(const char* filepath) {
 
     // 分配整块连续内存容纳所有段
     uint32_t total_memsz = max_vaddr - min_vaddr;
+    
+    // [安全加固 2] 限制单个 ELF 最大占用内存 (例如硬限制为 256KB)
+    if (total_memsz > 256 * 1024) {
+        sys_print("[ElfLoader] Error: total_memsz exceeds 256KB limit!\r\n");
+        VfsManager::instance().close(fd);
+        return false;
+    }
+
     char* segment_memory = new char[total_memsz];
     if (!segment_memory) {
         sys_print("[ElfLoader] Out of Memory while allocating segment!\r\n");
@@ -90,11 +105,20 @@ bool ElfLoader::load_and_exec(const char* filepath) {
         if (phdr.p_type == PT_LOAD && phdr.p_memsz > 0) {
             uint32_t offset_in_mem = phdr.p_vaddr - min_vaddr;
             
-            VfsManager::instance().lseek(fd, phdr.p_offset, 0);
-            VfsManager::instance().read(fd, segment_memory + offset_in_mem, phdr.p_filesz);
+            // [安全加固 3] 防止恶意的重叠段/假偏移导致越界写
+            if (offset_in_mem > total_memsz || phdr.p_memsz > total_memsz - offset_in_mem) {
+                sys_print("[ElfLoader] Error: segment offset out of bounds!\r\n");
+                delete[] segment_memory;
+                VfsManager::instance().close(fd);
+                return false;
+            }
 
-            // 清零 BSS 区域
-            for (uint32_t b = phdr.p_filesz; b < phdr.p_memsz; b++) {
+            VfsManager::instance().lseek(fd, phdr.p_offset, 0);
+            int actual_read = VfsManager::instance().read(fd, segment_memory + offset_in_mem, phdr.p_filesz);
+            if (actual_read < 0) actual_read = 0;
+
+            // [安全加固 4] 清零从实际读取到的位置到 p_memsz 的剩余区域，防止未初始化内存泄露
+            for (uint32_t b = actual_read; b < phdr.p_memsz; b++) {
                 segment_memory[offset_in_mem + b] = 0;
             }
         }
