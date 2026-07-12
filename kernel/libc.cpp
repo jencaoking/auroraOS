@@ -47,6 +47,14 @@ int strncmp(const char* s1, const char* s2, size_t n) {
     return 0;
 }
 
+int strcmp(const char* s1, const char* s2) {
+    while (*s1 && (*s1 == *s2)) {
+        s1++;
+        s2++;
+    }
+    return (unsigned char)*s1 - (unsigned char)*s2;
+}
+
 void* memmove(void* dest, const void* src, size_t n) {
     uint8_t* d = static_cast<uint8_t*>(dest);
     const uint8_t* s = static_cast<const uint8_t*>(src);

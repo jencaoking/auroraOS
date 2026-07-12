@@ -5,6 +5,8 @@
 #include "task.hpp"
 #include "posix.hpp"
 #include <string.h>
+#include "../utils/json_parser.hpp"
+#include "device_route_table.hpp"
 
 class DistributedSoftBus {
 private:
@@ -65,32 +67,41 @@ public:
 
         int console_fd = open("/dev/uart0", 0);
         write(console_fd, "[SoftBus] Distributed Engine Listening on UDP 8899...\r\n", 55);
+        close(console_fd);
+
+        uint32_t simulated_tick = 0; // 模拟系统 tick
 
         while (true) {
-            // 阻塞等待局域网内任何设备发向 8899 端口的数据
             int bytes = lwip_recvfrom(udp_socket_, recv_buf, sizeof(recv_buf) - 1, 0,
                                       (struct sockaddr*)&remote_addr, &addr_len);
             
             if (bytes > 0) {
                 recv_buf[bytes] = '\0';
+                simulated_tick++; 
                 
                 char ip_str[16];
                 ip4addr_ntoa_r((const ip4_addr_t*)&remote_addr.sin_addr, ip_str, sizeof(ip_str));
 
-                // 打印发现的远端设备信息
-                char msg[256];
-                int len = 0;
-                auto append = [&](const char* s) { while (*s) msg[len++] = *s++; };
-                
-                append("\r\n\r\n\xE2\x9B\xB0\xEF\xB8\x8F [SoftBus] Device Discovered! IP: ");
-                append(ip_str);
-                append("\r\n   Payload: ");
-                append(recv_buf);
-                append("\r\n\r\n");
+                // ========================================================
+                // 核心：调用零开销 JSON 解析器拆解 UDP 报文！
+                // ========================================================
+                JsonParser parser(recv_buf);
+                char event_type[32] = {0};
+                char device_id[32] = {0};
+                char cap_array[64] = {0};
 
-                write(console_fd, msg, len);
-
-                // 在这里可以解析 payload，把对方设备的 IP 和能力注册到内核的设备发现树中
+                // 只处理 "event":"beacon" 的心跳报文
+                if (parser.get_string("event", event_type, 32) && strcmp(event_type, "beacon") == 0) {
+                    
+                    if (parser.get_string("device_id", device_id, 32) && 
+                        parser.get_raw_value("cap", cap_array, 64)) {
+                        
+                        // 全部提取成功！将其扔给超级终端路由表进行智能注册
+                        DeviceRouteTable::instance().register_or_update_device(
+                            ip_str, device_id, cap_array, simulated_tick
+                        );
+                    }
+                }
             }
         }
     }
