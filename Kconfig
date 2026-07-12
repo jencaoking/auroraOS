@@ -116,5 +116,17 @@ config NET_DEFAULT_MAC
 
 endmenu
 
+menu "Applications and runtimes"
+
+config LUA_VM
+    bool "Lua 5.4.6 Virtual Machine"
+    default y if BOARD_MIBAND8
+    default n
+    help
+      Enable the Lua scripting engine.
+      WARNING: Lua 5.4.6 requires significant memory. It is highly recommended to disable this on targets with < 128KB SRAM (e.g. LM3S6965) to avoid OOM crashes.
+
+endmenu
+
 source "Kconfig.miband"
 

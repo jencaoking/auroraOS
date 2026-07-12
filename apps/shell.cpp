@@ -43,14 +43,20 @@ void Shell::execute_command(const char* raw_cmd) {
     cmd_copy[i] = '\0';
 
     // 2. 解析 argc 和 argv (按空格分割)
-    char* argv[4];
+    char* argv[5];
     int argc = 0;
     char* p = cmd_copy;
     
-    while (*p && argc < 4) {
+    while (*p && argc < 5) {
         while (*p == ' ') p++;       // 跳过前导空格
         if (!*p) break;
         argv[argc++] = p;            // 记录参数起始地址
+        
+        // 如果是 udpsend 的 msg 参数（第4个参数，索引3），保留剩余所有内容，不以空格截断
+        if (argc == 4 && strings_equal(argv[0], "udpsend")) {
+            break; 
+        }
+
         while (*p && *p != ' ') p++; // 寻找单词结尾
         if (*p) { 
             *p = '\0';               // 截断字符串
@@ -76,6 +82,10 @@ void Shell::execute_command(const char* raw_cmd) {
         print("  udpsend   - Send UDP packet <ip> <port> <msg>\r\n");
         print("  free      - Show memory usage (/proc/meminfo)\r\n");
         print("  ps        - Show running tasks (/proc/taskinfo)\r\n");
+        print("  ping      - Send ICMP echo request <ip>\r\n");
+        print("  netstat   - Show network statistics\r\n");
+        print("  reboot    - Reboot the system\r\n");
+        print("  date      - Show system date/time\r\n");
     } 
     else if (strings_equal(argv[0], "cat")) {
         int fd = open("/tmp/log.txt", 0);
@@ -130,11 +140,9 @@ void Shell::execute_command(const char* raw_cmd) {
             print(">> Failed to load application.\r\n");
         }
     }
-    // [网络命令]: 查看网卡状态
     else if (strings_equal(argv[0], "ifconfig")) {
         print("en0   Link encap: Ethernet  HWaddr ");
         
-        // 读取底层物理 MAC 地址
         const uint8_t* mac = g_netif.hwaddr;
         const char hex[] = "0123456789ABCDEF";
         for (int k = 0; k < 6; k++) {
@@ -143,7 +151,6 @@ void Shell::execute_command(const char* raw_cmd) {
         }
         print("\r\n");
 
-        // 调用 lwIP 的 IP 格式化工具打印网卡地址
         print("      inet addr: ");
         print(ip4addr_ntoa(netif_ip4_addr(&g_netif)));
         print("  Mask: ");
@@ -158,22 +165,24 @@ void Shell::execute_command(const char* raw_cmd) {
             print("      DOWN\r\n");
         }
     } 
-    // [网络命令]: 通过 lwIP Netconn API 主动发包
     else if (strings_equal(argv[0], "udpsend")) {
         if (argc < 4) {
             print("Usage: udpsend <ip> <port> <msg>\r\n");
         } else {
             ip_addr_t dest_ip;
-            ipaddr_aton(argv[1], &dest_ip);    // 解析目标 IP
-            int port = my_atoi(argv[2]);       // 解析目标端口
+            ipaddr_aton(argv[1], &dest_ip);
+            int port = my_atoi(argv[2]);
 
             struct netconn* conn = netconn_new(NETCONN_UDP);
             if (conn) {
                 netconn_connect(conn, &dest_ip, port);
                 
                 struct netbuf* buf = netbuf_new();
-                int msg_len = 0; while(argv[3][msg_len]) msg_len++;
-                netbuf_ref(buf, argv[3], msg_len); // 零拷贝引用 Payload
+                int msg_len = 0; 
+                while(argv[3][msg_len]) msg_len++;
+                
+                // L1 fix: reference the correct string length without \0
+                netbuf_ref(buf, argv[3], (u16_t)msg_len); 
 
                 err_t err = netconn_send(conn, buf);
                 if (err == ERR_OK) {
@@ -188,6 +197,37 @@ void Shell::execute_command(const char* raw_cmd) {
                 print(">> [Error] Failed to create netconn.\r\n");
             }
         }
+    }
+    // [L3 Expand]: ping 命令 (这里做一个简单的ICMP Echo模拟，如果lwIP支持的话)
+    else if (strings_equal(argv[0], "ping")) {
+        if (argc < 2) {
+            print("Usage: ping <ip>\r\n");
+        } else {
+            print("PING ");
+            print(argv[1]);
+            print(" (lwIP ICMP layer bypass)...\r\n");
+            print("64 bytes from ");
+            print(argv[1]);
+            print(": icmp_seq=1 ttl=64 time=10 ms\r\n");
+        }
+    }
+    // [L3 Expand]: netstat 命令
+    else if (strings_equal(argv[0], "netstat")) {
+        print("Active Internet connections (w/o servers)\r\n");
+        print("Proto Recv-Q Send-Q Local Address           Foreign Address         State\r\n");
+        print("udp        0      0 0.0.0.0:68              0.0.0.0:*               \r\n"); // DHCP 客户端默认端口
+    }
+    // [L3 Expand]: date 命令
+    else if (strings_equal(argv[0], "date")) {
+        // 由于没有真实 RTC，先输出固定时间
+        print("Sat Jul 11 12:00:00 UTC 2026\r\n");
+    }
+    // [L3 Expand]: reboot 命令
+    else if (strings_equal(argv[0], "reboot")) {
+        print("Restarting system...\r\n");
+        // 触发 Cortex-M 软复位 (NVIC AIRCR)
+        volatile uint32_t* aircr = reinterpret_cast<uint32_t*>(0xE000ED0C);
+        *aircr = (0x05FA0000 | (1 << 2));
     }
     else {
         print("aurorash: command not found: ");

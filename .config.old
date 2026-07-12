@@ -6,7 +6,7 @@ CONFIG_BOARD="miband8"
 # System Core Configuration
 #
 CONFIG_SCHEDULER=y
-CONFIG_MAX_TASKS=8
+CONFIG_MAX_TASKS=16
 CONFIG_TICK_RATE_HZ=1000
 # end of System Core Configuration
 
@@ -29,7 +29,10 @@ CONFIG_WORK_QUEUE=y
 #
 # Networking
 #
-# CONFIG_NETWORKING is not set
+CONFIG_NETWORKING=y
+CONFIG_NET_LWIP=y
+CONFIG_NET_DEFAULT_IP="10.0.2.15"
+CONFIG_NET_DEFAULT_MAC="00:11:22:33:44:55"
 # end of Networking
 
 #

@@ -3,7 +3,6 @@
 
 #include <stdint.h>
 #include "board.h"   // 引入板级引脚定义 (DISPLAY_WIDTH, DISPLAY_HEIGHT)
-// #include "device.hpp"
 
 // ========================================================
 // ST7789 核心硬件指令集
@@ -18,6 +17,20 @@
 #define ST7789_RAMWR   0x2C
 #define ST7789_WRDISBV 0x51 // 写入显示屏背光亮度指令
 
+// ========================================================
+// Apollo3 Blue IOM (SPI) 寄存器定义
+// ========================================================
+#define AM_HAL_IOM_BASE     0x50004000
+#define AM_HAL_IOM_FIFO     (AM_HAL_IOM_BASE + 0x200)
+#define AM_HAL_IOM_CMD      (AM_HAL_IOM_BASE + 0x108)
+#define AM_HAL_IOM_STATUS   (AM_HAL_IOM_BASE + 0x104)
+
+// GPIO Data/Set/Clear (伪寄存器，代替 gpio_set)
+#define AM_HAL_GPIO_BASE    0x40010000
+#define AM_HAL_GPIO_WT_EN   (AM_HAL_GPIO_BASE + 0x04)
+#define AM_HAL_GPIO_WT_DIS  (AM_HAL_GPIO_BASE + 0x08)
+#define PIN_DISP_DC         12 // Data/Command Pin
+
 class St7789Driver {
 private:
     uint16_t width_;
@@ -25,21 +38,41 @@ private:
     bool     is_sleeping_;
     uint8_t  current_brightness_;
 
-    // 内部底层接口：发送命令与数据 (实际需对接 Apollo3 SPI 寄存器)
+    // 内部底层接口：发送命令与数据 (对接 Apollo3 SPI 寄存器)
+    void set_dc_pin(bool data) {
+        volatile uint32_t* gpio_wt_en  = reinterpret_cast<uint32_t*>(AM_HAL_GPIO_WT_EN);
+        volatile uint32_t* gpio_wt_dis = reinterpret_cast<uint32_t*>(AM_HAL_GPIO_WT_DIS);
+        if (data) {
+            *gpio_wt_en = (1 << PIN_DISP_DC);
+        } else {
+            *gpio_wt_dis = (1 << PIN_DISP_DC);
+        }
+    }
+
+    void spi_transmit_byte(uint8_t byte) {
+        volatile uint32_t* iom_fifo   = reinterpret_cast<uint32_t*>(AM_HAL_IOM_FIFO);
+        volatile uint32_t* iom_cmd    = reinterpret_cast<uint32_t*>(AM_HAL_IOM_CMD);
+        volatile uint32_t* iom_status = reinterpret_cast<uint32_t*>(AM_HAL_IOM_STATUS);
+        
+        *iom_fifo = byte;
+        *iom_cmd  = 0x1; // Trigger 1 byte SPI write
+        while ((*iom_status & 0x1) != 0); // Wait until idle
+    }
+
     void spi_send_cmd(uint8_t cmd) {
-        // gpio_clear(PIN_DISP_DC);
-        // spi_transmit(DISPLAY_SPI_PORT, &cmd, 1);
+        set_dc_pin(false);
+        spi_transmit_byte(cmd);
     }
 
     void spi_send_data(uint8_t data) {
-        // gpio_set(PIN_DISP_DC);
-        // spi_transmit(DISPLAY_SPI_PORT, &data, 1);
+        set_dc_pin(true);
+        spi_transmit_byte(data);
     }
 
     void spi_send_data_16(uint16_t data) {
-        // gpio_set(PIN_DISP_DC);
-        // uint8_t buf[2] = { (uint8_t)(data >> 8), (uint8_t)(data & 0xFF) };
-        // spi_transmit(DISPLAY_SPI_PORT, buf, 2);
+        set_dc_pin(true);
+        spi_transmit_byte(data >> 8);
+        spi_transmit_byte(data & 0xFF);
     }
 
     St7789Driver() : width_(192), height_(490), is_sleeping_(false), current_brightness_(100) {} // 适配 192x490 分辨率
@@ -130,13 +163,27 @@ public:
     void write_patch(const uint16_t* buffer, uint32_t pixel_count) {
         if (is_sleeping_ || pixel_count == 0) return;
 
-        // gpio_set(PIN_DISP_DC);
+        set_dc_pin(true);
         
-        // 核心优化：启动 SPI DMA 异步传输
-        // spi_dma_transmit_async(DISPLAY_SPI_PORT, (uint8_t*)buffer, pixel_count * 2);
+        // 核心优化：启动 SPI DMA 异步传输 (假定 Apollo3 DMA 控制器)
+        #define AM_HAL_IOM_DMA_CFG     (AM_HAL_IOM_BASE + 0x2A0)
+        #define AM_HAL_IOM_DMA_TARG    (AM_HAL_IOM_BASE + 0x2A4)
+        #define AM_HAL_IOM_DMA_TOTLEN  (AM_HAL_IOM_BASE + 0x2A8)
+        
+        volatile uint32_t* dma_cfg    = reinterpret_cast<uint32_t*>(AM_HAL_IOM_DMA_CFG);
+        volatile uint32_t* dma_targ   = reinterpret_cast<uint32_t*>(AM_HAL_IOM_DMA_TARG);
+        volatile uint32_t* dma_totlen = reinterpret_cast<uint32_t*>(AM_HAL_IOM_DMA_TOTLEN);
+        volatile uint32_t* iom_status = reinterpret_cast<uint32_t*>(AM_HAL_IOM_STATUS);
+        
+        *dma_targ   = reinterpret_cast<uint32_t>(buffer);
+        *dma_totlen = pixel_count * 2;
+        *dma_cfg    = 0x1; // Enable DMA
         
         // 传输期间，通知 CPU 直接陷入 WFI 浅度睡眠节省电能，直到 DMA 传输完成中断唤醒 CPU
-        // __asm__ volatile ("wfi" : : : "memory"); 
+        // 模拟等待 DMA 结束
+        while ((*iom_status & 0x2) == 0) {
+            __asm__ volatile ("wfi" : : : "memory"); 
+        }
     }
 
     uint16_t get_width() const { return width_; }

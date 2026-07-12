@@ -7,13 +7,13 @@
 extern Mutex uart_mutex;
 
 StellarisEth::StellarisEth()
-    : mac_ris_(reinterpret_cast<uint32_t*>(BOARD_ETH_MAC_BASE + 0x000)),
-      mac_iack_(reinterpret_cast<uint32_t*>(BOARD_ETH_MAC_BASE + 0x000)),
-      mac_rctl_(reinterpret_cast<uint32_t*>(BOARD_ETH_MAC_BASE + 0x008)),
-      mac_tctl_(reinterpret_cast<uint32_t*>(BOARD_ETH_MAC_BASE + 0x00C)),
-      mac_data_(reinterpret_cast<uint32_t*>(BOARD_ETH_MAC_BASE + 0x018)),
-      mac_ia0_(reinterpret_cast<uint32_t*>(BOARD_ETH_MAC_BASE + 0x01C)),
-      mac_ia1_(reinterpret_cast<uint32_t*>(BOARD_ETH_MAC_BASE + 0x020)) {
+    : mac_ris_(reinterpret_cast<uint32_t*>(ETH_MAC_RIS)),
+      mac_iack_(reinterpret_cast<uint32_t*>(ETH_MAC_IACK)),
+      mac_rctl_(reinterpret_cast<uint32_t*>(ETH_MAC_RCTL)),
+      mac_tctl_(reinterpret_cast<uint32_t*>(ETH_MAC_TCTL)),
+      mac_data_(reinterpret_cast<uint32_t*>(ETH_MAC_DATA)),
+      mac_ia0_(reinterpret_cast<uint32_t*>(ETH_MAC_IA0)),
+      mac_ia1_(reinterpret_cast<uint32_t*>(ETH_MAC_IA1)) {
 
     // 使用 Kconfig 配置的默认 MAC 地址
 #ifdef CONFIG_NET_DEFAULT_MAC
@@ -38,9 +38,9 @@ StellarisEth::StellarisEth()
 bool StellarisEth::init() {
     sys_print("[NetDriver] Activating Stellaris Ethernet Controller Clocks...\r\n");
 
-    // 1. 开启系统控制寄存器中的以太网 MAC 和 PHY 时钟门控 (SYSCTL_RCGC2_R @ BASE+0x108)
-    volatile uint32_t* sysctl_rcgc2 = reinterpret_cast<uint32_t*>(BOARD_SYSCTL_BASE + 0x108);
-    *sysctl_rcgc2 |= (1 << 28) | (1 << 30); // Bit 28: MAC Clock, Bit 30: PHY Clock
+    // 1. 开启系统控制寄存器中的以太网 MAC 和 PHY 时钟门控
+    volatile uint32_t* sysctl_rcgc2 = reinterpret_cast<uint32_t*>(SYSCTL_RCGC2_R);
+    *sysctl_rcgc2 |= SYSCTL_RCGC2_MAC | SYSCTL_RCGC2_PHY; 
     
     // 简单循环等待时钟稳定
     for (volatile int i = 0; i < 10000; i++);
@@ -50,15 +50,14 @@ bool StellarisEth::init() {
     *mac_ia1_ = (mac_address_[5] << 8) | mac_address_[4];
 
     // 3. 配置接收控制寄存器 (RCTL):
-    // Bit 0: RXEN (开启接收), Bit 1: AMUL (接收多播), Bit 2: PRMS (混杂模式，捕获局域网所有包)
-    *mac_rctl_ = (1 << 0) | (1 << 1) | (1 << 2);
+    // RXEN (开启接收), AMUL (接收多播), PRMS (混杂模式，捕获局域网所有包)
+    *mac_rctl_ = MAC_RCTL_RXEN | MAC_RCTL_AMUL | MAC_RCTL_PRMS;
 
     // 4. 配置发送控制寄存器 (TCTL):
-    // Bit 0: TXEN (开启发包), Bit 1: PADEN (自动补齐到60字节), Bit 2: CRC (自动追加硬件 CRC 校验和)
-    *mac_tctl_ = (1 << 0) | (1 << 1) | (1 << 2);
+    // TXEN (开启发包), PADEN (自动补齐到60字节), CRC (自动追加硬件 CRC 校验和)
+    *mac_tctl_ = MAC_TCTL_TXEN | MAC_TCTL_PADEN | MAC_TCTL_CRC;
 
     link_up_ = true;
-    // MAC 字节由 BSP 提供，日志不再重复硬编码具体地址
     sys_print("[NetDriver] L2 Ethernet MAC Initialized [UP]\r\n");
     return true;
 }

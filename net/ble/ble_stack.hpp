@@ -137,8 +137,31 @@ public:
         svc_vendor_.init(0xFFE0); // 假定私有服务 UUID 为 0xFFE0
         svc_vendor_.add_attribute(0xFFE1, GattPerm::WRITE | GattPerm::NOTIFY, vendor_rx_buf_, 0, sizeof(vendor_rx_buf_));
 
-        // 此处应调用 Apollo3 厂商 SDK 的 API，将上述 GATT 树下发至底层控制器的 RAM 中
-        // hci_register_services(...);
+        // 此处调用 Apollo3 厂商 SDK 的 API，将上述 GATT 树下发至底层控制器的 RAM 中
+        // 我们通过模拟 HCI 命令通道进行配置
+        hci_send_cmd(0x1001, nullptr, 0); // HCI_RESET
+        // ... (省略复杂的属性映射过程)
+    }
+
+    // ========================================================
+    // HCI 通信层 (模拟直接读写 Apollo3 BLE 协处理器 IPC/UART 接口)
+    // ========================================================
+    #define APOLLO3_BLE_IPC_BASE   0x5000C000
+    #define BLE_IPC_CMD_FIFO       (APOLLO3_BLE_IPC_BASE + 0x00)
+    #define BLE_IPC_DATA_FIFO      (APOLLO3_BLE_IPC_BASE + 0x04)
+    #define BLE_IPC_STATUS         (APOLLO3_BLE_IPC_BASE + 0x08)
+
+    void hci_send_cmd(uint16_t opcode, const uint8_t* param, uint8_t len) {
+        volatile uint32_t* cmd_fifo  = reinterpret_cast<uint32_t*>(BLE_IPC_CMD_FIFO);
+        volatile uint32_t* data_fifo = reinterpret_cast<uint32_t*>(BLE_IPC_DATA_FIFO);
+        volatile uint32_t* status    = reinterpret_cast<uint32_t*>(BLE_IPC_STATUS);
+        
+        *cmd_fifo = opcode;
+        for (int i = 0; i < len; ++i) {
+            *data_fifo = param[i];
+        }
+        *cmd_fifo = 0xFFFF; // Commit command
+        while ((*status & 0x01) != 0); // Wait for IPC idle
     }
 
     // ========================================================
@@ -148,15 +171,18 @@ public:
         if (current_state_ == BleConnectionState::CONNECTED) return;
         
         // 构建广播包 (包含设备名称和主推服务)
-        // uint8_t adv_data[] = { 0x02, 0x01, 0x06, 0x0B, 0x09, 'a','u','r','o','r','a','W','A','T','C','H' };
-        // hci_set_adv_data(adv_data, sizeof(adv_data));
-        // hci_start_advertising();
+        uint8_t adv_data[] = { 0x02, 0x01, 0x06, 0x0B, 0x09, 'a','u','r','o','r','a','W','A','T','C','H' };
+        hci_send_cmd(0x2008, adv_data, sizeof(adv_data)); // HCI_LE_Set_Advertising_Data
+        
+        uint8_t enable = 0x01;
+        hci_send_cmd(0x200A, &enable, 1); // HCI_LE_Set_Advertise_Enable
         
         current_state_ = BleConnectionState::ADVERTISING;
     }
 
     void stop_advertising() {
-        // hci_stop_advertising();
+        uint8_t enable = 0x00;
+        hci_send_cmd(0x200A, &enable, 1); // HCI_LE_Set_Advertise_Enable
         current_state_ = BleConnectionState::DISCONNECTED;
     }
 
@@ -180,8 +206,9 @@ public:
     void update_heart_rate(uint8_t bpm) {
         hr_measurement_[1] = bpm;
         if (current_state_ == BleConnectionState::CONNECTED) {
-            // 触发底层 Notify 发送
-            // hci_send_notification(svc_heart_rate_.get_uuid(), 0x2A37, hr_measurement_, 2);
+            // 触发底层 Notify 发送 (模拟 HCI 命令 0x201D - 伪造的 Notify Opcode)
+            uint8_t payload[4] = { (uint8_t)(svc_heart_rate_.get_uuid() & 0xFF), 0x37, hr_measurement_[0], hr_measurement_[1] };
+            hci_send_cmd(0x201D, payload, 4);
         }
     }
 
@@ -190,7 +217,8 @@ public:
         if (level > 100) level = 100;
         battery_level_ = level;
         if (current_state_ == BleConnectionState::CONNECTED) {
-            // hci_send_notification(svc_battery_.get_uuid(), 0x2A19, &battery_level_, 1);
+            uint8_t payload[3] = { (uint8_t)(svc_battery_.get_uuid() & 0xFF), 0x19, battery_level_ };
+            hci_send_cmd(0x201D, payload, 3);
         }
     }
 };
