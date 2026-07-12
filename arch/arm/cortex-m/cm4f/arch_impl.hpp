@@ -2,6 +2,7 @@
 #define AURORA_ARCH_CM4F_IMPL_HPP
 
 #include <stdint.h>
+#include "board.h" // 包含 SYSTEM_CORE_CLOCK
 
 // ========================================================
 // Cortex-M4F 核心控制寄存器定义
@@ -30,9 +31,32 @@ namespace Arch {
         enable_fpu();
 
         // 将 PendSV 和 SysTick 的中断优先级设置为最低 (0xFF)
-        // 确保系统的上下文切换只在没有其他高优硬件中断抢占时才发生
+        // 确保系统的上下文切换只在没有其他 high-priority 硬件中断抢占时才发生
         SHPR3_PRI_14 = 0xFF;
         SHPR3_PRI_15 = 0xFF;
+    }
+
+    // ========================================================
+    // 底层内联汇编控制
+    // ========================================================
+    inline void disable_interrupts() {
+        __asm__ volatile ("cpsid i" : : : "memory");
+    }
+
+    inline void enable_interrupts() {
+        __asm__ volatile ("cpsie i" : : : "memory");
+    }
+
+    inline void wait_for_interrupt() {
+        __asm__ volatile ("wfi" : : : "memory");
+    }
+
+    // ========================================================
+    // 触发软中断，请求上下文切换
+    // ========================================================
+    inline void trigger_context_switch() {
+        SCB_ICSR |= (1 << 28); // 触发 PendSV 中断
+        __asm__ volatile ("isb\n\t" "dsb\n\t" : : : "memory");
     }
 
     // ========================================================
@@ -69,12 +93,42 @@ namespace Arch {
         return stk;
     }
 
+    inline uint32_t* init_thread_stack(void (*task_entry)(void), uint32_t* stack_space, uint32_t stack_size) {
+        uint32_t* top = stack_space + (stack_size / sizeof(uint32_t));
+        return init_task_stack(top, task_entry);
+    }
+
     // ========================================================
-    // 触发软中断，请求上下文切换
+    // SysTick 初始化
     // ========================================================
-    inline void request_context_switch() {
-        SCB_ICSR |= (1 << 28); // 触发 PendSV 中断
-        __asm__ volatile ("isb\n\t" "dsb\n\t" : : : "memory");
+    inline void systick_init(uint32_t hz) {
+        volatile uint32_t* syst_csr = reinterpret_cast<volatile uint32_t*>(0xE000E010);
+        volatile uint32_t* syst_rvr = reinterpret_cast<volatile uint32_t*>(0xE000E014);
+        volatile uint32_t* syst_cvr = reinterpret_cast<volatile uint32_t*>(0xE000E018);
+
+        *syst_csr = 0;                                        // 1. 禁用 SysTick
+        *syst_rvr = (SYSTEM_CORE_CLOCK / hz) - 1;             // 2. 设定重载周期
+        *syst_cvr = 0;                                       // 3. 清零当前值
+        *syst_csr = (1UL << 2) | (1UL << 1) | (1UL << 0);    // 4. 启动 (CLKSOURCE | TICKINT | ENABLE)
+    }
+
+    // ========================================================
+    // 引导第一个任务
+    // ========================================================
+    [[noreturn]] inline void start_first_task(uint32_t* stack_ptr, void (*entry_point)()) {
+        __asm__ volatile (
+            "ldm  %0!, {r4-r11}  \n\t"  // 弹出 R4-R11
+            "msr  psp, %0        \n\t"  // 将更新后的指针写入 PSP
+            "mov  r0, #2         \n\t"  // CONTROL = 0b10: Thread mode, use PSP
+            "msr  control, r0   \n\t"
+            "isb                 \n\t"  // 指令同步屏障
+            "cpsie i             \n\t"  // 全局开中断
+            "bx   %1             \n\t"  // 跳入任务入口
+            : : "r"(stack_ptr),
+                "r"(reinterpret_cast<uint32_t>(entry_point))
+            : "r0", "r4", "r5", "r6", "r7", "r8", "r9", "r10", "r11", "memory"
+        );
+        __builtin_unreachable();
     }
 
 } // namespace Arch

@@ -32,10 +32,8 @@ set(SOURCES
     kernel/memory.cpp
     kernel/libc.cpp
     kernel/posix.cpp
-    apps/shell.cpp
-    apps/elf_loader.cpp
-    apps/kernel.cpp
-    # miband 分支专属组件（占位，实际开发时将添加具体的源文件）
+    arch/arm/cortex-m/cm4f/context_switch.S
+    apps/watch/miband_main.cpp
 )
 
 # 小程序沙盒 (Lua)
@@ -67,6 +65,10 @@ target_include_directories(auroraOS.elf PRIVATE
     ${CMAKE_SOURCE_DIR}/vfs
     ${CMAKE_SOURCE_DIR}/apps
     ${CMAKE_SOURCE_DIR}/drivers/display
+    ${CMAKE_SOURCE_DIR}/drivers/sensor
+    ${CMAKE_SOURCE_DIR}/drivers/input
+    ${CMAKE_SOURCE_DIR}/net/ble
+    ${CMAKE_SOURCE_DIR}/apps/watch
     ${CMAKE_SOURCE_DIR}/arch/${ARCH_DIR}
     ${CMAKE_SOURCE_DIR}/boards/${BOARD_DIR}
 )

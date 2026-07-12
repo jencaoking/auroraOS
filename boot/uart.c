@@ -1,5 +1,15 @@
 #include "uart.h"
 
+#ifdef SOC_AMBIQ_APOLLO3_BLUE
+
+void uart_init(void) {}
+void uart_putc(char c) { (void)c; }
+char uart_getc(void) { return 0; }
+void uart_puts(const char *s) { (void)s; }
+int uart_getc_nb(char *c) { (void)c; return 0; }
+
+#else
+
 // 波特率与系统时钟统一取自 BSP (board.h)，更换板卡时无需改动驱动逻辑
 void uart_init(void)
 {
@@ -40,3 +50,5 @@ int uart_getc_nb(char *c) {
     *c = (char)(UART0_DR & 0xFF);
     return 1;
 }
+
+#endif

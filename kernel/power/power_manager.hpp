@@ -4,10 +4,10 @@
 #include <stdint.h>
 
 // 引入板级配置与传感器框架的空声明（实际项目中应引入真实头文件）
-// #include "board.h"
-// #include "sensor_framework.hpp"
-// #include "st7789_driver.hpp"
-// #include "frame_scheduler_v2.hpp"
+#include "board.h"
+#include "sensor_framework.hpp"
+#include "st7789_driver.hpp"
+#include "frame_scheduler_v2.hpp"
 
 // ========================================================
 // 5 级电源状态定义

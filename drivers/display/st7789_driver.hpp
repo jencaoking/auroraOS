@@ -2,7 +2,7 @@
 #define AURORA_ST7789_DRIVER_HPP
 
 #include <stdint.h>
-// #include "board.h"   // 引入板级引脚定义 (DISPLAY_WIDTH, DISPLAY_HEIGHT)
+#include "board.h"   // 引入板级引脚定义 (DISPLAY_WIDTH, DISPLAY_HEIGHT)
 // #include "device.hpp"
 
 // ========================================================

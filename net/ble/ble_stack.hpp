@@ -22,6 +22,10 @@ enum class GattPerm : uint8_t {
     NOTIFY_READ   = 0x11
 };
 
+inline GattPerm operator|(GattPerm a, GattPerm b) {
+    return static_cast<GattPerm>(static_cast<uint8_t>(a) | static_cast<uint8_t>(b));
+}
+
 // ========================================================
 // GATT 属性定义 (GattAttribute)
 // ========================================================

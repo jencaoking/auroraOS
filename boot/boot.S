@@ -84,54 +84,7 @@ Default_Handler:
     .weak DebugMon_Handler
     .thumb_set DebugMon_Handler, Default_Handler
 
-.global PendSV_Handler
-.thumb_func
-.type PendSV_Handler, %function
-PendSV_Handler:
-    cpsid i                     @ 1. 切换期间关闭中断，保证安全
-    
-    @ --- 保存当前旧线程的上下文 ---
-    mrs r0, psp                 @ 获取当前运行线程的线程栈指针 (PSP)
-    
-    @ 手动将 r4-r11 压入旧线程的栈中 (Cortex-M4 硬件不自动压这几个)
-    stmdb r0!, {r4-r11}
-    
-    @ 将更新后的栈指针 (SP) 写入旧线程的 TCB
-    ldr r1, =g_current_tcb_ptr
-    ldr r1, [r1]                @ r1 = *g_current_tcb_ptr
-    str r0, [r1]                @ TCB 的第一个成员就是 stack_ptr，等同于 tcb->stack_ptr = r0
-
-    @ --- 切换 TCB 指针 ---
-    ldr r2, =g_next_tcb_ptr
-    ldr r2, [r2]                @ r2 = *g_next_tcb_ptr
-    
-    ldr r3, =g_current_tcb_ptr
-    str r2, [r3]                @ *g_current_tcb_ptr = *g_next_tcb_ptr (同步 C++ 的选择)
-
-    @ --- 动态更新 MPU 沙盒 ---
-    push {r2, lr}               @ 保存 r2 (新 TCB 指针) 和 lr (EXC_RETURN)，8字节对齐
-    mov r0, r2                  @ r0 = 参数 next_tcb
-    bl mpu_switch_sandbox       @ 调用 C 函数 mpu_switch_sandbox
-    pop {r2, lr}                @ 恢复 r2 和 lr
-
-    @ --- 恢复新线程的上下文 ---
-    ldr r0, [r2]                @ r0 = tcb_next->stack_ptr (获取新线程的栈顶)
-
-    @ 注：所有任务统一使用 CONTROL=0x2（特权 Thread 模式 + PSP），
-    @ 该值已由 Arch::start_first_task() 在引导第一个任务时设置一次，
-    @ 此后不再需要按任务切换 CONTROL——历史上这里曾尝试从 TCB 偏移量 16
-    @ 读回一个 control_reg 字段，但该字段在重构中被移除、偏移 16 处
-    @ 现在是 sleep_ticks，继续按旧偏移量读写会把休眠计时错当成
-    @ CONTROL 寄存器值写入硬件，导致 SPSEL 位被破坏、任务错误地
-    @ 切换到 MSP 栈。因此这里不再触碰 CONTROL 寄存器。
-
-    @ 从新线程的栈中弹出 r4-r11 恢复给 CPU
-    ldmia r0!, {r4-r11}
-    
-    msr psp, r0                 @ 将新栈顶指针恢复给线程栈指针 (PSP)
-    
-    cpsie i                     @ 2. 重新开启全局中断
-    bx lr                       @ 3. 硬件自动弹出剩下寄存器，并跳转回新线程的 PC 处继续执行！
+/* PendSV_Handler is defined in context_switch.S for CM4F FPU support */
 
 .global SVC_Handler
 .thumb_func

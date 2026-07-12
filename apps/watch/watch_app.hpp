@@ -3,12 +3,12 @@
 
 #include <stdint.h>
 // 引入我们在底层已经铺设好的所有核心引擎
-// #include "power_manager.hpp"
-// #include "st7789_driver.hpp"
-// #include "sensor_framework.hpp"
-// #include "gesture_recognizer.hpp"
-// #include "ble_stack.hpp"
-// #include "font_engine.hpp" // 位图字体引擎
+#include "power_manager.hpp"
+#include "st7789_driver.hpp"
+#include "sensor_framework.hpp"
+#include "gesture_recognizer.hpp"
+#include "ble_stack.hpp"
+#include "font_engine.hpp" // 位图字体引擎
 
 // ========================================================
 // 手环 UI 页面路由枚举

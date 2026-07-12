@@ -3,14 +3,14 @@
 
 #include <stdint.h>
 // 引入手环特供的各类底层设施
-// #include "board.h"
-// #include "arch_impl.hpp"
-// #include "memory.hpp"
-// #include "task.hpp"
-// #include "frame_scheduler_v2.hpp"
-// #include "power_manager.hpp"
-// #include "sensor_framework.hpp"
-// #include "watch_app.hpp"
+#include "board.h"
+#include "arch_impl.hpp"
+#include "memory.hpp"
+#include "task.hpp"
+#include "frame_scheduler_v2.hpp"
+#include "power_manager.hpp"
+#include "sensor_framework.hpp"
+#include "watch_app.hpp"
 
 // ========================================================
 // 1. UI 渲染主线程 (优先级: CRITICAL)
@@ -88,18 +88,18 @@ extern "C" void miband_kernel_main(void) {
     
     // UI 线程栈 (分配 1024 uint32_t = 4KB，应对复杂的界面状态机)
     uint32_t* ui_stack = new uint32_t[1024];
-    uint32_t ui_tid = sched.create_task(ui_render_task, ui_stack, 1024 * sizeof(uint32_t), static_cast<uint8_t>(FramePriority::CRITICAL));
+    uint32_t ui_tid = sched.create_task(ui_render_task, ui_stack, 1024 * sizeof(uint32_t), static_cast<TaskPriority>(FramePriority::CRITICAL))->id;
     
     // 将 UI 线程绑定到动态帧调度器
     FrameSchedulerV2::instance().init(30, ui_tid);
 
     // 传感器与 BLE 线程栈 (分配 512 uint32_t = 2KB，处理浮点数和网络封包)
     uint32_t* daemon_stack = new uint32_t[512];
-    sched.create_task(sensor_ble_daemon_task, daemon_stack, 512 * sizeof(uint32_t), static_cast<uint8_t>(FramePriority::HIGH));
+    sched.create_task(sensor_ble_daemon_task, daemon_stack, 512 * sizeof(uint32_t), static_cast<TaskPriority>(FramePriority::HIGH));
 
     // Idle 线程栈 (极简 128 uint32_t = 0.5KB)
     uint32_t* idle_stack = new uint32_t[128];
-    sched.create_task(idle_task, idle_stack, 128 * sizeof(uint32_t), 0); // 绝对最低优先级 0
+    sched.create_task(idle_task, idle_stack, 128 * sizeof(uint32_t), TaskPriority::Idle); // 绝对最低优先级 0
 
     // ========================================================
     // 6. 激活内核心跳并点火升空！
