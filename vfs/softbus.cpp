@@ -6,7 +6,7 @@ void SoftBus::init() {
 }
 
 // 极其精简的字符串比较（因为裸机环境没有 <string.h>）
-bool SoftBus::strings_equal(const char* s1, const char* s2) {
+bool SoftBus::strings_equal(const char* s1, const char* s2) const {
     while (*s1 && *s2) {
         if (*s1 != *s2) return false;
         s1++; s2++;

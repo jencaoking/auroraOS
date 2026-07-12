@@ -16,9 +16,9 @@ private:
     };
     static constexpr uint32_t HEAP_MAGIC = 0x4D454D4F; // "MEMO"
 
-    BlockHeader* head_block;
-    size_t total_free_memory;
-    size_t total_size;
+    BlockHeader* head_block = nullptr;
+    size_t total_free_memory = 0;
+    size_t total_size = 0;
     Mutex heap_mutex_;        // 保护整个全局堆的互斥锁
 
 public:

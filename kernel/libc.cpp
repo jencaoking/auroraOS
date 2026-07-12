@@ -205,7 +205,7 @@ int abs(int x) {
 }
 
 float strtof(const char* nptr, char** endptr) {
-    if (endptr) *endptr = (char*)nptr;
+    if (endptr) *endptr = const_cast<char*>(nptr);
     return 0.0f;
 }
 

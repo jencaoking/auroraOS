@@ -1,7 +1,7 @@
 #include "vfs.hpp"
 #include "device.hpp"
 
-bool VfsManager::strings_equal(const char* s1, const char* s2) {
+bool VfsManager::strings_equal(const char* s1, const char* s2) const {
     if (!s1 || !s2) return false;
     while (*s1 && *s2) {
         if (*s1 != *s2) return false;

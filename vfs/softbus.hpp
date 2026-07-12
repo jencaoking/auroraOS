@@ -34,11 +34,11 @@ public:
 
 private:
     SoftBus() = default;
-    RpcNode services_[MAX_RPC_HANDLERS];
+    RpcNode services_[MAX_RPC_HANDLERS]{};
     int service_count_ = 0;
 
     void dispatch(const char* cmd, const char* payload);
-    bool strings_equal(const char* s1, const char* s2);
+    bool strings_equal(const char* s1, const char* s2) const;
 };
 
 #endif

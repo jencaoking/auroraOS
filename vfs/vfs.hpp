@@ -46,13 +46,13 @@ private:
     static constexpr int MAX_MOUNT_POINTS = 8;
     static constexpr int MAX_OPEN_FILES = 16;
 
-    MountPoint mounts_[MAX_MOUNT_POINTS];
+    MountPoint mounts_[MAX_MOUNT_POINTS]{};
     int mount_count_ = 0;
 
     // 升级为完整的文件描述符表
-    FileDescriptor fd_table_[MAX_OPEN_FILES];
+    FileDescriptor fd_table_[MAX_OPEN_FILES]{};
 
-    bool strings_equal(const char* s1, const char* s2);
+    bool strings_equal(const char* s1, const char* s2) const;
 };
 
 #endif
