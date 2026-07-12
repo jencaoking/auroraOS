@@ -71,9 +71,9 @@ auroraOS 坚信"好的架构来自借鉴与融合"。系统不是从零发明一
 
 ### 🚀 内核与调度
 
-- **优先级抢占式调度器**：5 级优先级阶梯（Idle / Low / Normal / High / Realtime），两阶段 O(N) 算法——阶段一找最高优先级，阶段二同级 Round-Robin 轮转
+- **O(1) 优先级抢占式调度器**：5 级优先级阶梯（Idle / Low / Normal / High / Realtime），基于就绪优先级位图（Ready Bitmask）与侵入式双向就绪链表，实现 O(1) 时间的任务入队、出队与最高优先级检索
 - **帧感知调度（FrameScheduler）**：借鉴 vivo 蓝河 BlueOS，30fps 帧内/帧间窗口分级，保证 UI 渲染 deadline，帧间释放 CPU 给后台任务
-- **优先级继承互斥锁（MutexPI）**：防止经典优先级反转，高优先级任务等待锁时临时提升持有者优先级
+- **多功能互斥锁（Mutex）**：支持优先级继承（防止经典优先级反转）、内核级递归加锁（避免同线程死锁）、加锁超时机制（支持特定 Tick 时间内非阻塞等待），并提供 RAII 风格的 `UniqueLock` 自释放接口
 - **任务通知（TaskNotify）**：FreeRTOS 风格的零开销 IPC，32 位直接通知，ISR 安全
 - **POSIX 信号（Signal）**：signal/kill/raise，16 路信号位图，调度器切换时分发
 - **软件定时器（TimerManager）**：OneShot/Periodic 模式，ISR 极短钩子 + daemon 任务执行回调
@@ -119,7 +119,7 @@ auroraOS 坚信"好的架构来自借鉴与融合"。系统不是从零发明一
 ### ⚡ 功耗管理
 
 - **5 级功耗状态**：RUN → IDLE → LIGHT_SLEEP → DEEP_SLEEP → SHUTDOWN
-- **Tickless 模式**：空闲时停止 SysTick，配置低功耗唤醒定时器，醒来后补偿流逝 tick
+- **Tickless 模式与抬腕唤醒**：空闲时关闭高频 SysTick 并配置低功耗唤醒定时器（RTC），醒来后补偿流逝 tick；配合 `WristWakeDetector` 加速度分量防抖算法，支持从睡眠/空闲状态中抬腕自动唤醒系统
 
 ---
 
@@ -273,7 +273,7 @@ auroraOS/
 
 ### 调度器与任务管理
 
-auroraOS 调度器实现 5 级优先级抢占式调度，支持优先级继承与帧感知调度。
+auroraOS 调度器实现 5 级优先级抢占式调度，采用位图与侵入式双链表实现 O(1) 调度效率，并支持优先级继承与帧感知调度。
 
 ```cpp
 // 任务优先级阶梯
@@ -302,7 +302,7 @@ struct TaskControlBlock {
 };
 ```
 
-**两阶段调度算法**：阶段一扫描所有就绪任务找最高优先级；阶段二在同级任务中做 Round-Robin 时间片轮转。调度器在 SysTick 每 10ms 触发一次，也在任务主动 yield/sleep 时触发。
+**O(1) 优先级就绪队列调度算法**：采用就绪优先级位图（`ready_bitmask`）配合侵入式双向链表。通过位扫描操作可在 O(1) 时间内定位最高优先级非空队列。就绪任务的入队、出队、以及同优先级 Round-Robin 时间片轮转均在 O(1) 内完成，彻底规避了老版本 O(N) 链表遍历开销。调度器在 SysTick 触发时或任务主动 yield/sleep 时进行调度。
 
 **上下文切换**：PendSV 异常（最低优先级）负责保存/恢复 r4-r11 + 栈指针，利用 Cortex-M 硬件自动压栈 r0-r3/r12/lr/pc/xpsr，实现高效切换。
 
@@ -312,14 +312,18 @@ struct TaskControlBlock {
 
 ### 内存管理
 
-内核堆采用首次适配（First-Fit）算法，支持块分裂（Split）与合并（Coalesce），线程安全。
+auroraOS 采用双轨制内存分配策略，兼顾灵活性与确定性实时性：
+- **KernelHeap 堆管理**：采用首次适配（First-Fit）与块分裂（Split）算法，支持线程安全（RAII LockGuard 保护）。并重构了释放合并逻辑，引入**延迟合并（Lazy Coalesce）**技术，将 deallocate 优化为 O(1) 极其敏捷的标记操作，并在 OOM 触发时懒执行碎片整理（`defragment()`），极大缩减了系统在高频分配释放时的延迟抖动。
+- **MemoryPool 内存池**：提供了 O(1) 的固定大小内存块分配器 `MemoryPool<T, BlockCount>`，内部通过空闲链表管理，分配与释放均为 O(1) 且绝无外部碎片，极其适合高频申请释放的传感器数据帧和网络包。
 
 ```cpp
+// 线程安全内核堆示例
 class KernelHeap {
     struct BlockHeader { size_t size; bool is_free; BlockHeader* next; };
     Mutex heap_mutex_;  // LockGuard RAII 保护
     void* allocate(size_t size);   // 4 字节对齐，首次适配 + 分裂
-    void  deallocate(void* ptr);   // 标记空闲 + 相邻合并
+    void  deallocate(void* ptr);   // 标记空闲，延迟合并 (Lazy Coalesce)
+    void  defragment();            // 碎片整理，合并相邻空闲块
 };
 // 覆写全局 operator new/delete 走 KernelHeap
 ```
@@ -330,7 +334,7 @@ class KernelHeap {
 
 | 原语 | 特性 | 借鉴来源 |
 |------|------|---------|
-| **Mutex** | 优先级继承（PI），owner 追踪，sleep(1) 让出防忙等 | NuttX |
+| **Mutex** | 优先级继承（PI），递归加锁，可配置超时唤醒，sleep(1)让出，UniqueLock RAII | NuttX |
 | **Semaphore** | 计数信号量，try_wait() ISR 安全 | FreeRTOS |
 | **MessageQueue** | 生产者-消费者，try_push/try_pop 非阻塞 | ThreadX |
 | **TaskNotify** | 32 位直接通知，零内存分配，ISR 极速 | FreeRTOS |
