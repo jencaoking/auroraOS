@@ -1,4 +1,4 @@
-mainmenu "auroraOS MiBand 8 (Apollo3) Configuration"
+if BOARD_MIBAND8
 
 config TARGET_MIBAND
     bool
@@ -29,12 +29,6 @@ endmenu
 # 2. 内核、内存与电源调度机制
 # ========================================================
 menu "Kernel & Power Management"
-
-config MAX_TASKS
-    int "Maximum Concurrent Tasks"
-    default 8
-    help
-      Reduced from 16 to 8 to fit within 384KB SRAM limits.
 
 config POWER_MANAGER
     bool "5-Level Power State Machine"
@@ -114,3 +108,6 @@ config FONT_ENGINE
       Renders text and numbers for the watch face.
 
 endmenu
+
+endif
+

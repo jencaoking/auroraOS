@@ -1,3 +1,5 @@
+#include "config/autoconf.h"
+
 .syntax unified
 .cpu cortex-m4
 .thumb
@@ -84,7 +86,49 @@ Default_Handler:
     .weak DebugMon_Handler
     .thumb_set DebugMon_Handler, Default_Handler
 
-/* PendSV_Handler is defined in context_switch.S for CM4F FPU support */
+#ifndef CONFIG_BOARD_MIBAND8
+.global PendSV_Handler
+.thumb_func
+.type PendSV_Handler, %function
+PendSV_Handler:
+    cpsid i                     @ 1. 切换期间关闭中断，保证安全
+    
+    @ --- 保存当前旧线程的上下文 ---
+    mrs r0, psp                 @ 获取当前运行线程的线程栈指针 (PSP)
+    
+    @ 手动将 r4-r11 压入旧线程的栈中 (Cortex-M4 硬件不自动压这几个)
+    stmdb r0!, {r4-r11}
+    
+    @ 将更新后的栈指针 (SP) 写入旧线程的 TCB
+    ldr r1, =g_current_tcb_ptr
+    ldr r1, [r1]                @ r1 = *g_current_tcb_ptr
+    str r0, [r1]                @ TCB 的第一个成员就是 stack_ptr，等同于 tcb->stack_ptr = r0
+
+    @ --- 切换 TCB 指针 ---
+    ldr r2, =g_next_tcb_ptr
+    ldr r2, [r2]                @ r2 = *g_next_tcb_ptr
+    
+    ldr r3, =g_current_tcb_ptr
+    str r2, [r3]                @ *g_current_tcb_ptr = *g_next_tcb_ptr (同步 C++ 的选择)
+
+    @ --- 动态更新 MPU 沙盒 ---
+    push {r2, lr}               @ 保存 r2 (新 TCB 指针) 和 lr (EXC_RETURN)，8字节对齐
+    mov r0, r2                  @ r0 = 参数 next_tcb
+    bl mpu_switch_sandbox       @ 调用 C 函数 mpu_switch_sandbox
+    pop {r2, lr}                @ 恢复 r2 和 lr
+
+    @ --- 恢复新线程的上下文 ---
+    ldr r0, [r2]                @ r0 = tcb_next->stack_ptr (获取新线程的栈顶)
+
+    @ 从新线程的栈中弹出 r4-r11 恢复给 CPU
+    ldmia r0!, {r4-r11}
+    
+    msr psp, r0                 @ 将新栈顶指针恢复给线程栈指针 (PSP)
+    
+    cpsie i                     @ 2. 重新开启全局中断
+    bx lr                       @ 3. 硬件自动弹出剩下寄存器，并跳转回新线程的 PC 处继续执行！
+#endif
+
 
 .global SVC_Handler
 .thumb_func

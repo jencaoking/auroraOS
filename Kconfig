@@ -1,10 +1,23 @@
 mainmenu "auroraOS Configuration"
 
-config BOARD
-    string "Target Hardware Board"
-    default "lm3s6965-qb"
+choice
+    prompt "Target Hardware Board"
+    default BOARD_LM3S6965_QB
     help
-      The target hardware board for auroraOS.
+      Select the hardware target board for auroraOS.
+
+config BOARD_LM3S6965_QB
+    bool "TI LM3S6965-QB (QEMU Cortex-M3)"
+
+config BOARD_MIBAND8
+    bool "Xiaomi Mi Band 8 (Ambiq Apollo3 Cortex-M4F)"
+
+endchoice
+
+config BOARD
+    string
+    default "lm3s6965-qb" if BOARD_LM3S6965_QB
+    default "miband8" if BOARD_MIBAND8
 
 menu "System Core Configuration"
 
@@ -16,6 +29,7 @@ config SCHEDULER
 
 config MAX_TASKS
     int "Maximum number of tasks"
+    default 8 if BOARD_MIBAND8
     default 16
     help
       The maximum number of tasks the scheduler can manage.
@@ -78,6 +92,7 @@ menu "Networking"
 
 config NETWORKING
     bool "Networking Support"
+    default n if BOARD_MIBAND8
     default y
     help
       Enable networking subsystem.
@@ -100,3 +115,6 @@ config NET_DEFAULT_MAC
     default "00:11:22:33:44:55"
 
 endmenu
+
+source "Kconfig.miband"
+
