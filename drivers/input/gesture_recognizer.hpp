@@ -2,6 +2,7 @@
 #define AURORA_GESTURE_RECOGNIZER_HPP
 
 #include <stdint.h>
+#include "input_event.hpp"
 
 // ========================================================
 // 支持的 7 种手势定义
@@ -15,16 +16,6 @@ enum class GestureType : uint8_t {
     SWIPE_DOWN,     // 下滑：快捷面板
     SWIPE_LEFT,     // 左滑：下一个应用
     SWIPE_RIGHT     // 右滑：返回上一页
-};
-
-// ========================================================
-// 触控底层状态机枚举
-// ========================================================
-enum class TouchState : uint8_t {
-    IDLE,       // 空闲
-    PRESSED,    // 按下
-    MOVING,     // 滑动
-    RELEASED    // 抬起
 };
 
 // 原始触控事件包 (由汇顶 GT316 驱动传入)
@@ -61,7 +52,7 @@ private:
 
 public:
     GestureRecognizer() : 
-        current_state_(TouchState::IDLE), 
+        current_state_(TouchState::RELEASED), 
         start_x_(0), start_y_(0), start_time_(0), 
         last_tap_time_(0), is_tracking_double_tap_(false) {}
 
@@ -73,7 +64,7 @@ public:
 
         switch (event.state) {
             case TouchState::PRESSED:
-                if (current_state_ == TouchState::IDLE) {
+                if (current_state_ == TouchState::RELEASED) {
                     current_state_ = TouchState::PRESSED;
                     start_x_    = event.x;
                     start_y_    = event.y;
@@ -85,12 +76,12 @@ public:
                 if (current_state_ == TouchState::PRESSED || current_state_ == TouchState::MOVING) {
                     current_state_ = TouchState::MOVING;
                     
-                    // 可选：在此处增加实时滑动的阻尼计算或拖拽跟随逻辑
+                    // 可选：在此处增加实时滑动的阻尼计算 or 拖拽跟随逻辑
                 }
                 break;
 
             case TouchState::RELEASED:
-                if (current_state_ != TouchState::IDLE) {
+                if (current_state_ != TouchState::RELEASED) {
                     uint32_t duration = event.timestamp - start_time_;
                     int32_t dx = event.x - start_x_;
                     int32_t dy = event.y - start_y_;
@@ -130,7 +121,7 @@ public:
                     }
 
                     // 状态重置归零
-                    current_state_ = TouchState::IDLE;
+                    current_state_ = TouchState::RELEASED;
                 }
                 break;
                 

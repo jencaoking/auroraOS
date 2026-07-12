@@ -140,6 +140,7 @@ if(BOARD STREQUAL "lm3s6965-qb")
         ${CMAKE_SOURCE_DIR}/drivers/display
         ${CMAKE_SOURCE_DIR}/drivers/sensor
         ${CMAKE_SOURCE_DIR}/drivers/input
+        ${CMAKE_SOURCE_DIR}/apps/watch
         ${CMAKE_SOURCE_DIR}/arch/${ARCH_DIR}
         ${CMAKE_SOURCE_DIR}/boards/${BOARD_DIR}
     )

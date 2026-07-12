@@ -28,6 +28,8 @@
 extern Mutex uart_mutex;
 #include "mpu.hpp"
 #include "net_app.hpp"
+#include "gesture_recognizer.hpp"
+#include "font_engine.hpp"
 
 // 包装一下入口函数以符合 create_task 的签名
 void network_task_entry(void) {
@@ -256,6 +258,12 @@ struct DraggableWidget {
 // ==========================================
 // 手表主 UI 界面与拖拽交互引擎 + 表盘小组件引擎
 // ==========================================
+enum class WatchPage : uint8_t {
+    WATCH_FACE,
+    HEART_RATE,
+    ACTIVITY
+};
+
 void ui_render_task(void) {
     g_oled.open();
     
@@ -266,64 +274,93 @@ void ui_render_task(void) {
     write(console_fd, "\r\n⌚ [auroraOS] WatchFace, Input Engine & Sensor Framework Online. Phase 2 Complete!\r\n", 83);
     close(console_fd);
 
-    // 初始化控件初始坐标于屏幕中央 (64, 64)
-    DraggableWidget widget = { 64, 64, 20, 20, 0x07E0, false }; // 亮绿色卡片
-
     // 配置表盘上的两个数据挂载槽位 (对标 watchOS Complications)
     g_watchface.add_complication(10, 10, 50, 20, 0xF800, 0x0000, hr_data_provider);
     g_watchface.add_complication(65, 10, 50, 20, 0x07E0, 0x0000, step_data_provider);
 
-    // 第一帧：绘制背景与初始控件
+    GestureRecognizer recognizer;
+    WatchPage current_page = WatchPage::WATCH_FACE;
+    uint32_t simulated_tick = 0;
+
+    // 第一帧：绘制背景并刷新
     g_fb.clear(0x0000);
-    g_fb.fill_rect(widget.x - widget.width/2, widget.y - widget.height/2, widget.width, widget.height, widget.color);
-    g_watchface.render(g_fb);
     g_fb.flush(g_oled);
     
     FrameScheduler::instance().wait_for_next_frame();
 
     while (true) {
-        // --- 1. 处理表盘数据渲染 (脏区域刷新) ---
-        g_watchface.render(g_fb);
-
-        // --- 2. 处理触摸交互与拖拽渲染 ---
+        // --- 1. 处理触摸交互与手势识别 ---
         TouchPoint touch;
         int bytes = read(touch_fd, reinterpret_cast<char*>(&touch), sizeof(TouchPoint));
+        
+        simulated_tick += 33; // 假设每帧 V-Sync 消耗 33ms
 
+        GestureType gesture = GestureType::NONE;
         if (bytes == sizeof(TouchPoint) && touch.is_valid) {
-            console_fd = open("/dev/uart0", 0);
-            
-            // 判断输入交互并计算 UI 拖拽响应
-            if (touch.state == TouchState::PRESSED || touch.state == TouchState::MOVING) {
-                if (!widget.is_dragging) {
-                    write(console_fd, "\r\n👇 [Input Event] Touch PRESSED! Widget Dragging Started...\r\n", 62);
-                    widget.is_dragging = true;
-                    widget.color = 0xF800; // 拖拽时高亮变红！
-                }
-
-                // 擦除旧区域
-                g_fb.fill_rect(widget.x - widget.width/2, widget.y - widget.height/2, widget.width, widget.height, 0x0000);
-
-                // 更新坐标
-                widget.x = touch.x;
-                widget.y = touch.y;
-
-                // 新坐标绘制
-                g_fb.fill_rect(widget.x - widget.width/2, widget.y - widget.height/2, widget.width, widget.height, widget.color);
-
-            } else if (touch.state == TouchState::RELEASED && widget.is_dragging) {
-                write(console_fd, "\r\n👆 [Input Event] Touch RELEASED! Widget Dragging Dropped.\r\n", 61);
-                widget.is_dragging = false;
-                widget.color = 0x07E0; // 抬起手指恢复
-                
-                g_fb.fill_rect(widget.x - widget.width/2, widget.y - widget.height/2, widget.width, widget.height, widget.color);
-            }
-            close(console_fd);
+            RawTouchEvent ev = { touch.x, touch.y, touch.state, simulated_tick };
+            gesture = recognizer.process_event(ev);
         }
 
-        // 3. 动态求合集的脏区域送到屏幕
+        // --- 2. 页面路由状态机切换 ---
+        if (gesture == GestureType::SWIPE_LEFT) {
+            console_fd = open("/dev/uart0", 0);
+            write(console_fd, "\r\n👈 [Gesture Event] Swipe LEFT! Switch to next page.\r\n", 54);
+            close(console_fd);
+
+            if (current_page == WatchPage::WATCH_FACE) current_page = WatchPage::HEART_RATE;
+            else if (current_page == WatchPage::HEART_RATE) current_page = WatchPage::ACTIVITY;
+            else if (current_page == WatchPage::ACTIVITY) current_page = WatchPage::WATCH_FACE;
+
+            g_fb.clear(0x0000); // 换页时清空屏幕缓冲区
+        } else if (gesture == GestureType::SWIPE_RIGHT) {
+            console_fd = open("/dev/uart0", 0);
+            write(console_fd, "\r\n👉 [Gesture Event] Swipe RIGHT! Switch to previous page.\r\n", 58);
+            close(console_fd);
+
+            if (current_page == WatchPage::WATCH_FACE) current_page = WatchPage::ACTIVITY;
+            else if (current_page == WatchPage::ACTIVITY) current_page = WatchPage::HEART_RATE;
+            else if (current_page == WatchPage::HEART_RATE) current_page = WatchPage::WATCH_FACE;
+
+            g_fb.clear(0x0000); // 换页时清空屏幕缓冲区
+        }
+
+        // --- 3. 页面内容渲染 ---
+        if (current_page == WatchPage::WATCH_FACE) {
+            // 3.1 主表盘页：渲染大字时间 "10:09" + 两侧小组件 (Complications)
+            FontEngine::draw_string(20, 50, "10:09", FontColor::WHITE, FontSize::HUGE, g_fb.get_raw_buffer(), 128);
+            g_watchface.render(g_fb);
+        } 
+        else if (current_page == WatchPage::HEART_RATE) {
+            // 3.2 实时心率测量页
+            FontEngine::draw_string(20, 20, "HEART RATE", FontColor::RED, FontSize::SMALL, g_fb.get_raw_buffer(), 128);
+            
+            SensorData data;
+            uint32_t bpm = 0;
+            // 尝试读取 SensorManager 的心率数据
+            if (SensorManager::instance().pop_data(&data) && data.type == SensorType::HEART_RATE) {
+                bpm = data.payload.bpm;
+            } else {
+                SensorManager::instance().get_hr_sensor().read(&data);
+                bpm = data.payload.bpm;
+            }
+            
+            FontEngine::draw_number(35, 60, bpm, FontColor::WHITE, FontSize::HUGE, g_fb.get_raw_buffer(), 128);
+            FontEngine::draw_string(85, 80, "bpm", FontColor::GRAY, FontSize::SMALL, g_fb.get_raw_buffer(), 128);
+        } 
+        else if (current_page == WatchPage::ACTIVITY) {
+            // 3.3 运动计步数据页
+            FontEngine::draw_string(30, 20, "ACTIVITY", FontColor::GREEN, FontSize::SMALL, g_fb.get_raw_buffer(), 128);
+            
+            uint32_t steps = SensorManager::instance().get_accel_sensor().get_steps();
+            
+            FontEngine::draw_number(20, 60, steps, FontColor::WHITE, FontSize::HUGE, g_fb.get_raw_buffer(), 128);
+            FontEngine::draw_string(80, 80, "steps", FontColor::GRAY, FontSize::SMALL, g_fb.get_raw_buffer(), 128);
+        }
+
+        // --- 4. 动态合围脏区域刷新同步到 OLED 屏幕 ---
         g_fb.flush(g_oled);
 
-        // 4. 遵守 30FPS V-Sync
+        // --- 5. 遵守 30FPS V-Sync
         FrameScheduler::instance().wait_for_next_frame();
     }
 }
