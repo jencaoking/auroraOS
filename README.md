@@ -303,6 +303,10 @@ struct TaskControlBlock {
 
 **上下文切换**：PendSV 异常（最低优先级）负责保存/恢复 r4-r11 + 栈指针，利用 Cortex-M 硬件自动压栈 r0-r3/r12/lr/pc/xpsr，实现高效切换。
 
+**信号安全加固与栈隔离**：
+- **栈隔离设计**：将信号分发点（`dispatch_signals`）从切换前对 `next_task` 提前处理，移动到 `schedule()` 最开端只对当前 `current_task` 进行处理。当任务在主动让出（Sleep/Yield）时，信号处理函数完全运行在任务自身的 PSP 栈上；当任务被 SysTick 中断抢占时，信号处理运行在中断栈（MSP）上。这彻底消除了在 outgoing 任务的栈上运行 incoming 任务信号回调的安全漏洞，有效杜绝了栈污染与溢出。
+- **SIGKILL 强语义立即终止**：重构了 `kill()` 逻辑。发送 `SIGKILL` 信号时，会**立即**强制将目标任务的状态修改为 `TaskState::Terminated`，确保其在下一次调度器的选组轮询中绝不可能被再次选中（无论它之前是睡眠还是就绪），消除了已被 Terminated 的任务继续多运行一个时间片的隐患。
+
 ### 内存管理
 
 内核堆采用首次适配（First-Fit）算法，支持块分裂（Split）与合并（Coalesce），线程安全。
@@ -351,6 +355,12 @@ class VfsManager {
 
 支持的文件系统：RamFS（内存文件）、ProcFS（/proc 诊断）、LittleFS（掉电安全持久存储）。
 
+**ELF 动态加载器（ElfLoader）安全防护**：
+- **地址回绕溢出校验**：在第一轮扫描 PT_LOAD 段时，校验 `phdr.p_vaddr + phdr.p_memsz < phdr.p_vaddr`。如果发生加法回绕整数溢出，则立即拒绝加载。
+- **最大内存配额硬限制**：对 ELF 所需的总虚拟内存跨度 `total_memsz` 实施 256KB 的硬性限额保护，防止超大段配置引发系统级堆耗尽崩溃。
+- **第二轮加载 OOB 检查**：加载前强制校验 `offset_in_mem + phdr.p_memsz <= total_memsz`，阻断利用重叠段或畸形段偏移覆盖内核堆的漏洞。
+- **截断与未初始化内存泄露防护**：对比 `VfsManager::read` 的实际返回字节数与段声明大小。如果文件被恶意截断，则动态将未读出区域及 BSS 段全量清零，严防内核堆历史敏感垃圾信息泄露。
+
 ### 网络协议栈
 
 深度集成 lwIP 2.x，通过 OSAL 适配层对接 auroraOS 内核原语。
@@ -364,6 +374,10 @@ sys_thread_t → TaskControlBlock*        // 调度器任务
 ```
 
 支持 DHCP 动态获取 IP、BSD Socket API、Netconn API。Shell 提供 `ifconfig`/`udpsend` 命令，内置 UDP Echo Server 测试。
+
+**网卡接收防死锁与 OOB 加固**：
+- **最大长度负数保护**：在 L2 以太网驱动 `receive_frame` 接口中，对传入的 `max_len` 进行有符号校验（`max_len <= 0` 直接返回），防止无符号强制转型绕过导致的堆缓冲区溢出。
+- **网卡死锁防御**：当读取到硬件帧大小超出 `max_len` 或异常时，除了清除中断标志，额外使用循环强制从数据寄存器中**排空（drain）**该包剩余字节，避免以太网控制器 FIFO 阻塞，彻底解决了因网络畸形包注入导致的中断挂死与网卡死锁。
 
 ### 设备驱动框架
 
@@ -441,6 +455,10 @@ class DistributedSoftBus {
     void broadcast_beacon();    // 广播 {"event":"beacon","device_id":"aurora_watch_01","cap":["display","touch"]}
     void listener_task();       // 阻塞接收 → JsonParser 解析 → DeviceRouteTable 注册
 };
+
+**分布式协议栈安全隔离**：
+- **零拷贝 JSON 解析器 OOB 保护**：在 `JsonParser::get_raw_value` 中增加前导字符防越界校验 `*val_start == '\0'`。一旦 JSON 键名后紧跟空字符（例如网络畸形截断报文），解析器将立即中断并快速失败，防止指针跳过空字符读取未授权相邻内存区。
+- **设备路由表抗污染**：为 `DeviceRouteTable::register_or_update_device` 添加严格的 `!ip || !dev_id || !cap` 空指针入参校验，确保即使网络层报文解析为空也无法向路由表写入非法数据，保证系统在多设备局域网游牧中的稳定性。
 ```
 
 ---
@@ -550,7 +568,7 @@ python scripts/genconfig.py
 
 ## 开发路线图
 
-### Phase 1: 内核加固（3-6 个月）— ✅ 93% 完成
+### Phase 1: 内核加固（3-6 个月）— ✅ 98% 完成
 
 - [x] 优先级抢占调度器 + 上下文切换
 - [x] 架构抽象层（arch_api → arch_impl）
@@ -561,12 +579,16 @@ python scripts/genconfig.py
 - [x] ProcFS（/proc/meminfo + /proc/taskinfo）
 - [x] Shell 增强（ps/free/ifconfig/udpsend）
 - [x] 任务通知（TaskNotify）+ POSIX 信号（Signal）
+- [x] 信号分发与调度栈隔离安全加固
+- [x] ELF 动态加载器安全边界与溢出校验
 - [x] 帧感知调度（FrameScheduler）
 - [x] 软件定时器（TimerManager）
 - [x] 工作队列（WorkQueue）
 - [x] Kconfig 配置系统
 - [x] lwIP TCP/IP 全栈 + DHCP
 - [x] MPU 内存保护（计划外提前实现）
+- [x] 以太网驱动防死锁排空机制
+- [x] 分布式软总线/JSON解析越界防护
 - [ ] Shell 命令补全（ping/netstat/reboot/date）
 - [ ] irq_save/restore 扩展
 - [ ] 消息队列优先级
