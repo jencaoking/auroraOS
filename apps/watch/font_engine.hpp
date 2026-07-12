@@ -64,7 +64,7 @@ public:
     // ========================================================
     // 渲染单个字符
     // ========================================================
-    static uint16_t draw_char(uint16_t x, uint16_t y, char c, FontColor color, FontSize size = FontSize::MEDIUM) {
+    static uint16_t draw_char(uint16_t x, uint16_t y, char c, FontColor color, FontSize size = FontSize::MEDIUM, uint16_t* buffer = nullptr, uint16_t buffer_width = 0) {
         const FontDef* font = get_font_def(size);
         if (!font || c < font->start_char || c > font->end_char) return 0;
 
@@ -87,13 +87,13 @@ public:
     // ========================================================
     // 渲染字符串
     // ========================================================
-    static void draw_string(uint16_t x, uint16_t y, const char* str, FontColor color, FontSize size = FontSize::MEDIUM) {
+    static void draw_string(uint16_t x, uint16_t y, const char* str, FontColor color, FontSize size = FontSize::MEDIUM, uint16_t* buffer = nullptr, uint16_t buffer_width = 0) {
         if (!str) return;
         uint16_t cursor_x = x;
         
         while (*str) {
             // 逐字绘制，并累加光标 X 轴偏移量
-            cursor_x += draw_char(cursor_x, y, *str, color, size);
+            cursor_x += draw_char(cursor_x, y, *str, color, size, buffer, buffer_width);
             str++;
         }
     }
@@ -101,7 +101,7 @@ public:
     // ========================================================
     // 渲染整数数值 (零内存分配)
     // ========================================================
-    static void draw_number(uint16_t x, uint16_t y, int32_t num, FontColor color, FontSize size = FontSize::MEDIUM) {
+    static void draw_number(uint16_t x, uint16_t y, int32_t num, FontColor color, FontSize size = FontSize::MEDIUM, uint16_t* buffer = nullptr, uint16_t buffer_width = 0) {
         char buf[16];
         int i = 0;
         bool is_neg = false;
@@ -132,7 +132,7 @@ public:
             end--;
         }
 
-        draw_string(x, y, buf, color, size);
+        draw_string(x, y, buf, color, size, buffer, buffer_width);
     }
 };
 

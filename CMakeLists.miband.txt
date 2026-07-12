@@ -34,6 +34,7 @@ set(SOURCES
     kernel/posix.cpp
     arch/arm/cortex-m/cm4f/context_switch.S
     apps/watch/miband_main.cpp
+    apps/watch/watch_app.cpp
 )
 
 # 小程序沙盒 (Lua)
