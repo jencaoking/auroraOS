@@ -23,6 +23,12 @@ SECTIONS
         . = ALIGN(4);
     } > FLASH
 
+    .ARM.exidx : {
+        __exidx_start = .;
+        *(.ARM.exidx* .gnu.linkonce.armexidx.*)
+        __exidx_end = .;
+    } > FLASH
+
     _sidata = LOADADDR(.data);
 
     .data : {
@@ -45,8 +51,11 @@ SECTIONS
         _ebss = .;
         __bss_end__ = _ebss;
     } > RAM
-    /* 【新增】将 BSS 结束后的地址对齐作为堆的起点 */
+
     . = ALIGN(4);
+    end = .;
+    _end = .;
+    __end__ = .;
     _heap_start = .; 
     
     /* 栈顶依然在 RAM 的末尾 */

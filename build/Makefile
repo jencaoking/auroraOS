@@ -176,6 +176,630 @@ auroraOS.elf/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/littlefs/lfs_util.c.s
 .PHONY : 3rdparty/littlefs/lfs_util.c.s
 
+3rdparty/lua/lapi.obj: 3rdparty/lua/lapi.c.obj
+.PHONY : 3rdparty/lua/lapi.obj
+
+# target to build an object file
+3rdparty/lua/lapi.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lapi.c.obj
+.PHONY : 3rdparty/lua/lapi.c.obj
+
+3rdparty/lua/lapi.i: 3rdparty/lua/lapi.c.i
+.PHONY : 3rdparty/lua/lapi.i
+
+# target to preprocess a source file
+3rdparty/lua/lapi.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lapi.c.i
+.PHONY : 3rdparty/lua/lapi.c.i
+
+3rdparty/lua/lapi.s: 3rdparty/lua/lapi.c.s
+.PHONY : 3rdparty/lua/lapi.s
+
+# target to generate assembly for a file
+3rdparty/lua/lapi.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lapi.c.s
+.PHONY : 3rdparty/lua/lapi.c.s
+
+3rdparty/lua/lauxlib.obj: 3rdparty/lua/lauxlib.c.obj
+.PHONY : 3rdparty/lua/lauxlib.obj
+
+# target to build an object file
+3rdparty/lua/lauxlib.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lauxlib.c.obj
+.PHONY : 3rdparty/lua/lauxlib.c.obj
+
+3rdparty/lua/lauxlib.i: 3rdparty/lua/lauxlib.c.i
+.PHONY : 3rdparty/lua/lauxlib.i
+
+# target to preprocess a source file
+3rdparty/lua/lauxlib.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lauxlib.c.i
+.PHONY : 3rdparty/lua/lauxlib.c.i
+
+3rdparty/lua/lauxlib.s: 3rdparty/lua/lauxlib.c.s
+.PHONY : 3rdparty/lua/lauxlib.s
+
+# target to generate assembly for a file
+3rdparty/lua/lauxlib.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lauxlib.c.s
+.PHONY : 3rdparty/lua/lauxlib.c.s
+
+3rdparty/lua/lbaselib.obj: 3rdparty/lua/lbaselib.c.obj
+.PHONY : 3rdparty/lua/lbaselib.obj
+
+# target to build an object file
+3rdparty/lua/lbaselib.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lbaselib.c.obj
+.PHONY : 3rdparty/lua/lbaselib.c.obj
+
+3rdparty/lua/lbaselib.i: 3rdparty/lua/lbaselib.c.i
+.PHONY : 3rdparty/lua/lbaselib.i
+
+# target to preprocess a source file
+3rdparty/lua/lbaselib.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lbaselib.c.i
+.PHONY : 3rdparty/lua/lbaselib.c.i
+
+3rdparty/lua/lbaselib.s: 3rdparty/lua/lbaselib.c.s
+.PHONY : 3rdparty/lua/lbaselib.s
+
+# target to generate assembly for a file
+3rdparty/lua/lbaselib.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lbaselib.c.s
+.PHONY : 3rdparty/lua/lbaselib.c.s
+
+3rdparty/lua/lcode.obj: 3rdparty/lua/lcode.c.obj
+.PHONY : 3rdparty/lua/lcode.obj
+
+# target to build an object file
+3rdparty/lua/lcode.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lcode.c.obj
+.PHONY : 3rdparty/lua/lcode.c.obj
+
+3rdparty/lua/lcode.i: 3rdparty/lua/lcode.c.i
+.PHONY : 3rdparty/lua/lcode.i
+
+# target to preprocess a source file
+3rdparty/lua/lcode.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lcode.c.i
+.PHONY : 3rdparty/lua/lcode.c.i
+
+3rdparty/lua/lcode.s: 3rdparty/lua/lcode.c.s
+.PHONY : 3rdparty/lua/lcode.s
+
+# target to generate assembly for a file
+3rdparty/lua/lcode.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lcode.c.s
+.PHONY : 3rdparty/lua/lcode.c.s
+
+3rdparty/lua/lcorolib.obj: 3rdparty/lua/lcorolib.c.obj
+.PHONY : 3rdparty/lua/lcorolib.obj
+
+# target to build an object file
+3rdparty/lua/lcorolib.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lcorolib.c.obj
+.PHONY : 3rdparty/lua/lcorolib.c.obj
+
+3rdparty/lua/lcorolib.i: 3rdparty/lua/lcorolib.c.i
+.PHONY : 3rdparty/lua/lcorolib.i
+
+# target to preprocess a source file
+3rdparty/lua/lcorolib.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lcorolib.c.i
+.PHONY : 3rdparty/lua/lcorolib.c.i
+
+3rdparty/lua/lcorolib.s: 3rdparty/lua/lcorolib.c.s
+.PHONY : 3rdparty/lua/lcorolib.s
+
+# target to generate assembly for a file
+3rdparty/lua/lcorolib.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lcorolib.c.s
+.PHONY : 3rdparty/lua/lcorolib.c.s
+
+3rdparty/lua/lctype.obj: 3rdparty/lua/lctype.c.obj
+.PHONY : 3rdparty/lua/lctype.obj
+
+# target to build an object file
+3rdparty/lua/lctype.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lctype.c.obj
+.PHONY : 3rdparty/lua/lctype.c.obj
+
+3rdparty/lua/lctype.i: 3rdparty/lua/lctype.c.i
+.PHONY : 3rdparty/lua/lctype.i
+
+# target to preprocess a source file
+3rdparty/lua/lctype.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lctype.c.i
+.PHONY : 3rdparty/lua/lctype.c.i
+
+3rdparty/lua/lctype.s: 3rdparty/lua/lctype.c.s
+.PHONY : 3rdparty/lua/lctype.s
+
+# target to generate assembly for a file
+3rdparty/lua/lctype.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lctype.c.s
+.PHONY : 3rdparty/lua/lctype.c.s
+
+3rdparty/lua/ldblib.obj: 3rdparty/lua/ldblib.c.obj
+.PHONY : 3rdparty/lua/ldblib.obj
+
+# target to build an object file
+3rdparty/lua/ldblib.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/ldblib.c.obj
+.PHONY : 3rdparty/lua/ldblib.c.obj
+
+3rdparty/lua/ldblib.i: 3rdparty/lua/ldblib.c.i
+.PHONY : 3rdparty/lua/ldblib.i
+
+# target to preprocess a source file
+3rdparty/lua/ldblib.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/ldblib.c.i
+.PHONY : 3rdparty/lua/ldblib.c.i
+
+3rdparty/lua/ldblib.s: 3rdparty/lua/ldblib.c.s
+.PHONY : 3rdparty/lua/ldblib.s
+
+# target to generate assembly for a file
+3rdparty/lua/ldblib.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/ldblib.c.s
+.PHONY : 3rdparty/lua/ldblib.c.s
+
+3rdparty/lua/ldebug.obj: 3rdparty/lua/ldebug.c.obj
+.PHONY : 3rdparty/lua/ldebug.obj
+
+# target to build an object file
+3rdparty/lua/ldebug.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/ldebug.c.obj
+.PHONY : 3rdparty/lua/ldebug.c.obj
+
+3rdparty/lua/ldebug.i: 3rdparty/lua/ldebug.c.i
+.PHONY : 3rdparty/lua/ldebug.i
+
+# target to preprocess a source file
+3rdparty/lua/ldebug.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/ldebug.c.i
+.PHONY : 3rdparty/lua/ldebug.c.i
+
+3rdparty/lua/ldebug.s: 3rdparty/lua/ldebug.c.s
+.PHONY : 3rdparty/lua/ldebug.s
+
+# target to generate assembly for a file
+3rdparty/lua/ldebug.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/ldebug.c.s
+.PHONY : 3rdparty/lua/ldebug.c.s
+
+3rdparty/lua/ldo.obj: 3rdparty/lua/ldo.c.obj
+.PHONY : 3rdparty/lua/ldo.obj
+
+# target to build an object file
+3rdparty/lua/ldo.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/ldo.c.obj
+.PHONY : 3rdparty/lua/ldo.c.obj
+
+3rdparty/lua/ldo.i: 3rdparty/lua/ldo.c.i
+.PHONY : 3rdparty/lua/ldo.i
+
+# target to preprocess a source file
+3rdparty/lua/ldo.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/ldo.c.i
+.PHONY : 3rdparty/lua/ldo.c.i
+
+3rdparty/lua/ldo.s: 3rdparty/lua/ldo.c.s
+.PHONY : 3rdparty/lua/ldo.s
+
+# target to generate assembly for a file
+3rdparty/lua/ldo.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/ldo.c.s
+.PHONY : 3rdparty/lua/ldo.c.s
+
+3rdparty/lua/ldump.obj: 3rdparty/lua/ldump.c.obj
+.PHONY : 3rdparty/lua/ldump.obj
+
+# target to build an object file
+3rdparty/lua/ldump.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/ldump.c.obj
+.PHONY : 3rdparty/lua/ldump.c.obj
+
+3rdparty/lua/ldump.i: 3rdparty/lua/ldump.c.i
+.PHONY : 3rdparty/lua/ldump.i
+
+# target to preprocess a source file
+3rdparty/lua/ldump.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/ldump.c.i
+.PHONY : 3rdparty/lua/ldump.c.i
+
+3rdparty/lua/ldump.s: 3rdparty/lua/ldump.c.s
+.PHONY : 3rdparty/lua/ldump.s
+
+# target to generate assembly for a file
+3rdparty/lua/ldump.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/ldump.c.s
+.PHONY : 3rdparty/lua/ldump.c.s
+
+3rdparty/lua/lfunc.obj: 3rdparty/lua/lfunc.c.obj
+.PHONY : 3rdparty/lua/lfunc.obj
+
+# target to build an object file
+3rdparty/lua/lfunc.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lfunc.c.obj
+.PHONY : 3rdparty/lua/lfunc.c.obj
+
+3rdparty/lua/lfunc.i: 3rdparty/lua/lfunc.c.i
+.PHONY : 3rdparty/lua/lfunc.i
+
+# target to preprocess a source file
+3rdparty/lua/lfunc.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lfunc.c.i
+.PHONY : 3rdparty/lua/lfunc.c.i
+
+3rdparty/lua/lfunc.s: 3rdparty/lua/lfunc.c.s
+.PHONY : 3rdparty/lua/lfunc.s
+
+# target to generate assembly for a file
+3rdparty/lua/lfunc.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lfunc.c.s
+.PHONY : 3rdparty/lua/lfunc.c.s
+
+3rdparty/lua/lgc.obj: 3rdparty/lua/lgc.c.obj
+.PHONY : 3rdparty/lua/lgc.obj
+
+# target to build an object file
+3rdparty/lua/lgc.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lgc.c.obj
+.PHONY : 3rdparty/lua/lgc.c.obj
+
+3rdparty/lua/lgc.i: 3rdparty/lua/lgc.c.i
+.PHONY : 3rdparty/lua/lgc.i
+
+# target to preprocess a source file
+3rdparty/lua/lgc.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lgc.c.i
+.PHONY : 3rdparty/lua/lgc.c.i
+
+3rdparty/lua/lgc.s: 3rdparty/lua/lgc.c.s
+.PHONY : 3rdparty/lua/lgc.s
+
+# target to generate assembly for a file
+3rdparty/lua/lgc.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lgc.c.s
+.PHONY : 3rdparty/lua/lgc.c.s
+
+3rdparty/lua/llex.obj: 3rdparty/lua/llex.c.obj
+.PHONY : 3rdparty/lua/llex.obj
+
+# target to build an object file
+3rdparty/lua/llex.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/llex.c.obj
+.PHONY : 3rdparty/lua/llex.c.obj
+
+3rdparty/lua/llex.i: 3rdparty/lua/llex.c.i
+.PHONY : 3rdparty/lua/llex.i
+
+# target to preprocess a source file
+3rdparty/lua/llex.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/llex.c.i
+.PHONY : 3rdparty/lua/llex.c.i
+
+3rdparty/lua/llex.s: 3rdparty/lua/llex.c.s
+.PHONY : 3rdparty/lua/llex.s
+
+# target to generate assembly for a file
+3rdparty/lua/llex.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/llex.c.s
+.PHONY : 3rdparty/lua/llex.c.s
+
+3rdparty/lua/lmem.obj: 3rdparty/lua/lmem.c.obj
+.PHONY : 3rdparty/lua/lmem.obj
+
+# target to build an object file
+3rdparty/lua/lmem.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lmem.c.obj
+.PHONY : 3rdparty/lua/lmem.c.obj
+
+3rdparty/lua/lmem.i: 3rdparty/lua/lmem.c.i
+.PHONY : 3rdparty/lua/lmem.i
+
+# target to preprocess a source file
+3rdparty/lua/lmem.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lmem.c.i
+.PHONY : 3rdparty/lua/lmem.c.i
+
+3rdparty/lua/lmem.s: 3rdparty/lua/lmem.c.s
+.PHONY : 3rdparty/lua/lmem.s
+
+# target to generate assembly for a file
+3rdparty/lua/lmem.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lmem.c.s
+.PHONY : 3rdparty/lua/lmem.c.s
+
+3rdparty/lua/lobject.obj: 3rdparty/lua/lobject.c.obj
+.PHONY : 3rdparty/lua/lobject.obj
+
+# target to build an object file
+3rdparty/lua/lobject.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lobject.c.obj
+.PHONY : 3rdparty/lua/lobject.c.obj
+
+3rdparty/lua/lobject.i: 3rdparty/lua/lobject.c.i
+.PHONY : 3rdparty/lua/lobject.i
+
+# target to preprocess a source file
+3rdparty/lua/lobject.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lobject.c.i
+.PHONY : 3rdparty/lua/lobject.c.i
+
+3rdparty/lua/lobject.s: 3rdparty/lua/lobject.c.s
+.PHONY : 3rdparty/lua/lobject.s
+
+# target to generate assembly for a file
+3rdparty/lua/lobject.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lobject.c.s
+.PHONY : 3rdparty/lua/lobject.c.s
+
+3rdparty/lua/lopcodes.obj: 3rdparty/lua/lopcodes.c.obj
+.PHONY : 3rdparty/lua/lopcodes.obj
+
+# target to build an object file
+3rdparty/lua/lopcodes.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lopcodes.c.obj
+.PHONY : 3rdparty/lua/lopcodes.c.obj
+
+3rdparty/lua/lopcodes.i: 3rdparty/lua/lopcodes.c.i
+.PHONY : 3rdparty/lua/lopcodes.i
+
+# target to preprocess a source file
+3rdparty/lua/lopcodes.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lopcodes.c.i
+.PHONY : 3rdparty/lua/lopcodes.c.i
+
+3rdparty/lua/lopcodes.s: 3rdparty/lua/lopcodes.c.s
+.PHONY : 3rdparty/lua/lopcodes.s
+
+# target to generate assembly for a file
+3rdparty/lua/lopcodes.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lopcodes.c.s
+.PHONY : 3rdparty/lua/lopcodes.c.s
+
+3rdparty/lua/lparser.obj: 3rdparty/lua/lparser.c.obj
+.PHONY : 3rdparty/lua/lparser.obj
+
+# target to build an object file
+3rdparty/lua/lparser.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lparser.c.obj
+.PHONY : 3rdparty/lua/lparser.c.obj
+
+3rdparty/lua/lparser.i: 3rdparty/lua/lparser.c.i
+.PHONY : 3rdparty/lua/lparser.i
+
+# target to preprocess a source file
+3rdparty/lua/lparser.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lparser.c.i
+.PHONY : 3rdparty/lua/lparser.c.i
+
+3rdparty/lua/lparser.s: 3rdparty/lua/lparser.c.s
+.PHONY : 3rdparty/lua/lparser.s
+
+# target to generate assembly for a file
+3rdparty/lua/lparser.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lparser.c.s
+.PHONY : 3rdparty/lua/lparser.c.s
+
+3rdparty/lua/lstate.obj: 3rdparty/lua/lstate.c.obj
+.PHONY : 3rdparty/lua/lstate.obj
+
+# target to build an object file
+3rdparty/lua/lstate.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lstate.c.obj
+.PHONY : 3rdparty/lua/lstate.c.obj
+
+3rdparty/lua/lstate.i: 3rdparty/lua/lstate.c.i
+.PHONY : 3rdparty/lua/lstate.i
+
+# target to preprocess a source file
+3rdparty/lua/lstate.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lstate.c.i
+.PHONY : 3rdparty/lua/lstate.c.i
+
+3rdparty/lua/lstate.s: 3rdparty/lua/lstate.c.s
+.PHONY : 3rdparty/lua/lstate.s
+
+# target to generate assembly for a file
+3rdparty/lua/lstate.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lstate.c.s
+.PHONY : 3rdparty/lua/lstate.c.s
+
+3rdparty/lua/lstring.obj: 3rdparty/lua/lstring.c.obj
+.PHONY : 3rdparty/lua/lstring.obj
+
+# target to build an object file
+3rdparty/lua/lstring.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lstring.c.obj
+.PHONY : 3rdparty/lua/lstring.c.obj
+
+3rdparty/lua/lstring.i: 3rdparty/lua/lstring.c.i
+.PHONY : 3rdparty/lua/lstring.i
+
+# target to preprocess a source file
+3rdparty/lua/lstring.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lstring.c.i
+.PHONY : 3rdparty/lua/lstring.c.i
+
+3rdparty/lua/lstring.s: 3rdparty/lua/lstring.c.s
+.PHONY : 3rdparty/lua/lstring.s
+
+# target to generate assembly for a file
+3rdparty/lua/lstring.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lstring.c.s
+.PHONY : 3rdparty/lua/lstring.c.s
+
+3rdparty/lua/ltable.obj: 3rdparty/lua/ltable.c.obj
+.PHONY : 3rdparty/lua/ltable.obj
+
+# target to build an object file
+3rdparty/lua/ltable.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/ltable.c.obj
+.PHONY : 3rdparty/lua/ltable.c.obj
+
+3rdparty/lua/ltable.i: 3rdparty/lua/ltable.c.i
+.PHONY : 3rdparty/lua/ltable.i
+
+# target to preprocess a source file
+3rdparty/lua/ltable.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/ltable.c.i
+.PHONY : 3rdparty/lua/ltable.c.i
+
+3rdparty/lua/ltable.s: 3rdparty/lua/ltable.c.s
+.PHONY : 3rdparty/lua/ltable.s
+
+# target to generate assembly for a file
+3rdparty/lua/ltable.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/ltable.c.s
+.PHONY : 3rdparty/lua/ltable.c.s
+
+3rdparty/lua/ltablib.obj: 3rdparty/lua/ltablib.c.obj
+.PHONY : 3rdparty/lua/ltablib.obj
+
+# target to build an object file
+3rdparty/lua/ltablib.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/ltablib.c.obj
+.PHONY : 3rdparty/lua/ltablib.c.obj
+
+3rdparty/lua/ltablib.i: 3rdparty/lua/ltablib.c.i
+.PHONY : 3rdparty/lua/ltablib.i
+
+# target to preprocess a source file
+3rdparty/lua/ltablib.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/ltablib.c.i
+.PHONY : 3rdparty/lua/ltablib.c.i
+
+3rdparty/lua/ltablib.s: 3rdparty/lua/ltablib.c.s
+.PHONY : 3rdparty/lua/ltablib.s
+
+# target to generate assembly for a file
+3rdparty/lua/ltablib.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/ltablib.c.s
+.PHONY : 3rdparty/lua/ltablib.c.s
+
+3rdparty/lua/ltm.obj: 3rdparty/lua/ltm.c.obj
+.PHONY : 3rdparty/lua/ltm.obj
+
+# target to build an object file
+3rdparty/lua/ltm.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/ltm.c.obj
+.PHONY : 3rdparty/lua/ltm.c.obj
+
+3rdparty/lua/ltm.i: 3rdparty/lua/ltm.c.i
+.PHONY : 3rdparty/lua/ltm.i
+
+# target to preprocess a source file
+3rdparty/lua/ltm.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/ltm.c.i
+.PHONY : 3rdparty/lua/ltm.c.i
+
+3rdparty/lua/ltm.s: 3rdparty/lua/ltm.c.s
+.PHONY : 3rdparty/lua/ltm.s
+
+# target to generate assembly for a file
+3rdparty/lua/ltm.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/ltm.c.s
+.PHONY : 3rdparty/lua/ltm.c.s
+
+3rdparty/lua/lundump.obj: 3rdparty/lua/lundump.c.obj
+.PHONY : 3rdparty/lua/lundump.obj
+
+# target to build an object file
+3rdparty/lua/lundump.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lundump.c.obj
+.PHONY : 3rdparty/lua/lundump.c.obj
+
+3rdparty/lua/lundump.i: 3rdparty/lua/lundump.c.i
+.PHONY : 3rdparty/lua/lundump.i
+
+# target to preprocess a source file
+3rdparty/lua/lundump.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lundump.c.i
+.PHONY : 3rdparty/lua/lundump.c.i
+
+3rdparty/lua/lundump.s: 3rdparty/lua/lundump.c.s
+.PHONY : 3rdparty/lua/lundump.s
+
+# target to generate assembly for a file
+3rdparty/lua/lundump.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lundump.c.s
+.PHONY : 3rdparty/lua/lundump.c.s
+
+3rdparty/lua/lutf8lib.obj: 3rdparty/lua/lutf8lib.c.obj
+.PHONY : 3rdparty/lua/lutf8lib.obj
+
+# target to build an object file
+3rdparty/lua/lutf8lib.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lutf8lib.c.obj
+.PHONY : 3rdparty/lua/lutf8lib.c.obj
+
+3rdparty/lua/lutf8lib.i: 3rdparty/lua/lutf8lib.c.i
+.PHONY : 3rdparty/lua/lutf8lib.i
+
+# target to preprocess a source file
+3rdparty/lua/lutf8lib.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lutf8lib.c.i
+.PHONY : 3rdparty/lua/lutf8lib.c.i
+
+3rdparty/lua/lutf8lib.s: 3rdparty/lua/lutf8lib.c.s
+.PHONY : 3rdparty/lua/lutf8lib.s
+
+# target to generate assembly for a file
+3rdparty/lua/lutf8lib.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lutf8lib.c.s
+.PHONY : 3rdparty/lua/lutf8lib.c.s
+
+3rdparty/lua/lvm.obj: 3rdparty/lua/lvm.c.obj
+.PHONY : 3rdparty/lua/lvm.obj
+
+# target to build an object file
+3rdparty/lua/lvm.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lvm.c.obj
+.PHONY : 3rdparty/lua/lvm.c.obj
+
+3rdparty/lua/lvm.i: 3rdparty/lua/lvm.c.i
+.PHONY : 3rdparty/lua/lvm.i
+
+# target to preprocess a source file
+3rdparty/lua/lvm.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lvm.c.i
+.PHONY : 3rdparty/lua/lvm.c.i
+
+3rdparty/lua/lvm.s: 3rdparty/lua/lvm.c.s
+.PHONY : 3rdparty/lua/lvm.s
+
+# target to generate assembly for a file
+3rdparty/lua/lvm.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lvm.c.s
+.PHONY : 3rdparty/lua/lvm.c.s
+
+3rdparty/lua/lzio.obj: 3rdparty/lua/lzio.c.obj
+.PHONY : 3rdparty/lua/lzio.obj
+
+# target to build an object file
+3rdparty/lua/lzio.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lzio.c.obj
+.PHONY : 3rdparty/lua/lzio.c.obj
+
+3rdparty/lua/lzio.i: 3rdparty/lua/lzio.c.i
+.PHONY : 3rdparty/lua/lzio.i
+
+# target to preprocess a source file
+3rdparty/lua/lzio.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lzio.c.i
+.PHONY : 3rdparty/lua/lzio.c.i
+
+3rdparty/lua/lzio.s: 3rdparty/lua/lzio.c.s
+.PHONY : 3rdparty/lua/lzio.s
+
+# target to generate assembly for a file
+3rdparty/lua/lzio.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/3rdparty/lua/lzio.c.s
+.PHONY : 3rdparty/lua/lzio.c.s
+
 3rdparty/lwip/src/api/api_lib.obj: 3rdparty/lwip/src/api/api_lib.c.obj
 .PHONY : 3rdparty/lwip/src/api/api_lib.obj
 
@@ -1447,6 +2071,84 @@ help:
 	@echo ... 3rdparty/littlefs/lfs_util.obj
 	@echo ... 3rdparty/littlefs/lfs_util.i
 	@echo ... 3rdparty/littlefs/lfs_util.s
+	@echo ... 3rdparty/lua/lapi.obj
+	@echo ... 3rdparty/lua/lapi.i
+	@echo ... 3rdparty/lua/lapi.s
+	@echo ... 3rdparty/lua/lauxlib.obj
+	@echo ... 3rdparty/lua/lauxlib.i
+	@echo ... 3rdparty/lua/lauxlib.s
+	@echo ... 3rdparty/lua/lbaselib.obj
+	@echo ... 3rdparty/lua/lbaselib.i
+	@echo ... 3rdparty/lua/lbaselib.s
+	@echo ... 3rdparty/lua/lcode.obj
+	@echo ... 3rdparty/lua/lcode.i
+	@echo ... 3rdparty/lua/lcode.s
+	@echo ... 3rdparty/lua/lcorolib.obj
+	@echo ... 3rdparty/lua/lcorolib.i
+	@echo ... 3rdparty/lua/lcorolib.s
+	@echo ... 3rdparty/lua/lctype.obj
+	@echo ... 3rdparty/lua/lctype.i
+	@echo ... 3rdparty/lua/lctype.s
+	@echo ... 3rdparty/lua/ldblib.obj
+	@echo ... 3rdparty/lua/ldblib.i
+	@echo ... 3rdparty/lua/ldblib.s
+	@echo ... 3rdparty/lua/ldebug.obj
+	@echo ... 3rdparty/lua/ldebug.i
+	@echo ... 3rdparty/lua/ldebug.s
+	@echo ... 3rdparty/lua/ldo.obj
+	@echo ... 3rdparty/lua/ldo.i
+	@echo ... 3rdparty/lua/ldo.s
+	@echo ... 3rdparty/lua/ldump.obj
+	@echo ... 3rdparty/lua/ldump.i
+	@echo ... 3rdparty/lua/ldump.s
+	@echo ... 3rdparty/lua/lfunc.obj
+	@echo ... 3rdparty/lua/lfunc.i
+	@echo ... 3rdparty/lua/lfunc.s
+	@echo ... 3rdparty/lua/lgc.obj
+	@echo ... 3rdparty/lua/lgc.i
+	@echo ... 3rdparty/lua/lgc.s
+	@echo ... 3rdparty/lua/llex.obj
+	@echo ... 3rdparty/lua/llex.i
+	@echo ... 3rdparty/lua/llex.s
+	@echo ... 3rdparty/lua/lmem.obj
+	@echo ... 3rdparty/lua/lmem.i
+	@echo ... 3rdparty/lua/lmem.s
+	@echo ... 3rdparty/lua/lobject.obj
+	@echo ... 3rdparty/lua/lobject.i
+	@echo ... 3rdparty/lua/lobject.s
+	@echo ... 3rdparty/lua/lopcodes.obj
+	@echo ... 3rdparty/lua/lopcodes.i
+	@echo ... 3rdparty/lua/lopcodes.s
+	@echo ... 3rdparty/lua/lparser.obj
+	@echo ... 3rdparty/lua/lparser.i
+	@echo ... 3rdparty/lua/lparser.s
+	@echo ... 3rdparty/lua/lstate.obj
+	@echo ... 3rdparty/lua/lstate.i
+	@echo ... 3rdparty/lua/lstate.s
+	@echo ... 3rdparty/lua/lstring.obj
+	@echo ... 3rdparty/lua/lstring.i
+	@echo ... 3rdparty/lua/lstring.s
+	@echo ... 3rdparty/lua/ltable.obj
+	@echo ... 3rdparty/lua/ltable.i
+	@echo ... 3rdparty/lua/ltable.s
+	@echo ... 3rdparty/lua/ltablib.obj
+	@echo ... 3rdparty/lua/ltablib.i
+	@echo ... 3rdparty/lua/ltablib.s
+	@echo ... 3rdparty/lua/ltm.obj
+	@echo ... 3rdparty/lua/ltm.i
+	@echo ... 3rdparty/lua/ltm.s
+	@echo ... 3rdparty/lua/lundump.obj
+	@echo ... 3rdparty/lua/lundump.i
+	@echo ... 3rdparty/lua/lundump.s
+	@echo ... 3rdparty/lua/lutf8lib.obj
+	@echo ... 3rdparty/lua/lutf8lib.i
+	@echo ... 3rdparty/lua/lutf8lib.s
+	@echo ... 3rdparty/lua/lvm.obj
+	@echo ... 3rdparty/lua/lvm.i
+	@echo ... 3rdparty/lua/lvm.s
+	@echo ... 3rdparty/lua/lzio.obj
+	@echo ... 3rdparty/lua/lzio.i
+	@echo ... 3rdparty/lua/lzio.s
 	@echo ... 3rdparty/lwip/src/api/api_lib.obj
 	@echo ... 3rdparty/lwip/src/api/api_lib.i
 	@echo ... 3rdparty/lwip/src/api/api_lib.s

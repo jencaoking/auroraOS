@@ -171,4 +171,55 @@ int __popcountsi2(int a) {
     return count;
 }
 
+void* realloc(void* ptr, size_t size) {
+    if (size == 0) {
+        free(ptr);
+        return nullptr;
+    }
+    if (!ptr) {
+        return malloc(size);
+    }
+    void* new_ptr = malloc(size);
+    if (new_ptr) {
+        memcpy(new_ptr, ptr, size);
+        free(ptr);
+    }
+    return new_ptr;
+}
+
+void abort(void) {
+    while(1);
+}
+
+void exit(int status) {
+    (void)status;
+    while(1);
+}
+
+int abs(int x) {
+    return x < 0 ? -x : x;
+}
+
+float strtof(const char* nptr, char** endptr) {
+    if (endptr) *endptr = (char*)nptr;
+    return 0.0f;
+}
+
+// 极简 math.h 占位，供 Lua lvm 引擎链接通过
+float floorf(float x) {
+    int i = (int)x;
+    return (float)(x < 0.0f && x != (float)i ? i - 1 : i);
+}
+
+float powf(float base, float exp) {
+    (void)base; (void)exp;
+    return 0.0f;
+}
+
+float fmodf(float x, float y) {
+    if (y == 0.0f) return 0.0f;
+    int quotient = (int)(x / y);
+    return x - quotient * y;
+}
+
 } // extern "C"
