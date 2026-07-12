@@ -1,6 +1,8 @@
 #include "net_app.hpp"
 #include "posix.hpp" // 使用我们的标准 sleep 和 print 封装
 #include "vfs.hpp"
+#include "timer.hpp" // 引入软件定时器
+#include "../net/distributed_bus.hpp" // 引入软总线
 
 // 引入 lwIP 核心头文件
 #include "lwip/netif.h"
@@ -37,6 +39,17 @@ static void tcpip_init_done_cb(void* arg) {
 }
 
 // ========================================================
+// 软总线监听任务的入口包装
+void softbus_listener_entry(void) {
+    DistributedSoftBus::instance().listener_task();
+}
+
+// 软件定时器回调：自动发送心跳广播
+void beacon_timer_callback(void* arg) {
+    DistributedSoftBus::instance().broadcast_beacon();
+}
+
+// ========================================================
 // 网络主轮询任务：由调度器在后台运行
 // ========================================================
 void NetApp::run_dhcp_client() {
@@ -70,6 +83,19 @@ void NetApp::run_dhcp_client() {
                 append_num(ip4_addr4(netif_ip4_addr(&g_netif))); append("\r\n\r\n");
 
                 write(console_fd, msg, len);
+                
+                // ========================================================
+                // 核心：在拿到网络身份后，正式激活 HarmonyOS 级软总线！
+                // ========================================================
+                DistributedSoftBus::instance().init();
+
+                // 1. 创建独立的软总线监听线程 (高优先级)
+                uint32_t* bus_stack = new uint32_t[1024];
+                Scheduler::instance().create_task(softbus_listener_entry, bus_stack, 1024 * sizeof(uint32_t), TaskPriority::High);
+
+                // 2. 利用定时器，每 3000ms 异步非阻塞发送一次心跳广播
+                TimerManager::instance().start_timer(3000, TimerType::Periodic, beacon_timer_callback);
+
                 ip_assigned = true;
             }
         } else {
