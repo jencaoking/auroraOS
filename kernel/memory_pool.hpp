@@ -14,6 +14,7 @@ private:
     };
 
     Node buffer_[PoolSize];
+    uint32_t allocated_[(PoolSize + 31) / 32];
     Node* free_list_;
     Mutex pool_mutex_;
 
@@ -24,6 +25,9 @@ public:
         }
         buffer_[PoolSize - 1].next = nullptr;
         free_list_ = &buffer_[0];
+        for (size_t i = 0; i < (PoolSize + 31) / 32; ++i) {
+            allocated_[i] = 0;
+        }
     }
 
     // Allocate an object from the pool in O(1) time
@@ -34,6 +38,8 @@ public:
         }
         Node* node = free_list_;
         free_list_ = node->next;
+        size_t index = node - &buffer_[0];
+        allocated_[index / 32] |= (1U << (index % 32));
         return reinterpret_cast<T*>(node);
     }
 
@@ -52,6 +58,14 @@ public:
         
         LockGuard lock(pool_mutex_);
         Node* node = reinterpret_cast<Node*>(ptr);
+        size_t index = node - &buffer_[0];
+        
+        // Double free check
+        if (!(allocated_[index / 32] & (1U << (index % 32)))) {
+            return; // Already free!
+        }
+        allocated_[index / 32] &= ~(1U << (index % 32));
+        
         node->next = free_list_;
         free_list_ = node;
     }

@@ -74,3 +74,27 @@ TEST_F(MemoryPoolTest, OutOfBoundsFree) {
     Packet* p2 = pool.allocate();
     EXPECT_NE(p2, nullptr);
 }
+
+// Test double free protection
+TEST_F(MemoryPoolTest, DoubleFree) {
+    MemoryPool<Packet, 2> pool;
+    Packet* p1 = pool.allocate();
+    
+    // Free once
+    pool.deallocate(p1);
+    
+    // Free again (should be ignored safely)
+    EXPECT_NO_FATAL_FAILURE(pool.deallocate(p1));
+    
+    // If it was double-freed, allocate would return p1 twice.
+    Packet* p2 = pool.allocate();
+    Packet* p3 = pool.allocate();
+    
+    EXPECT_NE(p2, p3);
+    EXPECT_NE(p2, nullptr);
+    EXPECT_NE(p3, nullptr);
+    
+    // Should be exhausted now
+    Packet* p4 = pool.allocate();
+    EXPECT_EQ(p4, nullptr);
+}

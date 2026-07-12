@@ -63,6 +63,8 @@ struct TaskControlBlock {
     // ========================================================
     uint32_t      pending_signals;          // 待处理信号位图
     SignalHandler signal_handlers[16];      // 信号回调处理函数表
+    
+    void*         held_mutexes;             // 持有的互斥锁链表头 (for PI)
 };
 
 // 前向声明：供 PendSV 汇编读取的两个全局 TCB 指针
@@ -192,6 +194,7 @@ public:
         tcb.notify_pending = false;
         tcb.pending_signals = 0;
         for (int i = 0; i < 16; i++) tcb.signal_handlers[i] = nullptr;
+        tcb.held_mutexes = nullptr;
 
         // 调用 HAL 接口完成 Cortex-M4 栈帧伪造，与具体架构解耦
         tcb.stack_ptr = Arch::init_thread_stack(task_entry, stack_space, stack_size);
@@ -212,7 +215,7 @@ public:
                 
                 if (i == SIGKILL) {
                     set_task_state(tcb->id, TaskState::Terminated);
-                    continue; // 终止后不再执行其它处理函数
+                    return; // 终止后不再执行其它处理函数
                 }
 
                 if (tcb->signal_handlers[i]) {

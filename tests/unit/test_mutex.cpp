@@ -106,3 +106,24 @@ TEST_F(MutexTest, UniqueLockRAII) {
     UniqueLock lock2(m, 5);
     EXPECT_TRUE(lock2.owns_lock());
 }
+
+// Test priority inheritance timeout revert
+TEST_F(MutexTest, PITimeoutRevert) {
+    Mutex m;
+    
+    TaskControlBlock* task1 = Scheduler::instance().create_task([](){}, nullptr, 0, TaskPriority::Low);
+    Scheduler::instance().schedule();
+    m.lock();
+    EXPECT_EQ(task1->current_priority, TaskPriority::Low);
+    
+    Scheduler::instance().set_task_state(task1->id, TaskState::Suspended);
+    
+    TaskControlBlock* task2 = Scheduler::instance().create_task([](){}, nullptr, 0, TaskPriority::High);
+    Scheduler::instance().schedule();
+    
+    // task2 waits, elevates task1 (High), then times out
+    EXPECT_FALSE(m.lock(2));
+    
+    // After timeout, task1 should revert back to Low!
+    EXPECT_EQ(task1->current_priority, TaskPriority::Low);
+}
