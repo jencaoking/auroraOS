@@ -6,6 +6,7 @@
 
 
 #include <stdint.h>
+#include "../../kernel/arch_api.hpp"
 
 // ========================================================
 // 传感器数据类型与标准载荷抽象 (Xiaomi Mi Band 8 专用)
@@ -203,28 +204,42 @@ public:
 
     // 后台高速采样线程调用，将数据推入环形缓冲区
     void fetch_and_buffer(uint32_t current_tick) {
-        SensorData data;
+        SensorData hr_data;
+        bool hr_ready = hr_sensor_.read(&hr_data);
         
-        if (hr_sensor_.read(&data)) {
-            data.timestamp = current_tick;
-            ring_buffer_[head_] = data;
+        SensorData accel_data;
+        bool accel_ready = accel_sensor_.read(&accel_data);
+        
+        // 集中对 RingBuffer 写入，通过关中断建立极速临界区保护
+        Arch::disable_interrupts();
+        
+        if (hr_ready) {
+            hr_data.timestamp = current_tick;
+            ring_buffer_[head_] = hr_data;
             head_ = (head_ + 1) % RING_BUFFER_SIZE;
             if (head_ == tail_) tail_ = (tail_ + 1) % RING_BUFFER_SIZE; // 覆盖旧数据
         }
 
-        if (accel_sensor_.read(&data)) {
-            data.timestamp = current_tick;
-            ring_buffer_[head_] = data;
+        if (accel_ready) {
+            accel_data.timestamp = current_tick;
+            ring_buffer_[head_] = accel_data;
             head_ = (head_ + 1) % RING_BUFFER_SIZE;
             if (head_ == tail_) tail_ = (tail_ + 1) % RING_BUFFER_SIZE; // 覆盖旧数据
         }
+        
+        Arch::enable_interrupts();
     }
 
     // 供前端 UI 或健康算法提取最新的一批数据进行批量处理
     bool pop_data(SensorData* out_data) {
-        if (head_ == tail_) return false; // 缓冲区空
+        Arch::disable_interrupts();
+        if (head_ == tail_) {
+            Arch::enable_interrupts();
+            return false; // 缓冲区空
+        }
         *out_data = ring_buffer_[tail_];
         tail_ = (tail_ + 1) % RING_BUFFER_SIZE;
+        Arch::enable_interrupts();
         return true;
     }
 

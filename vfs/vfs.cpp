@@ -25,7 +25,7 @@ bool VfsManager::mount(const char* path, VNode* vnode) {
     return true;
 }
 
-int VfsManager::open(const char* path) {
+int VfsManager::open(const char* path, int flags) {
     VNode* target = nullptr;
     // TODO(L6): Currently this only supports exact path matching (e.g. "/tmp/log.txt").
     // A real VFS should implement hierarchical path resolution:
@@ -39,6 +39,11 @@ int VfsManager::open(const char* path) {
 
     for (int fd = 0; fd < MAX_OPEN_FILES; fd++) {
         if (!fd_table_[fd].used) {
+            // 尝试让底层 VNode 处理特定于节点的打开逻辑
+            if (target->open_file(path, flags) < 0) {
+                return -1; // 底层拒绝打开
+            }
+            
             fd_table_[fd].vnode = target;
             fd_table_[fd].offset = 0;  // 默认游标在文件开头
             fd_table_[fd].used = true;

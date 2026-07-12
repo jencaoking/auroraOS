@@ -4,6 +4,8 @@
 class VNode {
 public:
     virtual ~VNode() = default;
+    // 增加 open_file, 传递 flags
+    virtual int open_file(const char* /*path*/, int /*flags*/) { return 0; }
     // 增加 offset 参数
     virtual int read(char* /*buf*/, int /*len*/, int /*offset*/) { return -1; }
     virtual int write(const char* /*buf*/, int /*len*/, int /*offset*/) { return -1; }
@@ -32,7 +34,7 @@ public:
 
     void init();
     bool mount(const char* path, VNode* vnode);
-    int open(const char* path);
+    int open(const char* path, int flags = 0);
     int read(int fd, char* buf, int len);
     int write(int fd, const char* buf, int len);
     void close(int fd);

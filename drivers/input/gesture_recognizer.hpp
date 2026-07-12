@@ -52,7 +52,7 @@ private:
 
 public:
     GestureRecognizer() : 
-        current_state_(TouchState::RELEASED), 
+        current_state_(TouchState::IDLE), 
         start_x_(0), start_y_(0), start_time_(0), 
         last_tap_time_(0), is_tracking_double_tap_(false) {}
 
@@ -64,7 +64,7 @@ public:
 
         switch (event.state) {
             case TouchState::PRESSED:
-                if (current_state_ == TouchState::RELEASED) {
+                if (current_state_ == TouchState::IDLE || current_state_ == TouchState::RELEASED) {
                     current_state_ = TouchState::PRESSED;
                     start_x_    = event.x;
                     start_y_    = event.y;
@@ -121,7 +121,7 @@ public:
                     }
 
                     // 状态重置归零
-                    current_state_ = TouchState::RELEASED;
+                    current_state_ = TouchState::IDLE;
                 }
                 break;
                 

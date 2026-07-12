@@ -60,6 +60,7 @@ void NetApp::run_dhcp_client() {
     tcpip_init(tcpip_init_done_cb, nullptr);
 
     bool ip_assigned = false;
+    static bool network_services_started = false;
 
     // 轮询等待 DHCP 服务器分配 IP
     while (true) {
@@ -68,12 +69,14 @@ void NetApp::run_dhcp_client() {
                 // 当成功拿到 IP 时，进行格式化打印
                 char msg[128];
                 int len = 0;
-                auto append = [&](const char* s) { while (*s) msg[len++] = *s++; };
+                auto append = [&](const char* s) { 
+                    while (*s && len < (int)sizeof(msg) - 1) msg[len++] = *s++; 
+                };
                 auto append_num = [&](uint8_t n) {
                     char tmp[4]; int i = 0;
                     if (n == 0) tmp[i++] = '0';
                     while (n > 0) { tmp[i++] = (n % 10) + '0'; n /= 10; }
-                    while (i > 0) msg[len++] = tmp[--i];
+                    while (i > 0 && len < (int)sizeof(msg) - 1) msg[len++] = tmp[--i];
                 };
 
                 append("\r\n\r\n🌐 [DHCP] Success! auroraOS got IP Address: ");
@@ -82,19 +85,25 @@ void NetApp::run_dhcp_client() {
                 append_num(ip4_addr3(netif_ip4_addr(&g_netif))); append(".");
                 append_num(ip4_addr4(netif_ip4_addr(&g_netif))); append("\r\n\r\n");
 
+                msg[len] = '\0';
                 write(console_fd, msg, len);
                 
-                // ========================================================
-                // 核心：在拿到网络身份后，正式激活 HarmonyOS 级软总线！
-                // ========================================================
-                DistributedSoftBus::instance().init();
+                if (!network_services_started) {
+                    // ========================================================
+                    // 核心：在拿到网络身份后，正式激活 HarmonyOS 级软总线！
+                    // 且整个生命周期只初始化一次，防止掉线重连导致的 Socket 泄漏
+                    // ========================================================
+                    DistributedSoftBus::instance().init();
 
-                // 1. 创建独立的软总线监听线程 (高优先级)
-                uint32_t* bus_stack = new uint32_t[1024];
-                Scheduler::instance().create_task(softbus_listener_entry, bus_stack, 1024 * sizeof(uint32_t), TaskPriority::High);
+                    // 1. 创建独立的软总线监听线程 (高优先级)
+                    uint32_t* bus_stack = new uint32_t[1024];
+                    Scheduler::instance().create_task(softbus_listener_entry, bus_stack, 1024 * sizeof(uint32_t), TaskPriority::High);
 
-                // 2. 利用定时器，每 3000ms 异步非阻塞发送一次心跳广播
-                TimerManager::instance().start_timer(3000, TimerType::Periodic, beacon_timer_callback);
+                    // 2. 利用定时器，每 3000ms 异步非阻塞发送一次心跳广播
+                    TimerManager::instance().start_timer(3000, TimerType::Periodic, beacon_timer_callback);
+
+                    network_services_started = true;
+                }
 
                 ip_assigned = true;
             }

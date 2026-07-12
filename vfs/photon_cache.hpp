@@ -59,7 +59,10 @@ private:
 
         // 2. 缓存未命中，如果被淘汰的页是脏页，必须先将其落盘保护
         if (pool_[oldest_idx].is_valid && pool_[oldest_idx].is_dirty) {
-            flush_page(oldest_idx);
+            int res = flush_page(oldest_idx);
+            if (res != 0) {
+                return -1; // 刷盘失败，拒绝覆盖该脏页，向上层报错
+            }
         }
 
         // 3. 载入新物理页到该缓存槽位
@@ -158,14 +161,18 @@ public:
     // 显式同步 (Sync)：将所有脏页批量高效刷入闪存
     // ========================================================
     int sync() {
+        int final_res = 0;
         cache_mutex_.lock();
         for (int i = 0; i < CACHE_POOL_SIZE; i++) {
             if (pool_[i].is_valid && pool_[i].is_dirty) {
-                flush_page(i);
+                int res = flush_page(i);
+                if (res != 0 && final_res == 0) {
+                    final_res = res; // 记录第一次遇到的错误
+                }
             }
         }
         cache_mutex_.unlock();
-        return 0;
+        return final_res;
     }
 };
 

@@ -3,6 +3,7 @@
 
 #include "vfs.hpp"
 #include "photon_cache.hpp"
+#include "../kernel/posix.hpp"
 // 引入第三方开源库接口 (假定项目附带于 3rdparty/littlefs/lfs.h)
 extern "C" {
 #include "lfs.h"
@@ -88,8 +89,23 @@ private:
 public:
     LfsFileNode(LittleFsAdapter& fs) : fs_(fs), is_open_(false) {}
 
-    int open_file(const char* path, int flags) {
-        int lfs_flags = LFS_O_RDWR | LFS_O_CREAT;
+    int open_file(const char* path, int flags) override {
+        int lfs_flags = 0;
+        
+        // 映射 O_ACCMODE 掩码
+        if ((flags & 0x03) == O_RDWR) {
+            lfs_flags |= LFS_O_RDWR;
+        } else if ((flags & 0x03) == O_WRONLY) {
+            lfs_flags |= LFS_O_WRONLY;
+        } else {
+            lfs_flags |= LFS_O_RDONLY; // Default to O_RDONLY (0)
+        }
+        
+        // 映射创建/截断/追加标志
+        if (flags & O_CREAT)  lfs_flags |= LFS_O_CREAT;
+        if (flags & O_TRUNC)  lfs_flags |= LFS_O_TRUNC;
+        if (flags & O_APPEND) lfs_flags |= LFS_O_APPEND;
+
         int err = lfs_file_open(fs_.get_lfs(), &file_, path, lfs_flags);
         is_open_ = (err == 0);
         return is_open_ ? 0 : -1;

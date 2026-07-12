@@ -93,13 +93,23 @@ public:
         // 1. 设定 OLED 驱动 IC 的硬件局部显示窗口
         driver.set_window(dirty_.x0, dirty_.y0, dirty_.x1, dirty_.y1);
 
-        // 2. 将脏区域内的像素一行行提取并以 DMA/SPI 传输给硬件
+        // 2. 将脏区域内的像素逐行提取并以 DMA/SPI 传输给硬件
         uint16_t patch_width = dirty_.x1 - dirty_.x0 + 1;
         uint16_t patch_height = dirty_.y1 - dirty_.y0 + 1;
-        uint32_t total_patch_pixels = patch_width * patch_height;
-
-        // 简化的批量推送演示（直接将需要发送的局部切片指针或拷贝块推送）
-        driver.write_patch(&buffer_[dirty_.y0 * Width + dirty_.x0], total_patch_pixels);
+        
+        if (patch_width == Width) {
+            // 优化：如果是全屏幕宽度，内存依然是连续的，可以直接一把梭哈
+            uint32_t total_patch_pixels = patch_width * patch_height;
+            driver.write_patch(&buffer_[dirty_.y0 * Width + dirty_.x0], total_patch_pixels);
+        } else {
+            // 脏区域跨行错位，必须逐行发送 (或利用 line_buffer_ 拼装多行)
+            // 这里为了简单安全，直接逐行发送
+            for (uint16_t y = dirty_.y0; y <= dirty_.y1; ++y) {
+                // 如果单行非常窄，理论上可以通过 line_buffer_ 收集多行再发送
+                // 但考虑到 write_patch 会自己处理 SPI 发送，直接逐行发也足够稳定
+                driver.write_patch(&buffer_[y * Width + dirty_.x0], patch_width);
+            }
+        }
 
         // 3. 画面同步完毕，重置脏矩形树！
         dirty_.reset();

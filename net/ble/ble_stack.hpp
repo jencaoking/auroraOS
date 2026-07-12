@@ -153,7 +153,7 @@ public:
     #define BLE_IPC_DATA_FIFO      (APOLLO3_BLE_IPC_BASE + 0x04)
     #define BLE_IPC_STATUS         (APOLLO3_BLE_IPC_BASE + 0x08)
 
-    void hci_send_cmd(uint16_t opcode, const uint8_t* param, uint8_t len) {
+    bool hci_send_cmd(uint16_t opcode, const uint8_t* param, uint8_t len) {
         LockGuard lock(hci_mutex_); // 防止多线程并发写穿或交错
         
         volatile uint32_t* cmd_fifo  = reinterpret_cast<uint32_t*>(BLE_IPC_CMD_FIFO);
@@ -173,6 +173,8 @@ public:
         while ((*status & 0x01) != 0 && timeout > 0) {
             timeout--;
         }
+        
+        return timeout > 0;
     }
 
     // ========================================================

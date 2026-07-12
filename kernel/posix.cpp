@@ -8,9 +8,8 @@
 extern "C" {
 
 int open(const char* path, int flags) {
-    (void)flags;
 #ifdef CONFIG_VFS
-    return VfsManager::instance().open(path);
+    return VfsManager::instance().open(path, flags);
 #else
     return -1;
 #endif

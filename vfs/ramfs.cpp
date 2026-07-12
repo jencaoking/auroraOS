@@ -13,7 +13,7 @@ int RamFile::read(char* buf, int len, int offset) {
     if (offset >= file_size_) return 0; // EOF (End of File)
     
     int bytes_to_read = len;
-    if (offset + len > file_size_) {
+    if (len > file_size_ - offset) {
         bytes_to_read = file_size_ - offset;
     }
 
@@ -27,7 +27,7 @@ int RamFile::write(const char* buf, int len, int offset) {
     if (offset >= capacity_) return 0; // 超出物理容量上限
     
     int bytes_to_write = len;
-    if (offset + len > capacity_) {
+    if (len > capacity_ - offset) {
         bytes_to_write = capacity_ - offset;
     }
 
