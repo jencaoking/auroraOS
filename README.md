@@ -593,7 +593,7 @@ python scripts/genconfig.py
 - [x] 内核调度器死亡任务兜底切换与死锁修复
 - [x] 内核内存堆双重释放拦截（魔数）与 realloc 越界读取修复
 - [ ] irq_save/restore 扩展
-- [ ] 消息队列优先级
+- [x] 消息队列优先级 (紧急插队 push_urgent)
 
 ### Phase 2: 手表原型（6-12 个月）— 🚧 63% 完成
 

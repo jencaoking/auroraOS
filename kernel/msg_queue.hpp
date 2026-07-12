@@ -25,7 +25,7 @@ public:
         spaces_.init(Capacity);
     }
 
-    // 生产者调用：向队列发送消息
+    // 生产者调用：向队列发送消息（追加到队尾，普通优先级）
     void push(const T& item) {
         spaces_.wait(); // 如果队列满了，生产者会在这里阻塞休眠
 
@@ -35,6 +35,20 @@ public:
         mutex_.unlock();
 
         items_.signal(); // 通知消费者：有新消息啦！
+    }
+
+    // 生产者调用：向队列发送高优先级消息（插队到队头，紧急优先级）
+    // 借鉴 ThreadX，允许加急消息越过等待队列被最先处理
+    void push_urgent(const T& item) {
+        spaces_.wait();
+
+        mutex_.lock();
+        // 头部逆向移动（带环绕保护）
+        head_ = (head_ - 1 + Capacity) % Capacity;
+        buffer_[head_] = item;
+        mutex_.unlock();
+
+        items_.signal();
     }
 
     // 消费者调用：从队列获取消息
@@ -60,6 +74,19 @@ public:
         disable_interrupts();
         buffer_[tail_] = item;
         tail_ = (tail_ + 1) % Capacity;
+        enable_interrupts();
+
+        items_.signal();
+        return true;
+    }
+
+    // 非阻塞生产者（高优插队）：适用于 ISR 中产生极高优事件需要立刻响应
+    bool try_push_urgent(const T& item) {
+        if (!spaces_.try_wait()) return false;
+
+        disable_interrupts();
+        head_ = (head_ - 1 + Capacity) % Capacity;
+        buffer_[head_] = item;
         enable_interrupts();
 
         items_.signal();
