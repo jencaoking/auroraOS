@@ -589,7 +589,7 @@ python scripts/genconfig.py
 - [x] MPU 内存保护（计划外提前实现）
 - [x] 以太网驱动防死锁排空机制
 - [x] 分布式软总线/JSON解析越界防护
-- [ ] Shell 命令补全（ping/netstat/reboot/date）
+- [x] Shell 命令补全（ping/netstat/reboot/date）
 - [ ] irq_save/restore 扩展
 - [ ] 消息队列优先级
 

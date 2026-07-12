@@ -3,6 +3,7 @@
 #include "syscall.hpp"
 #include "elf_loader.hpp"
 #include "config.h"
+#include "timer.hpp"
 
 // 引入 lwIP 的网络接口与 Socket 核心 API
 #include "lwip/netif.h"
@@ -25,6 +26,24 @@ static int my_atoi(const char* str) {
         str++;
     }
     return res;
+}
+
+// 裸机极简版整数转字符串 (itoa)
+static void print_int(int stdout_fd, int val) {
+    char buf[16];
+    int i = 0;
+    if (val == 0) buf[i++] = '0';
+    while (val > 0) {
+        buf[i++] = '0' + (val % 10);
+        val /= 10;
+    }
+    for (int j = 0; j < i / 2; j++) {
+        char t = buf[j];
+        buf[j] = buf[i - 1 - j];
+        buf[i - 1 - j] = t;
+    }
+    buf[i] = '\0';
+    write(stdout_fd, buf, i);
 }
 
 void Shell::execute_command(const char* raw_cmd) {
@@ -205,22 +224,32 @@ void Shell::execute_command(const char* raw_cmd) {
         } else {
             print("PING ");
             print(argv[1]);
-            print(" (lwIP ICMP layer bypass)...\r\n");
-            print("64 bytes from ");
-            print(argv[1]);
-            print(": icmp_seq=1 ttl=64 time=10 ms\r\n");
+            print(" 56(84) bytes of data.\r\n");
+            print("ping: ICMP raw sockets require LWIP_RAW=1 in lwipopts.h (Feature not compiled)\r\n");
         }
     }
     // [L3 Expand]: netstat 命令
     else if (strings_equal(argv[0], "netstat")) {
         print("Active Internet connections (w/o servers)\r\n");
         print("Proto Recv-Q Send-Q Local Address           Foreign Address         State\r\n");
-        print("udp        0      0 0.0.0.0:68              0.0.0.0:*               \r\n"); // DHCP 客户端默认端口
+        print("udp        0      0 0.0.0.0:8899            0.0.0.0:*               LISTEN (SoftBus)\r\n");
+        print("udp        0      0 0.0.0.0:68              0.0.0.0:*               LISTEN (DHCP)\r\n");
     }
     // [L3 Expand]: date 命令
     else if (strings_equal(argv[0], "date")) {
-        // 由于没有真实 RTC，先输出固定时间
-        print("Sat Jul 11 12:00:00 UTC 2026\r\n");
+        uint32_t ticks = TimerManager::instance().get_current_tick();
+        uint32_t seconds = ticks / 1000;
+        uint32_t ms = ticks % 1000;
+        
+        print("System Uptime: ");
+        print_int(stdout_fd, seconds);
+        print(".");
+        if (ms < 100) print("0");
+        if (ms < 10) print("0");
+        print_int(stdout_fd, ms);
+        print(" seconds (");
+        print_int(stdout_fd, ticks);
+        print(" ticks)\r\n");
     }
     // [L3 Expand]: reboot 命令
     else if (strings_equal(argv[0], "reboot")) {

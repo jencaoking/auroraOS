@@ -42,6 +42,8 @@ public:
         return mgr;
     }
 
+    uint32_t get_current_tick() const { return current_tick_; }
+
     // 1. 供应用层调用的 API：创建并启动定时器
     int start_timer(uint32_t period_ticks, TimerType type, TimerCallback cb, void* arg = nullptr) {
         Arch::disable_interrupts();
