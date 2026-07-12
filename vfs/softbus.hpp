@@ -34,6 +34,9 @@ public:
 
 private:
     SoftBus() = default;
+    SoftBus(const SoftBus&) = delete;
+    SoftBus& operator=(const SoftBus&) = delete;
+
     RpcNode services_[MAX_RPC_HANDLERS]{};
     int service_count_ = 0;
 

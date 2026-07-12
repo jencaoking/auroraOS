@@ -43,6 +43,9 @@ public:
 
 private:
     VfsManager() = default;
+    VfsManager(const VfsManager&) = delete;
+    VfsManager& operator=(const VfsManager&) = delete;
+
     static constexpr int MAX_MOUNT_POINTS = 8;
     static constexpr int MAX_OPEN_FILES = 16;
 

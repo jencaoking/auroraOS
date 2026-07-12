@@ -22,6 +22,9 @@ private:
     Mutex heap_mutex_;        // 保护整个全局堆的互斥锁
 
 public:
+    KernelHeap(const KernelHeap&) = delete;
+    KernelHeap& operator=(const KernelHeap&) = delete;
+
     static KernelHeap& instance() {
         static KernelHeap heap;
         return heap;

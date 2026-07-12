@@ -211,8 +211,8 @@ float strtof(const char* nptr, char** endptr) {
 
 // 极简 math.h 占位，供 Lua lvm 引擎链接通过
 float floorf(float x) {
-    int i = (int)x;
-    return (float)(x < 0.0f && x != (float)i ? i - 1 : i);
+    int i = static_cast<int>(x);
+    return static_cast<float>(x < 0.0f && x != static_cast<float>(i) ? i - 1 : i);
 }
 
 float powf(float base, float exp) {
@@ -222,7 +222,7 @@ float powf(float base, float exp) {
 
 float fmodf(float x, float y) {
     if (y == 0.0f) return 0.0f;
-    int quotient = (int)(x / y);
+    int quotient = static_cast<int>(x / y);
     return x - quotient * y;
 }
 
