@@ -51,3 +51,10 @@ bool frame_scheduler_is_task_allowed(uint8_t /*priority*/) {
 }
 
 }  // extern "C"
+
+namespace Arch {
+    void disable_systick() {}
+    void enable_systick() {}
+    void start_wakeup_timer(uint32_t /*ticks*/) {}
+    uint32_t stop_wakeup_timer() { return 0; }
+}

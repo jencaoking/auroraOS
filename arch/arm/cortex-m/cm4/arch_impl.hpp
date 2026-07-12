@@ -81,6 +81,27 @@ namespace Arch {
         *syst_csr = SYST_CSR_CLKSOURCE | SYST_CSR_TICKINT | SYST_CSR_ENABLE; // 4. 启动
     }
 
+    inline void disable_systick() {
+        volatile uint32_t* syst_csr = reinterpret_cast<volatile uint32_t*>(SYST_CSR_ADDR);
+        *syst_csr &= ~SYST_CSR_ENABLE;
+    }
+
+    inline void enable_systick() {
+        volatile uint32_t* syst_csr = reinterpret_cast<volatile uint32_t*>(SYST_CSR_ADDR);
+        *syst_csr |= SYST_CSR_ENABLE;
+    }
+
+    // Tickless Idle: 唤醒定时器存根实现 (Stub)
+    // 真实的硬件移植需要在具体的板级驱动中重写该实现 (如连接 RTC)
+    inline void start_wakeup_timer(uint32_t /*ticks*/) {
+        // 空实现：QEMU 测试环境可不接写真实 RTC
+    }
+
+    inline uint32_t stop_wakeup_timer() {
+        // 返回0表示没有经过额外的时间，补偿由常规 SysTick 处理即可
+        return 0;
+    }
+
     inline void trigger_context_switch() {
         *reinterpret_cast<volatile uint32_t*>(ICSR_ADDR) = ICSR_PENDSVSET;
     }

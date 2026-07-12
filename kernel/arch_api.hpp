@@ -16,6 +16,12 @@ namespace Arch {
     uint32_t irq_save();
     void irq_restore(uint32_t flags);
     void wait_for_interrupt();
+    
+    // ── Tickless Idle 时钟管理 ────────────────────────────────────
+    void disable_systick();
+    void enable_systick();
+    void start_wakeup_timer(uint32_t ticks);
+    uint32_t stop_wakeup_timer();
 
     // ── 系统节拍定时器 ────────────────────────────────────────────
     // 配置 SysTick 产生周期性中断（系统心跳），hz = 每秒中断次数

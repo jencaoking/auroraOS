@@ -44,6 +44,35 @@ public:
 
     uint32_t get_current_tick() const { return current_tick_; }
 
+    // 获取下一个最早到期定时器的剩余时间 (Tickless Idle 预测)
+    uint32_t get_next_expire_ticks() const {
+        uint32_t min_ticks = 0xFFFFFFFF;
+        for (int i = 0; i < MAX_TIMERS; i++) {
+            if (timers_[i].active) {
+                uint32_t remaining = (timers_[i].expire_tick > current_tick_) ? 
+                                     (timers_[i].expire_tick - current_tick_) : 0;
+                if (remaining < min_ticks) min_ticks = remaining;
+            }
+        }
+        return min_ticks;
+    }
+
+    // Tickless 休眠唤醒后的时间补偿
+    void fast_forward_ticks(uint32_t ticks) {
+        current_tick_ += ticks;
+        // 如果有定时器因此到期，这里也可以选择立刻触发 wakeup_sem_
+        bool need_wakeup = false;
+        for (int i = 0; i < MAX_TIMERS; i++) {
+            if (timers_[i].active && current_tick_ >= timers_[i].expire_tick) {
+                need_wakeup = true;
+                break;
+            }
+        }
+        if (need_wakeup) {
+            wakeup_sem_.signal(); 
+        }
+    }
+
     // 1. 供应用层调用的 API：创建并启动定时器
     int start_timer(uint32_t period_ticks, TimerType type, TimerCallback cb, void* arg = nullptr) {
         Arch::disable_interrupts();

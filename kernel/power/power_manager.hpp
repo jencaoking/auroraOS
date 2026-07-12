@@ -8,6 +8,8 @@
 #include "../../drivers/sensor/sensor_framework.hpp"
 #include "../../drivers/display/st7789_driver.hpp"
 #include "../frame_scheduler_v2.hpp"
+#include "../task.hpp"
+#include "../timer.hpp"
 
 // ========================================================
 // 5 级电源状态定义
@@ -147,7 +149,36 @@ public:
     // 内核 Idle 线程的最后一道屏障，切断 CPU 供电
     void execute_wfi_if_needed() {
         if (current_state_ == PowerState::SLEEP || current_state_ == PowerState::CRITICAL) {
-            // board_enter_wfi(); // 调用 CPU WFI 指令
+            uint32_t expected_task_ticks = Scheduler::instance().get_expected_idle_ticks();
+            uint32_t expected_timer_ticks = TimerManager::instance().get_next_expire_ticks();
+            uint32_t expected_idle_ticks = expected_task_ticks < expected_timer_ticks ? expected_task_ticks : expected_timer_ticks;
+            
+            // 如果睡眠时间太短（比如小于 5ms），来回切换时钟源的开销反而更大，直接普通 WFI
+            if (expected_idle_ticks < 5) {
+                Arch::wait_for_interrupt();
+                return;
+            }
+
+            // 1. 停跳！关闭 Cortex-M4F 的内核 SysTick
+            Arch::disable_systick();
+
+            // 2. 将预计睡眠时间转换为低功耗时钟源 (RTC/CTIMER) 的匹配值并启动
+            Arch::start_wakeup_timer(expected_idle_ticks);
+
+            // 3. 进入带状态保持的深度睡眠 (Deep Sleep)
+            Arch::wait_for_interrupt(); 
+
+            // ================= CPU 在此被中断唤醒 =================
+
+            // 4. 停止硬件唤醒定时器，并读取它实际走过的时间
+            uint32_t actual_sleep_ticks = Arch::stop_wakeup_timer();
+
+            // 5. 时间补偿：将错过的 OS Ticks 一次性补给系统
+            Scheduler::instance().compensate_ticks(actual_sleep_ticks);
+            TimerManager::instance().fast_forward_ticks(actual_sleep_ticks);
+
+            // 6. 恢复高频 SysTick 心跳，继续常规调度
+            Arch::enable_systick();
         }
     }
 };
