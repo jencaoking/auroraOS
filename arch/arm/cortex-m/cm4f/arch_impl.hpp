@@ -47,6 +47,27 @@ namespace Arch {
         __asm__ volatile ("cpsie i" : : : "memory");
     }
 
+    inline uint32_t irq_save() {
+        uint32_t flags;
+        __asm__ volatile (
+            "mrs %0, primask \n\t"
+            "cpsid i         \n\t"
+            : "=r" (flags)
+            :
+            : "memory"
+        );
+        return flags;
+    }
+
+    inline void irq_restore(uint32_t flags) {
+        __asm__ volatile (
+            "msr primask, %0 \n\t"
+            :
+            : "r" (flags)
+            : "memory"
+        );
+    }
+
     inline void wait_for_interrupt() {
         __asm__ volatile ("wfi" : : : "memory");
     }

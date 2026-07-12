@@ -13,6 +13,8 @@ namespace Arch {
     // ── 临界区 / 低功耗 ────────────────────────────────────────────
     void disable_interrupts();
     void enable_interrupts();
+    uint32_t irq_save();
+    void irq_restore(uint32_t flags);
     void wait_for_interrupt();
 
     // ── 系统节拍定时器 ────────────────────────────────────────────
