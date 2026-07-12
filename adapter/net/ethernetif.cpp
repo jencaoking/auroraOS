@@ -57,7 +57,7 @@ void ethernetif_input_task(void) {
                 pbuf_free(p);
             }
         } else {
-            Scheduler::instance().sleep(5); // 无数据时让出 CPU
+            Scheduler::instance().sleep_ms(5); // 无数据时让出 CPU
         }
     }
 }

@@ -91,7 +91,7 @@ public:
             Arch::enable_interrupts();
             
             if (timeout_ticks != 0xFFFFFFFF) elapsed++;
-            Scheduler::instance().sleep(1);
+            Scheduler::instance().sleep_ms(1);
         }
     }
 

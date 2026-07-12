@@ -5,7 +5,7 @@
 // mutex.hpp — Host-native STUB (overrides kernel/mutex.hpp in tests)
 //
 // The real kernel/mutex.hpp includes task.hpp + syscall.hpp and calls
-// Scheduler::instance().sleep(1) inside its spin loop — which requires a
+// Scheduler::instance().sleep_ms(1) inside its spin loop — which requires a
 // live scheduler with at least one task.  That invariant cannot hold in
 // isolated unit tests.
 //

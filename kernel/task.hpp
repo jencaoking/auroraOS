@@ -281,11 +281,11 @@ public:
     }
 
     // 主动休眠：将当前任务挂起，立刻调度次高优先级任务接管 CPU
-    void sleep(uint32_t ticks) {
+    void sleep_ms(uint32_t ms) {
         // 注意：sleep() 仅在任务上下文调用，无需屏蔽中断
         // SysTick 只会检查 sleeping 状态，不会修改当前任务的字段
         TaskControlBlock* current = get_current_tcb();
-        current->sleep_ticks = ticks;
+        current->sleep_ticks = ms;
         set_task_state(current->id, TaskState::Sleeping);
         schedule(); // 状态更新后立即让出 CPU
     }

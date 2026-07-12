@@ -111,34 +111,34 @@ extern "C" void shell_task(void) {
 Mutex pi_lock;
 
 void pi_test_low() {
-    Scheduler::instance().sleep(500); // 错开系统启动的日志打印期
+    Scheduler::instance().sleep_ms(500); // 错开系统启动的日志打印期
     sys_print("\r\n[Low] Task started, grabbing lock...\r\n");
     pi_lock.lock();
     sys_print("[Low] Lock acquired. Sleeping to let Mid & High wake up...\r\n");
-    Scheduler::instance().sleep(500); 
+    Scheduler::instance().sleep_ms(500); 
     // 此时它被唤醒，如果 PI 成功，它的优先级已经被 High 拔高，它能抢占 Mid 运行！
     sys_print("[Low] Woken up with inherited priority. Releasing lock...\r\n");
     pi_lock.unlock();
     sys_print("[Low] Lock released. Base priority restored.\r\n");
-    while (1) Scheduler::instance().sleep(10000);
+    while (1) Scheduler::instance().sleep_ms(10000);
 }
 
 void pi_test_mid() {
-    Scheduler::instance().sleep(700); // 等 Low 先拿到锁
+    Scheduler::instance().sleep_ms(700); // 等 Low 先拿到锁
     sys_print("[Mid] Task woken up! Starting busy loop to starve Low...\r\n");
     // 疯狂循环模拟 CPU 占用，注意不能加 volatile 防止被优化没，而是加一点实际工作或者 volatile 计数
     for (volatile int i = 0; i < 50000000; i++) {}
     sys_print("[Mid] Busy loop finished. If PI worked, this prints AFTER High gets the lock.\r\n");
-    while (1) Scheduler::instance().sleep(10000);
+    while (1) Scheduler::instance().sleep_ms(10000);
 }
 
 void pi_test_high() {
-    Scheduler::instance().sleep(800); // 等 Mid 开始疯狂占用 CPU 后再醒来
+    Scheduler::instance().sleep_ms(800); // 等 Mid 开始疯狂占用 CPU 后再醒来
     sys_print("[High] Task woken up! Trying to grab lock...\r\n");
     pi_lock.lock();
     sys_print("[High] Lock acquired! Priority Inheritance SUCCESS!\r\n");
     pi_lock.unlock();
-    while (1) Scheduler::instance().sleep(10000);
+    while (1) Scheduler::instance().sleep_ms(10000);
 }
 
 #include "timer.hpp"
@@ -176,11 +176,11 @@ void posix_app_task(void) {
 
         while (1) {
             write(fd, "[App] Main app loop running...\r\n", 32);
-            Scheduler::instance().sleep(3000); // 故意睡 3 秒，和定时器的 2 秒产生异步交错
+            Scheduler::instance().sleep_ms(3000); // 故意睡 3 秒，和定时器的 2 秒产生异步交错
         }
         close(fd);
     }
-    while (1) { Scheduler::instance().sleep(10000); } 
+    while (1) { Scheduler::instance().sleep_ms(10000); } 
 }
 #endif
 
@@ -225,16 +225,16 @@ void receiver_task(void) {
 }
 
 void sender_task(void) {
-    Scheduler::instance().sleep(1500); // 等待接收线程就绪
+    Scheduler::instance().sleep_ms(1500); // 等待接收线程就绪
 
     while (true) {
         // 测试 1：发送 FreeRTOS 任务通知
         TaskNotify::give(g_receiver_task_id, 0xA5A5);
-        Scheduler::instance().sleep(2000);
+        Scheduler::instance().sleep_ms(2000);
 
         // 测试 2：跨线程发送 POSIX 异步软件信号
         kill(g_receiver_task_id, SIGUSR1);
-        Scheduler::instance().sleep(2000);
+        Scheduler::instance().sleep_ms(2000);
     }
 }
 
@@ -379,7 +379,7 @@ void sensor_log_task(void) {
         // 模拟较长的传感器卡尔曼滤波数学运算
         for (volatile int i = 0; i < 400000; i++);
         
-        Scheduler::instance().sleep(10); // 稍微出让一下，让打印更工整
+        Scheduler::instance().sleep_ms(10); // 稍微出让一下，让打印更工整
     }
 }
 
@@ -405,7 +405,7 @@ void system_daemon_task(void) {
         // 1. 意图引擎监控传感器变化
         IntentEngine::process_sensors(g_lua_app);
         
-        Scheduler::instance().sleep(500); // 采样间隔
+        Scheduler::instance().sleep_ms(500); // 采样间隔
     }
 }
 
@@ -494,7 +494,7 @@ void storage_test_task(void) {
             write(log_fd, log_entry, len);
             
             write(console_fd, "  ⚡ [Photon Cache] Intercepted 42B write. Aggregated in RAM (0 Flash Erase!)\r\n", 80);
-            Scheduler::instance().sleep(1000);
+            Scheduler::instance().sleep_ms(1000);
         }
 
         write(console_fd, "\r\n🔒 [Sync] Explicit sync triggered. Flushing dirty RAM pages to Flash...\r\n", 76);
@@ -513,7 +513,7 @@ void storage_test_task(void) {
         close(log_fd);
     }
 
-    while (1) { Scheduler::instance().sleep(10000); }
+    while (1) { Scheduler::instance().sleep_ms(10000); }
 }
 
 // =========================================================================
@@ -525,7 +525,7 @@ void hacker_app_task(void) {
     // 尝试一：通过系统调用合法打印（正常通过）
     sys_print("[Hacker App] Step 1: Legal syscall works fine.\r\n");
 
-    Scheduler::instance().sleep(3000); // 延时3秒，确保前面系统的启动日志能完整打印出来
+    Scheduler::instance().sleep_ms(3000); // 延时3秒，确保前面系统的启动日志能完整打印出来
 
     // 此时主动将自身的 CPU 特权级降级为 Unprivileged (普通应用态)
     sys_print("[Hacker App] Dropping CPU privilege level to User Mode...\r\n");

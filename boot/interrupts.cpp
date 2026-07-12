@@ -41,7 +41,7 @@ extern "C" {
                 Scheduler::instance().schedule();
                 break;
             case SYS_SLEEP: // SysCall: 任务 Sleep
-                Scheduler::instance().sleep(frame->r0);
+                Scheduler::instance().sleep_ms(frame->r0);
                 break;
             default:
                 uart_puts("[Kernel] Unknown SVC ID!\n");

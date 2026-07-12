@@ -35,7 +35,7 @@ public:
             // 任务（包括真正能释放这个信号量的生产者）被忙等饿死，形成事实上
             // 的优先级反转。改为真正让出 CPU 一个 tick（进入 Sleeping 态），
             // 调度器才会去运行其他任务，1 tick 后自动醒来重试。
-            Scheduler::instance().sleep(1);
+            Scheduler::instance().sleep_ms(1);
         }
     }
 
