@@ -23,82 +23,12 @@
 #include "../vfs/littlefs_vnode.hpp"
 extern Mutex uart_mutex;
 #include "mpu.hpp"
+#include "net_app.hpp"
 
-#ifdef CONFIG_NET_LWIP
-#include "lwip/init.h"
-#include "lwip/tcpip.h"
-#include "lwip/netif.h"
-#include "lwip/api.h"
-#include "arch_api.hpp"
-
-extern err_t ethernetif_init(struct netif *netif);
-extern void ethernetif_input_task(void);
-
-struct netif g_netif;
-#endif // CONFIG_NET_LWIP
-
-#ifdef CONFIG_NET_LWIP
-// ==========================================
-// 业务层测试：基于 lwIP Netconn API 的 UDP Echo 服务器
-// ==========================================
-void udp_echo_server_task(void) {
-    sys_print("[App] Starting UDP Echo Server on Port 8080...\r\n");
-
-    // 创建一个 UDP 通信绑定
-    struct netconn* conn = netconn_new(NETCONN_UDP);
-    netconn_bind(conn, IP_ADDR_ANY, 8080);
-
-    struct netbuf* buf;
-    while (true) {
-        // 挂起自身，直到物理网线那边发来目标为 8080 端口的数据包！
-        if (netconn_recv(conn, &buf) == ERR_OK) {
-            sys_print("\r\n>>> [UDP Server] Received packet from Net! Echoing back...\r\n");
-            
-            // 工业级原路奉还 (Echo 回发给源 IP 和源端口)
-            netconn_sendto(conn, buf, netbuf_fromaddr(buf), netbuf_fromport(buf));
-            netbuf_delete(buf);
-        }
-    }
+// 包装一下入口函数以符合 create_task 的签名
+void network_task_entry(void) {
+    NetApp::run_dhcp_client();
 }
-
-// 协议栈就绪回调函数
-void tcpip_init_done(void* arg) {
-    sys_print("[lwIP] TCP/IP Core Stack Booted Successfully!\r\n");
-
-    // 1. 从配置层读取 IPv4 参数（IP/掩码/网关统一由 net_config.h 提供）
-    const NetIpv4Config cfg = get_default_ipv4_config();
-    ip4_addr_t ipaddr, netmask, gw;
-    IP4_ADDR(&ipaddr,  cfg.ip[0],      cfg.ip[1],      cfg.ip[2],      cfg.ip[3]);
-    IP4_ADDR(&netmask, cfg.netmask[0], cfg.netmask[1], cfg.netmask[2], cfg.netmask[3]);
-    IP4_ADDR(&gw,      cfg.gateway[0], cfg.gateway[1], cfg.gateway[2], cfg.gateway[3]);
-
-    if (cfg.use_dhcp) {
-        // 预留 DHCP 接入点：在 lwipopts.h 中开启 LWIP_DHCP 后，
-        // 此处改为 dhcp_start(&g_netif) 并跳过静态 netif_add 参数
-        sys_print("[lwIP] DHCP requested but LWIP_DHCP not enabled, fallback to static\r\n");
-    }
-
-    // 2. 将网卡挂载进 lwIP 路由表
-    netif_add(&g_netif, &ipaddr, &netmask, &gw, nullptr, ethernetif_init, tcpip_input);
-    netif_set_default(&g_netif);
-    netif_set_up(&g_netif);
-
-    sys_print("[lwIP] IPv4 interface configured (static)\r\n");
-
-    // 3. 起飞网卡数据泵任务（Normal 优先级：轮询式驱动，每 5ms sleep 一次，无硬实时需求）
-    uint32_t* rx_stack  = new uint32_t[512];
-    uint32_t* app_stack = new uint32_t[512];
-    if (!Scheduler::instance().create_task(
-        reinterpret_cast<void (*)()>(ethernetif_input_task), rx_stack, 512 * sizeof(uint32_t),
-        TaskPriority::Normal)) { // Normal：后台网卡轮询，sleep(5ms) 让出 CPU
-        sys_print("[Kernel] ERROR: task table full, failed to spawn ethernetif_input_task!\r\n");
-    }
-    if (!Scheduler::instance().create_task(udp_echo_server_task, app_stack, 512 * sizeof(uint32_t),
-        TaskPriority::Normal)) { // Normal：业务层 Echo 处理
-        sys_print("[Kernel] ERROR: task table full, failed to spawn udp_echo_server_task!\r\n");
-    }
-}
-#endif // CONFIG_NET_LWIP
 
 extern "C" {
     extern uint32_t _heap_start;
@@ -608,11 +538,9 @@ extern "C" void kernel_main(void) {
     Scheduler::instance().create_task(workqueue_daemon_entry, new uint32_t[STACK_SIZE_DAEMON], STACK_SIZE_DAEMON*sizeof(uint32_t), TaskPriority::High);
 #endif
 
-#ifdef CONFIG_NET_LWIP
-    // 起 lwIP 协议栈引擎（内部回调中将以 Realtime 优先级注册网卡 RX 任务）
-    sys_print("[lwIP] Initializing TCP/IP Engine...\r\n");
-    tcpip_init(tcpip_init_done, nullptr);
-#endif
+    // 【新增】创建独立的网络 DHCP 客户端线程
+    uint32_t* net_stack = new uint32_t[1024]; // lwIP 比较吃栈，给大一点 (4KB)
+    sched.create_task(network_task_entry, net_stack, 1024 * sizeof(uint32_t), TaskPriority::Realtime);
 
     // 启动调度器：正确引导第一个任务（通过 PSP/bx 跳入，不破坏栈帧）
     // 调度器从此接管 CPU，永不返回

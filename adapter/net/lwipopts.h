@@ -10,6 +10,7 @@
 #define LWIP_NETCONN 1
 #define LWIP_ICMP 1 // For PING
 #define LWIP_ARP 1
+#define LWIP_DHCP 1
 
 // 2. Memory configurations
 #define MEM_ALIGNMENT 4

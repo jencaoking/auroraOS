@@ -53,6 +53,7 @@ set(SOURCES
     apps/shell.cpp
     apps/elf_loader.cpp
     apps/kernel.cpp
+    apps/net_app.cpp
 )
 
 if(CONFIG_VFS)

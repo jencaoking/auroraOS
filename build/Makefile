@@ -1184,6 +1184,30 @@ apps/kernel.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/apps/kernel.cpp.s
 .PHONY : apps/kernel.cpp.s
 
+apps/net_app.obj: apps/net_app.cpp.obj
+.PHONY : apps/net_app.obj
+
+# target to build an object file
+apps/net_app.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/apps/net_app.cpp.obj
+.PHONY : apps/net_app.cpp.obj
+
+apps/net_app.i: apps/net_app.cpp.i
+.PHONY : apps/net_app.i
+
+# target to preprocess a source file
+apps/net_app.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/apps/net_app.cpp.i
+.PHONY : apps/net_app.cpp.i
+
+apps/net_app.s: apps/net_app.cpp.s
+.PHONY : apps/net_app.s
+
+# target to generate assembly for a file
+apps/net_app.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/apps/net_app.cpp.s
+.PHONY : apps/net_app.cpp.s
+
 apps/shell.obj: apps/shell.cpp.obj
 .PHONY : apps/shell.obj
 
@@ -1549,6 +1573,9 @@ help:
 	@echo ... apps/kernel.obj
 	@echo ... apps/kernel.i
 	@echo ... apps/kernel.s
+	@echo ... apps/net_app.obj
+	@echo ... apps/net_app.i
+	@echo ... apps/net_app.s
 	@echo ... apps/shell.obj
 	@echo ... apps/shell.i
 	@echo ... apps/shell.s
