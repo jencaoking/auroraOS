@@ -170,12 +170,26 @@ public:
 
         // ── 阶段二：同级优先级循环时间片轮转 ────────────────────────────
         uint32_t next_task = current_task_index;
+        bool task_found = false;
         for (uint32_t i = 0; i < task_count; i++) {
             next_task = (next_task + 1) % task_count;
             if (tasks[next_task].state != TaskState::Sleeping && tasks[next_task].state != TaskState::Blocked_On_Notify && tasks[next_task].state != TaskState::Terminated &&
                 tasks[next_task].current_priority == max_prio) {
                 // 【蓝河帧感知拦截】同级查找也需校验
                 if (frame_scheduler_is_task_allowed(static_cast<uint8_t>(tasks[next_task].current_priority))) {
+                    task_found = true;
+                    break;
+                }
+            }
+        }
+
+        // ── 阶段二点五：兜底安全网，如果所有任务都被帧拦截或休眠 ────────
+        // 如果连符合条件的任务都没找到，强制查找是否有 Idle 任务可运行（打破帧调度器的封锁）
+        // 否则如果在没有任务可运行的情况下不切换任务，当前可能已经Terminated的任务会继续执行，造成极度危险的OOB执行和崩溃
+        if (!task_found) {
+            for (uint32_t i = 0; i < task_count; i++) {
+                if (tasks[i].base_priority == TaskPriority::Idle && tasks[i].state == TaskState::Ready) {
+                    next_task = i;
                     break;
                 }
             }

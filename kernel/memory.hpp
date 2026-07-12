@@ -8,10 +8,13 @@
 class KernelHeap {
 private:
     struct BlockHeader {
+        uint32_t magic;       // 魔数校验，防止越界或非法指针
         size_t size;          // 包含头部在内的总大小
+        size_t requested_size;// 原始请求大小（防止 realloc OOB read）
         bool is_free;         // 是否空闲
         BlockHeader* next;    // 指向下一个块的指针
     };
+    static constexpr uint32_t HEAP_MAGIC = 0x4D454D4F; // "MEMO"
 
     BlockHeader* head_block;
     size_t total_free_memory;
@@ -34,7 +37,9 @@ public:
         end = end & ~3;
 
         head_block = reinterpret_cast<BlockHeader*>(start);
+        head_block->magic = HEAP_MAGIC;
         head_block->size = end - start;
+        head_block->requested_size = 0;
         head_block->is_free = true;
         head_block->next = nullptr;
 
@@ -48,6 +53,7 @@ public:
     // 分配内存
     void* allocate(size_t size) {
         LockGuard lock(heap_mutex_); // CP.20: RAII 线程安全保护
+        size_t size_orig = size;
         // 4字节对齐
         size = (size + 3) & ~3;
         size_t required_space = size + sizeof(BlockHeader);
@@ -60,7 +66,9 @@ public:
                     BlockHeader* next_block = reinterpret_cast<BlockHeader*>(
                         reinterpret_cast<uintptr_t>(current) + required_space
                     );
+                    next_block->magic = HEAP_MAGIC;
                     next_block->size = current->size - required_space;
+                    next_block->requested_size = 0;
                     next_block->is_free = true;
                     next_block->next = current->next;
 
@@ -69,6 +77,7 @@ public:
                 }
 
                 current->is_free = false;
+                current->requested_size = size_orig; // 记录原始请求大小
                 total_free_memory -= current->size;
                 // 返回越过 BlockHeader 之后的实际可用内存地址
                 return reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(current) + sizeof(BlockHeader));
@@ -87,12 +96,15 @@ public:
             reinterpret_cast<uintptr_t>(ptr) - sizeof(BlockHeader)
         );
 
-        // 边界检查：防止越界/非法指针
+        // 边界及魔数检查：防止越界/非法指针
         uintptr_t target_addr = reinterpret_cast<uintptr_t>(target);
         uintptr_t heap_start = reinterpret_cast<uintptr_t>(head_block);
         uintptr_t heap_end = heap_start + total_size;
         if (target_addr < heap_start || target_addr >= heap_end) {
             return; // 非法指针，拒绝释放
+        }
+        if (target->magic != HEAP_MAGIC) {
+            return; // 内存损坏或未对齐指针，拒绝释放
         }
 
         // 双重释放检查
@@ -101,6 +113,7 @@ public:
         }
 
         target->is_free = true;
+        target->requested_size = 0;
         total_free_memory += target->size;
 
         // 整理内存：自动合并连续的空闲块 (Coalesce Free Blocks)
@@ -115,21 +128,21 @@ public:
         }
     }
 
-    // 获取已分配内存块的大小（包含头部）
-    size_t get_block_size(void* ptr) {
+    // 获取已分配内存块的原始请求大小
+    size_t get_requested_size(void* ptr) {
         if (!ptr) return 0;
         LockGuard lock(heap_mutex_);
         BlockHeader* target = reinterpret_cast<BlockHeader*>(
             reinterpret_cast<uintptr_t>(ptr) - sizeof(BlockHeader)
         );
-        // 边界检查
+        // 边界与魔数检查
         uintptr_t target_addr = reinterpret_cast<uintptr_t>(target);
         uintptr_t heap_start = reinterpret_cast<uintptr_t>(head_block);
         uintptr_t heap_end = heap_start + total_size;
-        if (target_addr < heap_start || target_addr >= heap_end || target->is_free) {
+        if (target_addr < heap_start || target_addr >= heap_end || target->is_free || target->magic != HEAP_MAGIC) {
             return 0; 
         }
-        return target->size - sizeof(BlockHeader);
+        return target->requested_size;
     }
 };
 
