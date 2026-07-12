@@ -67,6 +67,10 @@ private:
     static constexpr uint32_t TIMEOUT_ACTIVE_TO_DIM = 5000;  // 5秒无交互变暗
     static constexpr uint32_t TIMEOUT_DIM_TO_IDLE   = 3000;  // 暗屏3秒后息屏
     static constexpr uint32_t TIMEOUT_IDLE_TO_SLEEP = 10000; // 息屏10秒后进入深度睡眠
+    
+    // Tickless 的极限安全边界参数
+    static constexpr uint32_t TICKLESS_MIN_THRESHOLD = 5; 
+    static constexpr uint32_t TICKLESS_MAX_SLEEP = 0x00FFFFFF; 
 
     PowerManager() : current_state_(PowerState::ACTIVE), state_ticks_(0) {}
 
@@ -153,32 +157,43 @@ public:
             uint32_t expected_timer_ticks = TimerManager::instance().get_next_expire_ticks();
             uint32_t expected_idle_ticks = expected_task_ticks < expected_timer_ticks ? expected_task_ticks : expected_timer_ticks;
             
+            // 硬件寄存器防溢出保护
+            if (expected_idle_ticks > TICKLESS_MAX_SLEEP) {
+                expected_idle_ticks = TICKLESS_MAX_SLEEP;
+            }
+
             // 如果睡眠时间太短（比如小于 5ms），来回切换时钟源的开销反而更大，直接普通 WFI
-            if (expected_idle_ticks < 5) {
+            if (expected_idle_ticks < TICKLESS_MIN_THRESHOLD) {
                 Arch::wait_for_interrupt();
                 return;
             }
 
-            // 1. 停跳！关闭 Cortex-M4F 的内核 SysTick
+            // 1. 关闭全局中断，防止在切换硬件时钟的临界区被强行打断
+            Arch::disable_interrupts();
+
+            // 2. 停跳！关闭 Cortex-M4F 的内核 SysTick
             Arch::disable_systick();
 
-            // 2. 将预计睡眠时间转换为低功耗时钟源 (RTC/CTIMER) 的匹配值并启动
+            // 3. 将预计睡眠时间转换为低功耗时钟源 (RTC/CTIMER) 的匹配值并启动
             Arch::start_wakeup_timer(expected_idle_ticks);
 
-            // 3. 进入带状态保持的深度睡眠 (Deep Sleep)
+            // 4. 进入带状态保持的深度睡眠 (Deep Sleep)
             Arch::wait_for_interrupt(); 
 
-            // ================= CPU 在此被中断唤醒 =================
+            // ================= CPU 在此被硬件定时器或外部事件唤醒 =================
 
-            // 4. 停止硬件唤醒定时器，并读取它实际走过的时间
+            // 5. 立即停止硬件唤醒定时器，并读取它【真实】跑过的周期数
             uint32_t actual_sleep_ticks = Arch::stop_wakeup_timer();
 
-            // 5. 时间补偿：将错过的 OS Ticks 一次性补给系统
+            // 6. 时间补偿：将睡觉期间错失的时间一次性补给系统
             Scheduler::instance().compensate_ticks(actual_sleep_ticks);
             TimerManager::instance().fast_forward_ticks(actual_sleep_ticks);
 
-            // 6. 恢复高频 SysTick 心跳，继续常规调度
+            // 7. 恢复高频 SysTick 心跳，继续常规调度
             Arch::enable_systick();
+            
+            // 8. 重新开启全局中断，系统继续运行
+            Arch::enable_interrupts();
         }
     }
 };
