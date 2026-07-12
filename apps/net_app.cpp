@@ -19,7 +19,7 @@ struct netif g_netif;
 // ========================================================
 // lwIP 核心协议栈初始化完成后的回调函数
 // ========================================================
-static void tcpip_init_done_cb(void* arg) {
+static void tcpip_init_done_cb(void* /*arg*/) {
     ip4_addr_t ipaddr, netmask, gw;
     
     // 初始化时 IP 全设为 0，因为我们要通过 DHCP 获取
@@ -45,7 +45,7 @@ void softbus_listener_entry(void) {
 }
 
 // 软件定时器回调：自动发送心跳广播
-void beacon_timer_callback(void* arg) {
+void beacon_timer_callback(void* /*arg*/) {
     DistributedSoftBus::instance().broadcast_beacon();
 }
 
