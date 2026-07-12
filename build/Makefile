@@ -1760,61 +1760,101 @@ adapter/net/sys_arch.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/adapter/net/sys_arch.cpp.s
 .PHONY : adapter/net/sys_arch.cpp.s
 
-apps/watch/miband_main.obj: apps/watch/miband_main.cpp.obj
-.PHONY : apps/watch/miband_main.obj
+apps/elf_loader.obj: apps/elf_loader.cpp.obj
+.PHONY : apps/elf_loader.obj
 
 # target to build an object file
-apps/watch/miband_main.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/apps/watch/miband_main.cpp.obj
-.PHONY : apps/watch/miband_main.cpp.obj
+apps/elf_loader.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/apps/elf_loader.cpp.obj
+.PHONY : apps/elf_loader.cpp.obj
 
-apps/watch/miband_main.i: apps/watch/miband_main.cpp.i
-.PHONY : apps/watch/miband_main.i
+apps/elf_loader.i: apps/elf_loader.cpp.i
+.PHONY : apps/elf_loader.i
 
 # target to preprocess a source file
-apps/watch/miband_main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/apps/watch/miband_main.cpp.i
-.PHONY : apps/watch/miband_main.cpp.i
+apps/elf_loader.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/apps/elf_loader.cpp.i
+.PHONY : apps/elf_loader.cpp.i
 
-apps/watch/miband_main.s: apps/watch/miband_main.cpp.s
-.PHONY : apps/watch/miband_main.s
+apps/elf_loader.s: apps/elf_loader.cpp.s
+.PHONY : apps/elf_loader.s
 
 # target to generate assembly for a file
-apps/watch/miband_main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/apps/watch/miband_main.cpp.s
-.PHONY : apps/watch/miband_main.cpp.s
+apps/elf_loader.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/apps/elf_loader.cpp.s
+.PHONY : apps/elf_loader.cpp.s
 
-apps/watch/watch_app.obj: apps/watch/watch_app.cpp.obj
-.PHONY : apps/watch/watch_app.obj
+apps/kernel.obj: apps/kernel.cpp.obj
+.PHONY : apps/kernel.obj
 
 # target to build an object file
-apps/watch/watch_app.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/apps/watch/watch_app.cpp.obj
-.PHONY : apps/watch/watch_app.cpp.obj
+apps/kernel.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/apps/kernel.cpp.obj
+.PHONY : apps/kernel.cpp.obj
 
-apps/watch/watch_app.i: apps/watch/watch_app.cpp.i
-.PHONY : apps/watch/watch_app.i
+apps/kernel.i: apps/kernel.cpp.i
+.PHONY : apps/kernel.i
 
 # target to preprocess a source file
-apps/watch/watch_app.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/apps/watch/watch_app.cpp.i
-.PHONY : apps/watch/watch_app.cpp.i
+apps/kernel.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/apps/kernel.cpp.i
+.PHONY : apps/kernel.cpp.i
 
-apps/watch/watch_app.s: apps/watch/watch_app.cpp.s
-.PHONY : apps/watch/watch_app.s
+apps/kernel.s: apps/kernel.cpp.s
+.PHONY : apps/kernel.s
 
 # target to generate assembly for a file
-apps/watch/watch_app.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/apps/watch/watch_app.cpp.s
-.PHONY : apps/watch/watch_app.cpp.s
+apps/kernel.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/apps/kernel.cpp.s
+.PHONY : apps/kernel.cpp.s
 
-arch/arm/cortex-m/cm4f/context_switch.obj: arch/arm/cortex-m/cm4f/context_switch.S.obj
-.PHONY : arch/arm/cortex-m/cm4f/context_switch.obj
+apps/net_app.obj: apps/net_app.cpp.obj
+.PHONY : apps/net_app.obj
 
 # target to build an object file
-arch/arm/cortex-m/cm4f/context_switch.S.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/arch/arm/cortex-m/cm4f/context_switch.S.obj
-.PHONY : arch/arm/cortex-m/cm4f/context_switch.S.obj
+apps/net_app.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/apps/net_app.cpp.obj
+.PHONY : apps/net_app.cpp.obj
+
+apps/net_app.i: apps/net_app.cpp.i
+.PHONY : apps/net_app.i
+
+# target to preprocess a source file
+apps/net_app.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/apps/net_app.cpp.i
+.PHONY : apps/net_app.cpp.i
+
+apps/net_app.s: apps/net_app.cpp.s
+.PHONY : apps/net_app.s
+
+# target to generate assembly for a file
+apps/net_app.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/apps/net_app.cpp.s
+.PHONY : apps/net_app.cpp.s
+
+apps/shell.obj: apps/shell.cpp.obj
+.PHONY : apps/shell.obj
+
+# target to build an object file
+apps/shell.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/apps/shell.cpp.obj
+.PHONY : apps/shell.cpp.obj
+
+apps/shell.i: apps/shell.cpp.i
+.PHONY : apps/shell.i
+
+# target to preprocess a source file
+apps/shell.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/apps/shell.cpp.i
+.PHONY : apps/shell.cpp.i
+
+apps/shell.s: apps/shell.cpp.s
+.PHONY : apps/shell.s
+
+# target to generate assembly for a file
+apps/shell.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\auroraOS.elf.dir\build.make CMakeFiles/auroraOS.elf.dir/apps/shell.cpp.s
+.PHONY : apps/shell.cpp.s
 
 boot/boot.obj: boot/boot.S.obj
 .PHONY : boot/boot.obj
@@ -2229,13 +2269,18 @@ help:
 	@echo ... adapter/net/sys_arch.obj
 	@echo ... adapter/net/sys_arch.i
 	@echo ... adapter/net/sys_arch.s
-	@echo ... apps/watch/miband_main.obj
-	@echo ... apps/watch/miband_main.i
-	@echo ... apps/watch/miband_main.s
-	@echo ... apps/watch/watch_app.obj
-	@echo ... apps/watch/watch_app.i
-	@echo ... apps/watch/watch_app.s
-	@echo ... arch/arm/cortex-m/cm4f/context_switch.obj
+	@echo ... apps/elf_loader.obj
+	@echo ... apps/elf_loader.i
+	@echo ... apps/elf_loader.s
+	@echo ... apps/kernel.obj
+	@echo ... apps/kernel.i
+	@echo ... apps/kernel.s
+	@echo ... apps/net_app.obj
+	@echo ... apps/net_app.i
+	@echo ... apps/net_app.s
+	@echo ... apps/shell.obj
+	@echo ... apps/shell.i
+	@echo ... apps/shell.s
 	@echo ... boot/boot.obj
 	@echo ... boot/interrupts.obj
 	@echo ... boot/interrupts.i

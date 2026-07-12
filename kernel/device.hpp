@@ -47,8 +47,8 @@ public:
     BlockDevice(const char* name) : Device(name, DeviceType::Block) {}
     
     // 块设备通常需要扇区对齐的读写
-    virtual int read_blocks(uint32_t block_addr, uint32_t num_blocks, uint8_t* buf) { return -1; }
-    virtual int write_blocks(uint32_t block_addr, uint32_t num_blocks, const uint8_t* buf) { return -1; }
+    virtual int read_blocks(uint32_t block_addr, uint32_t offset, uint8_t* buf, uint32_t size) { return -1; }
+    virtual int write_blocks(uint32_t block_addr, uint32_t offset, const uint8_t* buf, uint32_t size) { return -1; }
 };
 
 // 设备注册表：负责将设备对象绑定到 VFS

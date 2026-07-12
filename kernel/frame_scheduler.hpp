@@ -4,14 +4,9 @@
 #include <stdint.h>
 #include "task.hpp"
 #include "task_notify.hpp"
+#include "frame_scheduler_v2.hpp"
 
-// 对应蓝河 BlueOS 的任务优先级分级
-enum class FramePriority : uint8_t {
-    CRITICAL = 200, // 帧内绝对优先：UI 渲染与触摸驱动
-    HIGH     = 150, // 帧内次优先：动画插值计算
-    NORMAL   = 100, // 帧间执行：运动健康算法、传感器日志
-    LOW      = 50   // 帧间执行：后台网络通信、数据存储
-};
+// FramePriority is now defined in frame_scheduler_v2.hpp
 
 class FrameScheduler {
 private:

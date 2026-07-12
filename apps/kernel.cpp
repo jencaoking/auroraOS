@@ -61,7 +61,8 @@ void idle_task_entry(void) {
 
         // 2. 将预测时间交给电源管理器，由它决定是浅睡还是彻底关停 SysTick (Tickless)
         if (expected_idle > 0 && expected_idle != 0xFFFFFFFF) {
-            PowerManager::instance().enter_idle_state(expected_idle);
+            PowerManager::instance().on_tick(expected_idle);
+            PowerManager::instance().execute_wfi_if_needed();
         }
     }
 }
@@ -241,7 +242,7 @@ FrameBuffer<128, 128> g_fb;
 // 2. 实例化全局 I2C 触控屏驱动，命名为 touch0
 TouchDriver g_touch("touch0", 128, 128);
 
-HealthSensor g_health_sensor("health");
+HeartRateSensor g_health_sensor;
 WatchFaceEngine g_watchface;
 
 // 可拖拽的 UI 控件组件 (比如一个 24x24 的手表智能应用卡片)
@@ -546,7 +547,7 @@ extern "C" void kernel_main(void) {
     DeviceRegistry::instance().register_device(&g_oled);
     DeviceRegistry::instance().register_device(&g_touch);
     DeviceRegistry::instance().register_device(&g_nor_flash);
-    DeviceRegistry::instance().register_device(&g_health_sensor);
+    // DeviceRegistry::instance().register_device(&g_health_sensor);
     
 #ifdef CONFIG_FS_PROCFS
     // 挂载 ProcFS 虚拟节点
