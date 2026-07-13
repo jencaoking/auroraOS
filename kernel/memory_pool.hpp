@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <new>
 #include "mutex.hpp"
 
 template <typename T, size_t PoolSize>
@@ -68,6 +69,22 @@ public:
         
         node->next = free_list_;
         free_list_ = node;
+    }
+
+    template <typename... Args>
+    T* create(Args&&... args) {
+        T* ptr = allocate();
+        if (ptr) {
+            new (ptr) T(static_cast<Args&&>(args)...);
+        }
+        return ptr;
+    }
+
+    void destroy(T* ptr) {
+        if (ptr) {
+            ptr->~T();
+            deallocate(ptr);
+        }
     }
 
     size_t get_capacity() const {

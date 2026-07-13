@@ -28,9 +28,19 @@ struct AppControlBlock {
             case AppState::BACKGROUND:
                 Scheduler::instance().set_task_priority(tid, TaskPriority::Low);  // 降级为后台处理级
                 break;
-            case AppState::SUSPENDED:
-                Scheduler::instance().set_task_state(tid, TaskState::Suspended); // 强行永久挂起调度
+            case AppState::SUSPENDED: {
+                // 强行永久挂起调度并释放持有的互斥锁
+                Mutex* m = static_cast<Mutex*>(tcb->held_mutexes);
+                while (m) {
+                    Mutex* next = m->next_held_;
+                    m->force_unlock(tcb);
+                    m = next;
+                }
+                tcb->held_mutexes = nullptr;
+                // 注意：lfs_file_t 等资源的释放需要对接 FS 层，此处可增加回调或事件通知
+                Scheduler::instance().set_task_state(tid, TaskState::Suspended); 
                 break;
+            }
             default: break;
         }
     }

@@ -174,6 +174,38 @@ public:
         }
         Arch::enable_interrupts();
     }
+
+    void force_unlock(TaskControlBlock* target_owner) {
+        Arch::disable_interrupts();
+        if (owner_ == target_owner) {
+            owner_ = nullptr;
+            locked_ = false;
+            recursive_count_ = 0;
+            if (wait_mask_ != 0) {
+                uint32_t best_id = 0xFFFFFFFF;
+                uint8_t best_prio = 0;
+                for (int i = 0; i < 32; i++) {
+                    if (wait_mask_ & (1 << i)) {
+                        TaskControlBlock* t = Scheduler::instance().get_task_by_id(i);
+                        if (t && (t->state == TaskState::Suspended || t->state == TaskState::Sleeping)) {
+                            uint8_t prio = static_cast<uint8_t>(t->current_priority);
+                            if (best_id == 0xFFFFFFFF || prio > best_prio) {
+                                best_prio = prio;
+                                best_id = i;
+                            }
+                        } else {
+                            wait_mask_ &= ~(1 << i);
+                        }
+                    }
+                }
+                if (best_id != 0xFFFFFFFF) {
+                    wait_mask_ &= ~(1 << best_id);
+                    Scheduler::instance().set_task_state(best_id, TaskState::Ready);
+                }
+            }
+        }
+        Arch::enable_interrupts();
+    }
 };
 
 // CP.20: Use RAII, never plain lock()/unlock()

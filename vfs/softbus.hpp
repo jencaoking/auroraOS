@@ -2,6 +2,7 @@
 #define SOFTBUS_HPP
 
 #include <stdint.h>
+#include "../kernel/mutex.hpp"
 
 // 预定义总线上最大支持的 RPC 服务数量
 constexpr int MAX_RPC_HANDLERS = 5;
@@ -14,10 +15,10 @@ struct RpcNode {
     RpcCallback handler;
 };
 
-class SoftBus {
+class SerialRpcBus {
 public:
-    static SoftBus& instance() {
-        static SoftBus bus;
+    static SerialRpcBus& instance() {
+        static SerialRpcBus bus;
         return bus;
     }
 
@@ -33,15 +34,24 @@ public:
     void poll();
 
 private:
-    SoftBus() = default;
-    SoftBus(const SoftBus&) = delete;
-    SoftBus& operator=(const SoftBus&) = delete;
+    SerialRpcBus() = default;
+    SerialRpcBus(const SerialRpcBus&) = delete;
+    SerialRpcBus& operator=(const SerialRpcBus&) = delete;
 
     RpcNode services_[MAX_RPC_HANDLERS]{};
     int service_count_ = 0;
+    Mutex tx_mutex_;
+
+    // 状态机成员变量，取代原本的 static
+    int state_ = 0;
+    char cmd_buf_[16] = {0};
+    char payload_buf_[64] = {0};
+    int cmd_idx_ = 0;
+    int pay_idx_ = 0;
 
     void dispatch(const char* cmd, const char* payload);
     bool strings_equal(const char* s1, const char* s2) const;
+    bool verify_auth(const char* payload) const;
 };
 
 #endif

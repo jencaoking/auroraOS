@@ -5,6 +5,7 @@
 #include "task.hpp"
 #include "task_notify.hpp"
 #include "arch_api.hpp"
+#include <atomic>
 
 // ========================================================
 // 我们现已统一使用 kernel/task.hpp 中的 TaskPriority。
@@ -21,7 +22,7 @@ private:
     uint32_t frame_period_ticks_;     // 单帧对应的系统 Tick 数
     uint32_t current_frame_tick_;     // 当前帧内已流逝的 Tick 数
     
-    volatile bool in_active_render_window_;
+    std::atomic<bool> in_active_render_window_;
     uint32_t render_task_id_;         // 绑定的表盘 UI 主任务 TID
 
     inline void disable_interrupts() { Arch::disable_interrupts(); }
@@ -52,11 +53,8 @@ public:
         current_fps_ = fps;
         if (fps > 0) {
             frame_period_ticks_ = 1000 / fps; // 动态重算帧时间窗
-            // Wake up render task if it was suspended
-            TaskControlBlock* render_task = Scheduler::instance().get_task_by_id(render_task_id_);
-            if (render_task && render_task->state == TaskState::Suspended) {
-                Scheduler::instance().set_task_state(render_task_id_, TaskState::Ready);
-            }
+            // Wake up render task if it was waiting
+            TaskNotify::give(render_task_id_, 1, false);
         } else {
             // 0fps 状态：彻底关闭 UI 帧率推进机制
             frame_period_ticks_ = 0xFFFFFFFF; 
@@ -95,16 +93,8 @@ public:
     }
 
     void wait_for_next_frame() {
-        if (current_fps_ > 0) {
-            notify_render_complete();
-            TaskNotify::take(true);
-        } else {
-            // 保护机制：如果强行在 0fps 状态下调用，直接将自身剥夺就绪态并挂起
-            disable_interrupts();
-            Scheduler::instance().set_task_state(Scheduler::instance().get_current_tcb()->id, TaskState::Suspended);
-            enable_interrupts();
-            Scheduler::instance().schedule();
-        }
+        notify_render_complete();
+        TaskNotify::take(true);
     }
 
     // ========================================================
@@ -126,6 +116,11 @@ public:
         }
 
         return true;
+    }
+
+    uint32_t create_frame_task(void (*entry)(void), uint32_t* stack, uint32_t stack_size, TaskPriority prio) {
+        int32_t tid = Scheduler::instance().create_task(entry, stack, stack_size, prio);
+        return tid >= 0 ? static_cast<uint32_t>(tid) : 0;
     }
 };
 

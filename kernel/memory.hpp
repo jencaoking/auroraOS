@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include "task.hpp"
+#include "arch_api.hpp"
 
 class KernelHeap {
 private:

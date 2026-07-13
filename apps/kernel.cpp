@@ -387,7 +387,7 @@ void sensor_log_task(void) {
 FlashBlockDevice g_nor_flash("spiflash0", 4096, 128); // 512KB 闪存
 PhotonCacheLayer g_photon_cache(g_nor_flash);         // 蓝河光子缓存层
 LittleFsAdapter  g_lfs(g_photon_cache, 4096, 128);    // LittleFS 日志文件系统
-LfsFileNode      g_step_log(g_lfs);                   // 运动步数持久化日志文件
+LittleFsVNode    g_vfs_lfs(g_lfs);                    // LittleFS VFS 挂载节点
 
 // ==========================================
 // Phase 3: Lua 小程序引擎与生命周期守护任务
@@ -400,6 +400,15 @@ void system_daemon_task(void) {
     int console_fd = open("/dev/uart0", 0);
     write(console_fd, "\r\n[AI] Intent Engine & App Lifecycle Manager Online.\r\n", 54);
     close(console_fd);
+
+#ifdef CONFIG_TIMER_MANAGER
+    TimerManager::instance().start_timer(1000, TimerType::Periodic, [](void*) {
+        g_photon_cache.sync();
+    });
+    TimerManager::instance().start_timer(5000, TimerType::Periodic, [](void*) {
+        DeviceRouteTable::instance().dump_routes();
+    });
+#endif
 
     while (true) {
         // 1. 意图引擎监控传感器变化
@@ -473,14 +482,12 @@ void storage_test_task(void) {
         write(console_fd, "[LittleFS] Mounted successfully over Flash Block Device.\r\n", 59);
     }
 
-    // 2. 将日志文件绑定挂载到 VFS 路径
-    if (g_step_log.open_file("steps_history.log", 0) == 0) {
-        VfsManager::instance().mount("/storage/steps.log", &g_step_log);
-        write(console_fd, "[VFS] Mounted /storage/steps.log to LFS file node.\r\n\r\n", 55);
-    }
+    // 2. 将整个文件系统挂载到 VFS 路径
+    VfsManager::instance().mount("/storage", &g_vfs_lfs);
+    write(console_fd, "[VFS] Mounted /storage to LFS VNode.\r\n\r\n", 40);
 
     // 3. 模拟高频微小字节写入（连续记录 5 次运动传感器数据）
-    int log_fd = open("/storage/steps.log", 0);
+    int log_fd = VfsManager::instance().open("/storage/steps.log", O_CREAT | O_WRONLY | O_APPEND);
     if (log_fd >= 0) {
         for (int i = 1; i <= 5; i++) {
             char log_entry[64];

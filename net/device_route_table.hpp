@@ -37,26 +37,7 @@ private:
         dest[i] = '\0';
     }
 
-    static void print_log_worker(void* arg) {
-        RemoteDevice* dev = static_cast<RemoteDevice*>(arg);
-        if (!dev || !dev->is_online) return;
-
-        int fd = open("/dev/uart0", 0);
-        if (fd >= 0) {
-            char msg[256]; int len = 0;
-            auto append = [&](const char* s) { 
-                while (*s && len < (int)sizeof(msg) - 1) msg[len++] = *s++; 
-            };
-            
-            append("\r\n\xF0\x9F\x93\xB1 [Super Terminal] NEW Device Registered!\r\n");
-            append("   => ID: "); append(dev->device_id);
-            append("\r\n   => IP: "); append(dev->ip_addr);
-            append("\r\n   => Capabilities: "); append(dev->capabilities); append("\r\n\r\n");
-            
-            write(fd, msg, len);
-            close(fd);
-        }
-    }
+    // removed print_log_worker as it causes blocking in WorkQueue during slow Flash I/O
 
 public:
     static DeviceRouteTable& instance() {
@@ -119,9 +100,30 @@ public:
             str_copy(devices_[empty_slot].capabilities, cap, 64);
             devices_[empty_slot].last_seen_tick = current_tick;
 
-            // 触发炫酷的内核控制台提示，交给后台 WorkQueue 异步打印，避免阻塞网络接收
-            WorkQueue::instance().submit_from_isr(print_log_worker, &devices_[empty_slot]);
+            // 触发炫酷的内核控制台提示交由独立的 Dump 定时任务完成，避免网络接收被 I/O 阻塞。
         }
+    }
+
+    void dump_routes() {
+        LockGuard lock(table_mutex_);
+        int fd = open("/dev/uart0", 0);
+        if (fd < 0) return;
+
+        char msg[256]; int len = 0;
+        auto append = [&](const char* s) { 
+            while (*s && len < (int)sizeof(msg) - 1) msg[len++] = *s++; 
+        };
+        
+        append("\r\n--- Device Route Table Dump ---\r\n");
+        for (int i = 0; i < MAX_DEVICES; i++) {
+            if (devices_[i].is_online) {
+                append("ID: "); append(devices_[i].device_id);
+                append(" IP: "); append(devices_[i].ip_addr);
+                append("\r\n");
+            }
+        }
+        write(fd, msg, len);
+        close(fd);
     }
 };
 
