@@ -13,7 +13,7 @@
 #include "../net/eth_driver.hpp"
 #include "task_notify.hpp"
 #include "signal.hpp"
-#include "frame_scheduler.hpp"
+#include "frame_scheduler_v2.hpp"
 #include "../drivers/display/oled_driver.hpp"
 #include "../drivers/display/framebuffer.hpp"
 #include "../drivers/input/touch_driver.hpp" // 引入触控驱动
@@ -287,7 +287,7 @@ void ui_render_task(void) {
     g_fb.clear(0x0000);
     g_fb.flush(g_oled);
     
-    FrameScheduler::instance().wait_for_next_frame();
+    FrameSchedulerV2::instance().wait_for_next_frame();
 
     while (true) {
         // --- 1. 处理触摸交互与手势识别 ---
@@ -362,7 +362,7 @@ void ui_render_task(void) {
         g_fb.flush(g_oled);
 
         // --- 5. 遵守 30FPS V-Sync
-        FrameScheduler::instance().wait_for_next_frame();
+        FrameSchedulerV2::instance().wait_for_next_frame();
     }
 }
 
@@ -466,7 +466,7 @@ void lua_app_task(void) {
         }
 
         // 3. 遵守 30FPS 的帧感知调度，将剩余 CPU 时间让出
-        FrameScheduler::instance().wait_for_next_frame();
+        FrameSchedulerV2::instance().wait_for_next_frame();
     }
 }
 
@@ -647,10 +647,10 @@ extern "C" void kernel_main(void) {
 
     // 6. 蓝河 Frame-Aware Scheduler 任务注册
     uint32_t* ui_stack = new uint32_t[STACK_SIZE_TEST];
-    uint32_t ui_tid = FrameScheduler::instance().create_frame_task(ui_render_task, ui_stack, STACK_SIZE_TEST * sizeof(uint32_t), TaskPriority::Realtime);
+    uint32_t ui_tid = FrameSchedulerV2::instance().create_frame_task(ui_render_task, ui_stack, STACK_SIZE_TEST * sizeof(uint32_t), TaskPriority::Realtime);
 
     uint32_t* sensor_stack = new uint32_t[STACK_SIZE_TEST];
-    FrameScheduler::instance().create_frame_task(sensor_log_task, sensor_stack, STACK_SIZE_TEST * sizeof(uint32_t), TaskPriority::Normal);
+    FrameSchedulerV2::instance().create_frame_task(sensor_log_task, sensor_stack, STACK_SIZE_TEST * sizeof(uint32_t), TaskPriority::Normal);
 
     // 7. 光子存储写聚合测试任务
     uint32_t* storage_stack = new uint32_t[STACK_SIZE_SHELL];
@@ -661,7 +661,7 @@ extern "C" void kernel_main(void) {
     
     // Lua 虚拟机需要较大的栈
     uint32_t* lua_stack = new uint32_t[2048];
-    uint32_t tid_lua = FrameScheduler::instance().create_frame_task(
+    uint32_t tid_lua = FrameSchedulerV2::instance().create_frame_task(
         lua_app_task, lua_stack, 2048 * sizeof(uint32_t), TaskPriority::Realtime
     );
     g_lua_app.tid = tid_lua;

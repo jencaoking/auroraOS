@@ -5,6 +5,7 @@
 #include "timer.hpp"
 #include "work_queue.hpp"
 #include "mpu.hpp"
+#include "frame_scheduler_v2.hpp"
 
 // 供 PendSV 汇编读取的两个全局 TCB 指针
 // 声明为非 volatile：汇编直接使用符号地址，编译器临界区内通过 Arch:: 保护
@@ -87,7 +88,7 @@ extern "C" {
 #include "frame_scheduler.hpp"
 
 extern "C" bool frame_scheduler_is_task_allowed(uint8_t priority) {
-    return FrameScheduler::instance().is_task_allowed(priority);
+    return FrameSchedulerV2::instance().is_task_allowed(priority);
 }
 
 void SysTick_Handler(void) {
@@ -97,7 +98,7 @@ void SysTick_Handler(void) {
     TimerManager::instance().on_tick();
 
     // 2. 【核心注入】驱动蓝河帧感知时钟窗 (计算 33ms 边界)
-    FrameScheduler::instance().on_tick();
+    FrameSchedulerV2::instance().on_tick();
 
     Scheduler& sched = Scheduler::instance();
     sched.tick_update();
