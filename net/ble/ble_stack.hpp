@@ -2,119 +2,61 @@
 #define AURORA_BLE_STACK_HPP
 
 #include <stdint.h>
-#include <stddef.h>
-#include "../../kernel/mutex.hpp"
+#include <string.h>
+#include "../../kernel/task.hpp"
+#include "../../kernel/msg_queue.hpp"
 
 // ========================================================
-// BLE 基础数据结构与权限定义
+// 蓝牙连接状态机
 // ========================================================
 enum class BleConnectionState : uint8_t {
-    DISCONNECTED,
-    ADVERTISING,
-    CONNECTED
-};
-
-enum class GattPerm : uint8_t {
-    READ          = 0x01,
-    WRITE         = 0x02,
-    NOTIFY        = 0x10,
-    INDICATE      = 0x20,
-    READ_WRITE    = 0x03,
-    NOTIFY_READ   = 0x11
-};
-
-inline GattPerm operator|(GattPerm a, GattPerm b) {
-    return static_cast<GattPerm>(static_cast<uint8_t>(a) | static_cast<uint8_t>(b));
-}
-
-// ========================================================
-// GATT 属性定义 (GattAttribute)
-// ========================================================
-class GattAttribute {
-public:
-    uint16_t  uuid_16;       // 16-bit 蓝牙 SIG 标准 UUID (如 0x2A37 为心率测量)
-    GattPerm  permissions;   // 读写/通知权限
-    uint8_t*  data_ptr;      // 指向真实数据的指针
-    uint16_t  data_len;      // 数据长度
-    uint16_t  max_len;       // 缓冲区最大长度
-
-    GattAttribute() : uuid_16(0), permissions(GattPerm::READ), data_ptr(nullptr), data_len(0), max_len(0) {}
-
-    void init(uint16_t uuid, GattPerm perm, uint8_t* data, uint16_t len, uint16_t max) {
-        uuid_16 = uuid;
-        permissions = perm;
-        data_ptr = data;
-        data_len = len;
-        max_len = max;
-    }
-    
-    // 供底层 HCI 在收到远端 Write Request 时调用更新数据
-    bool update_data(const uint8_t* new_data, uint16_t len) {
-        if (len > max_len || !data_ptr) return false;
-        for (uint16_t i = 0; i < len; ++i) {
-            data_ptr[i] = new_data[i];
-        }
-        data_len = len;
-        return true;
-    }
+    DISCONNECTED, // 断开连接，仅维持极低频的广播 (Advertising)
+    ADVERTISING,  // 高频广播中 (等待手机连接)
+    CONNECTING,   // 正在建立 LL 层连接
+    CONNECTED     // 链路已建立，GATT 数据通道开启
 };
 
 // ========================================================
-// GATT 服务定义 (GattService)
+// 标准 SIG GATT 服务 UUID 定义 (16-bit)
 // ========================================================
-class GattService {
-private:
-    static constexpr int MAX_ATTRS_PER_SERVICE = 5;
-    uint16_t      service_uuid_;
-    GattAttribute attributes_[MAX_ATTRS_PER_SERVICE];
-    uint8_t       attr_count_;
+constexpr uint16_t GATT_SVC_DEVICE_INFO = 0x180A; // 设备信息服务
+constexpr uint16_t GATT_SVC_HEART_RATE  = 0x180D; // 心率服务
+constexpr uint16_t GATT_SVC_BATTERY     = 0x180F; // 电池服务
 
-public:
-    GattService() : service_uuid_(0), attr_count_(0) {}
+// 极客专属：AuroraOS 自定义 OTA 与 Lua 脚本传输服务 (128-bit UUID)
+// 比如: 0000FF01-0000-1000-8000-00805F9B34FB
+constexpr uint16_t GATT_SVC_AURORA_CUSTOM = 0xFF01; 
 
-    void init(uint16_t uuid) {
-        service_uuid_ = uuid;
-        attr_count_ = 0;
-    }
-
-    bool add_attribute(uint16_t uuid, GattPerm perm, uint8_t* data, uint16_t len, uint16_t max) {
-        if (attr_count_ >= MAX_ATTRS_PER_SERVICE) return false;
-        attributes_[attr_count_].init(uuid, perm, data, len, max);
-        attr_count_++;
-        return true;
-    }
-    
-    uint16_t get_uuid() const { return service_uuid_; }
-    uint8_t get_attr_count() const { return attr_count_; }
-    GattAttribute* get_attribute(uint8_t index) {
-        if (index >= attr_count_) return nullptr;
-        return &attributes_[index];
-    }
+// ========================================================
+// 蓝牙底层硬件事件定义 (用于解耦芯片厂 SDK 的 HCI 层)
+// ========================================================
+struct BleHciEvent {
+    uint8_t event_type;
+    uint16_t connection_handle;
+    uint8_t payload[16];
 };
 
-// ========================================================
-// BLE 核心协议栈管理器 (BleManager)
-// ========================================================
 class BleManager {
 private:
     BleConnectionState current_state_;
     
-    // 预定义 5 个标准服务 (对齐 MIBAND 适配报告)
-    GattService svc_device_info_; // Device Information Service (0x180A)
-    GattService svc_time_;        // Current Time Service (0x1805)
-    GattService svc_heart_rate_;  // Heart Rate Service (0x180D)
-    GattService svc_battery_;     // Battery Service (0x180F)
-    GattService svc_vendor_;      // 厂商自定义服务 (用于私有协议与 OTA)
+    // 异步消息队列：用于接收来自底层硬件中断的 HCI 事件，防止阻塞射频中断
+    MessageQueue<BleHciEvent, 16> hci_event_queue_;
+    
+    // 缓存最新的设备特征值，当手机发起 Read 请求时直接返回
+    uint8_t cached_battery_level_;
+    uint8_t cached_heart_rate_;
 
-    // 本地硬件数据缓存映射
-    uint8_t  battery_level_;
-    uint8_t  hr_measurement_[2]; // [0]: Flags, [1]: BPM
-    uint8_t  vendor_rx_buf_[20]; // 接收手机 App 发送的控制指令
-    Mutex    hci_mutex_;         // 保护底层硬件 IPC/UART 通信
+    BleManager() : current_state_(BleConnectionState::DISCONNECTED), 
+                   cached_battery_level_(100), cached_heart_rate_(0) {}
 
-    BleManager() : current_state_(BleConnectionState::DISCONNECTED), battery_level_(100) {
-        hr_measurement_[0] = 0x00; // 8-bit Heart Rate format
-        hr_measurement_[1] = 0;
+    // 内部注册所有的 GATT Services 和 Characteristics
+    void build_gatt_profile() {
+        // 伪代码：向底层 SDK 注册 GATT 数据库
+        // 1. 注册 0x180A 设备信息 (包含 Manufacturer Name, Model Number 等)
+        // 2. 注册 0x180D 心率服务 (设定 Characteristic 为 Notify 属性)
+        // 3. 注册 0x180F 电池服务 (设定 Characteristic 为 Read/Notify 属性)
+        // 4. 注册 0xFF01 Aurora 自定义服务 (设定为 Write Without Response，用于接收 Lua 脚本)
     }
 
 public:
@@ -123,115 +65,72 @@ public:
         return manager;
     }
 
-    // ========================================================
-    // 协议栈初始化与服务注册
-    // ========================================================
     void init() {
-        // 1. 注册电池服务
-        svc_battery_.init(0x180F);
-        svc_battery_.add_attribute(0x2A19, GattPerm::READ | GattPerm::NOTIFY, &battery_level_, 1, 1);
-
-        // 2. 注册心率服务
-        svc_heart_rate_.init(0x180D);
-        svc_heart_rate_.add_attribute(0x2A37, GattPerm::NOTIFY, hr_measurement_, 2, 2);
-
-        // 3. 注册厂商自定义控制服务
-        svc_vendor_.init(0xFFE0); // 假定私有服务 UUID 为 0xFFE0
-        svc_vendor_.add_attribute(0xFFE1, GattPerm::WRITE | GattPerm::NOTIFY, vendor_rx_buf_, 0, sizeof(vendor_rx_buf_));
-
-        // 此处调用 Apollo3 厂商 SDK 的 API，将上述 GATT 树下发至底层控制器的 RAM 中
-        // 我们通过模拟 HCI 命令通道进行配置
-        hci_send_cmd(0x1001, nullptr, 0); // HCI_RESET
-        // ... (省略复杂的属性映射过程)
-    }
-
-    // ========================================================
-    // HCI 通信层 (模拟直接读写 Apollo3 BLE 协处理器 IPC/UART 接口)
-    // ========================================================
-    #define APOLLO3_BLE_IPC_BASE   0x5000C000
-    #define BLE_IPC_CMD_FIFO       (APOLLO3_BLE_IPC_BASE + 0x00)
-    #define BLE_IPC_DATA_FIFO      (APOLLO3_BLE_IPC_BASE + 0x04)
-    #define BLE_IPC_STATUS         (APOLLO3_BLE_IPC_BASE + 0x08)
-
-    bool hci_send_cmd(uint16_t opcode, const uint8_t* param, uint8_t len) {
-        LockGuard lock(hci_mutex_); // 防止多线程并发写穿或交错
-        
-        volatile uint32_t* cmd_fifo  = reinterpret_cast<uint32_t*>(BLE_IPC_CMD_FIFO);
-        volatile uint32_t* data_fifo = reinterpret_cast<uint32_t*>(BLE_IPC_DATA_FIFO);
-        volatile uint32_t* status    = reinterpret_cast<uint32_t*>(BLE_IPC_STATUS);
-        
-        *cmd_fifo = opcode;
-        if (param != nullptr && len > 0) {
-            for (int i = 0; i < len; ++i) {
-                *data_fifo = param[i];
-            }
-        }
-        *cmd_fifo = 0xFFFF; // Commit command
-        
-        // 带超时的安全轮询，防止底层蓝牙协处理器挂死导致主核死锁
-        uint32_t timeout = 100000;
-        while ((*status & 0x01) != 0 && timeout > 0) {
-            timeout--;
-        }
-        
-        return timeout > 0;
-    }
-
-    // ========================================================
-    // 连接与广播控制
-    // ========================================================
-    void start_advertising() {
-        if (current_state_ == BleConnectionState::CONNECTED) return;
-        
-        // 构建广播包 (包含设备名称和主推服务)
-        uint8_t adv_data[] = { 0x02, 0x01, 0x06, 0x0B, 0x09, 'a','u','r','o','r','a','W','A','T','C','H' };
-        hci_send_cmd(0x2008, adv_data, sizeof(adv_data)); // HCI_LE_Set_Advertising_Data
-        
-        uint8_t enable = 0x01;
-        hci_send_cmd(0x200A, &enable, 1); // HCI_LE_Set_Advertise_Enable
-        
+        hci_event_queue_.init();
+        build_gatt_profile();
         current_state_ = BleConnectionState::ADVERTISING;
-    }
-
-    void stop_advertising() {
-        uint8_t enable = 0x00;
-        hci_send_cmd(0x200A, &enable, 1); // HCI_LE_Set_Advertise_Enable
-        current_state_ = BleConnectionState::DISCONNECTED;
-    }
-
-    // 由底层 HCI 硬件中断回调更新状态
-    void on_connected() {
-        current_state_ = BleConnectionState::CONNECTED;
-    }
-
-    void on_disconnected() {
-        current_state_ = BleConnectionState::DISCONNECTED;
-        start_advertising(); // 断开后自动重新广播
+        
+        // 伪代码：调用 Ambiq Cordio SDK 等底层库，开启射频广播
+        // HalBle::start_advertising("Aurora_MiBand8");
     }
 
     BleConnectionState get_state() const { return current_state_; }
 
     // ========================================================
-    // 上层应用数据推送接口 (Notify)
+    // 上层应用调用：推送最新状态 (解耦调用，零阻塞)
     // ========================================================
-    
-    // 更新心率并通过蓝牙实时推送到手机
     void update_heart_rate(uint8_t bpm) {
-        hr_measurement_[1] = bpm;
+        if (cached_heart_rate_ == bpm) return;
+        cached_heart_rate_ = bpm;
+        
+        // 如果当前是连接状态，且手机订阅了 Notify，则推向空中接口
         if (current_state_ == BleConnectionState::CONNECTED) {
-            // 触发底层 Notify 发送 (模拟 HCI 命令 0x201D - 伪造的 Notify Opcode)
-            uint8_t payload[4] = { (uint8_t)(svc_heart_rate_.get_uuid() & 0xFF), 0x37, hr_measurement_[0], hr_measurement_[1] };
-            hci_send_cmd(0x201D, payload, 4);
+            // HalBle::notify_characteristic(GATT_SVC_HEART_RATE, ... , &bpm, 1);
         }
     }
 
-    // 更新电池电量
     void update_battery_level(uint8_t level) {
-        if (level > 100) level = 100;
-        battery_level_ = level;
+        if (cached_battery_level_ == level) return;
+        cached_battery_level_ = level;
+
         if (current_state_ == BleConnectionState::CONNECTED) {
-            uint8_t payload[3] = { (uint8_t)(svc_battery_.get_uuid() & 0xFF), 0x19, battery_level_ };
-            hci_send_cmd(0x201D, payload, 3);
+            // HalBle::notify_characteristic(GATT_SVC_BATTERY, ... , &level, 1);
+        }
+    }
+
+    // ========================================================
+    // 底层硬件中断钩子 (ISR)：严禁执行任何阻塞操作！
+    // ========================================================
+    void on_hci_hardware_event_isr(uint8_t event_type, uint16_t handle) {
+        BleHciEvent event = {event_type, handle, {0}};
+        // 使用非阻塞的 try_push 塞入队列
+        hci_event_queue_.try_push_urgent(event); 
+    }
+
+    // ========================================================
+    // BLE 守护线程执行中枢 (运行在 HIGH 优先级)
+    // ========================================================
+    void daemon_task() {
+        while (true) {
+            // 0 功耗挂起，等待底层射频芯片发来事件
+            BleHciEvent event = hci_event_queue_.pop();
+
+            Arch::disable_interrupts();
+            // 处理连接与断开的逻辑状态机
+            switch (event.event_type) {
+                case 0x01: // EVENT_CONNECT
+                    current_state_ = BleConnectionState::CONNECTED;
+                    break;
+                case 0x02: // EVENT_DISCONNECT
+                    current_state_ = BleConnectionState::ADVERTISING;
+                    // 断开后立刻重启广播
+                    // HalBle::start_advertising(...);
+                    break;
+                case 0x03: // EVENT_DATA_RECEIVED (例如收到手机传来的 Lua 小程序数据包)
+                    // 将收到的分片数据扔给 VFS 或 MiniProgramEngine 处理
+                    break;
+            }
+            Arch::enable_interrupts();
         }
     }
 };
