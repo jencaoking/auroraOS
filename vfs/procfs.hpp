@@ -80,8 +80,9 @@ public:
             if (tcb->state == TaskState::Running) append_str("RUN\t");
             else if (tcb->state == TaskState::Ready) append_str("RDY\t");
             else if (tcb->state == TaskState::Sleeping) append_str("SLP\t");
-            else if (tcb->state == TaskState::Blocked) append_str("BLK\t");
+            else if (tcb->state == TaskState::Blocked_On_Notify) append_str("BNT\t");
             else if (tcb->state == TaskState::Suspended) append_str("SUS\t");
+            else if (tcb->state == TaskState::Terminated) append_str("TRM\t");
             else append_str("UNK\t");
 
             append_num(tcb->sleep_ticks);
