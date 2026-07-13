@@ -62,7 +62,11 @@ public:
         int broadcast_enable = 1;
         lwip_setsockopt(udp_socket_, SOL_SOCKET, SO_BROADCAST, &broadcast_enable, sizeof(broadcast_enable));
 
-        // 3. 绑定本地端口，准备接收其他设备的广播
+        // 3. 禁用自发广播/组播的本地环回 (防止自己收到自己的信标)
+        char loopch = 0;
+        lwip_setsockopt(udp_socket_, IPPROTO_IP, IP_MULTICAST_LOOP, &loopch, sizeof(loopch));
+
+        // 4. 绑定本地端口，准备接收其他设备的广播
         struct sockaddr_in local_addr;
         memset(&local_addr, 0, sizeof(local_addr));
         local_addr.sin_family = AF_INET;

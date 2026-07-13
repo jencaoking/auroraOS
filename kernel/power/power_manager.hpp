@@ -11,6 +11,7 @@
 #include "../frame_scheduler_v2.hpp"
 #include "../task.hpp"
 #include "../timer.hpp"
+#include "../../net/ble/ble_stack.hpp"
 
 // ========================================================
 // 5 级电源状态定义
@@ -187,13 +188,21 @@ public:
                 }
             }
             
+            // 加入 BLE 广播/连接间隔
+            uint32_t ble_interval = (BleManager::instance().get_state() == BleConnectionState::CONNECTED) ? 30 : 100;
+            if (ble_interval < expected_idle_ticks) {
+                expected_idle_ticks = ble_interval;
+            }
+
             // 硬件寄存器防溢出保护
             if (expected_idle_ticks > TICKLESS_MAX_SLEEP) {
                 expected_idle_ticks = TICKLESS_MAX_SLEEP;
             }
 
-            // 如果睡眠时间太短（比如小于 5ms），来回切换时钟源的开销反而更大，直接普通 WFI
-            if (expected_idle_ticks < TICKLESS_MIN_THRESHOLD) {
+            bool is_ble_connected = (BleManager::instance().get_state() == BleConnectionState::CONNECTED);
+
+            // 如果睡眠时间太短，或者 BLE 处于高频连接态，直接普通 WFI
+            if (expected_idle_ticks < TICKLESS_MIN_THRESHOLD || is_ble_connected) {
                 Arch::wait_for_interrupt();
                 return;
             }

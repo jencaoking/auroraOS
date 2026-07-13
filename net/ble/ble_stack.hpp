@@ -104,8 +104,8 @@ public:
     // ========================================================
     void on_hci_hardware_event_isr(uint8_t event_type, uint16_t handle) {
         BleHciEvent event = {event_type, handle, {0}};
-        // 使用非阻塞的 try_push 塞入队列
-        hci_event_queue_.try_push_urgent(event); 
+        // 使用非阻塞的 try_push 塞入无锁队列
+        hci_event_queue_.try_push(event); 
     }
 
     // ========================================================
@@ -116,14 +116,17 @@ public:
             // 0 功耗挂起，等待底层射频芯片发来事件
             BleHciEvent event = hci_event_queue_.pop();
 
-            Arch::disable_interrupts();
             // 处理连接与断开的逻辑状态机
             switch (event.event_type) {
                 case 0x01: // EVENT_CONNECT
+                    Arch::disable_interrupts();
                     current_state_ = BleConnectionState::CONNECTED;
+                    Arch::enable_interrupts();
                     break;
                 case 0x02: // EVENT_DISCONNECT
+                    Arch::disable_interrupts();
                     current_state_ = BleConnectionState::ADVERTISING;
+                    Arch::enable_interrupts();
                     // 断开后立刻重启广播
                     // HalBle::start_advertising(...);
                     break;
@@ -149,7 +152,6 @@ public:
                     break;
                 }
             }
-            Arch::enable_interrupts();
         }
     }
 };
