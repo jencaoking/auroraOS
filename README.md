@@ -95,11 +95,11 @@ auroraOS 坚信"好的架构来自借鉴与融合"。系统不是从零发明一
 
 ### 🌐 网络与通信
 
-- **lwIP 2.x 全栈**：IPv4/TCP/UDP/ICMP/ARP/DHCP，Socket + Netconn 双 API
-- **OSAL 适配层**：sys_arch.cpp 完整实现 Mutex/Semaphore/Mailbox/Thread 映射
-- **DHCP 客户端**：动态获取 IP 地址
-- **BLE 蓝牙协议栈 (BleManager)**：通过硬件 IPC 模拟连接 Apollo3 蓝牙协处理器，预置设备信息、心率、电量等服务。其底层 HCI 层经过严格的防挂死超时与互斥锁加固，彻底规避因外设无响应导致内核级死锁。
-- **分布式软总线**：借鉴 HarmonyOS，UDP 广播设备发现 + JSON 信标 + 设备路由表
+- **lwIP 2.x 全栈**：IPv4/TCP/UDP/ICMP/ARP/DHCP，Socket + Netconn 双 API，已启用 `LWIP_TCPIP_CORE_LOCKING` 实现全系统 Socket API 的核心互斥锁保护，保证多线程调用安全。
+- **OSAL 适配层**：sys_arch.cpp 完整实现 Mutex/Semaphore/Mailbox/Thread 映射。
+- **DHCP 客户端**：动态获取 IP 地址。
+- **BLE 蓝牙协议栈 (BleManager)**：通过硬件 IPC 模拟连接 Apollo3 蓝牙协处理器，预置设备信息、心率、电量等服务。对 OTA 与 Lua 传输的 `0xFF01` 特征值强制执行 **Security Mode 1 Level 3（配对并加密）** 写入，增加数据流数字签名校验，并缩小守护线程中的关中断区间。
+- **分布式软总线与路由表**：借鉴 HarmonyOS，UDP 广播发现。安全加固版去除了硬编码 Token，采用 **Challenge-Response + HMAC-SHA256** 验证；对设备 ID 进行了严格字母及长度限制（`strnlen`），对能力集（cap）进行了正则白名单拦截（`^[a-z_,\[\"]+$`）；设置 `IP_MULTICAST_LOOP` 为 0 以过滤自发广播。设备路由表全面加入互斥锁保护、30秒 LRU 节点淘汰与 5/s 的抗 DDoS 注册速率限制，并移除包处理路径中的阻塞式 I/O，改为独立 Dump 任务显示。
 
 ### 🎨 显示与输入
 
@@ -119,7 +119,8 @@ auroraOS 坚信"好的架构来自借鉴与融合"。系统不是从零发明一
 ### ⚡ 功耗管理
 
 - **5 级功耗状态**：RUN → IDLE → LIGHT_SLEEP → DEEP_SLEEP → SHUTDOWN
-- **Tickless 模式与抬腕唤醒**：空闲时关闭高频 SysTick 并配置低功耗唤醒定时器（RTC），醒来后补偿流逝 tick；配合 `WristWakeDetector` 加速度分量防抖算法，支持从睡眠/空闲状态中抬腕自动唤醒系统
+- **Tickless 模式与抬腕唤醒**：空闲时关闭高频 SysTick 并配置低功耗唤醒定时器（RTC），醒来后补偿流逝 tick；配合 `WristWakeDetector` 加速度分量防抖算法，支持从睡眠/空闲状态中抬腕自动唤醒系统。
+- **智能睡眠时钟规划与 BLE 状态绑定**：重构低功耗休眠唤醒估算算法，将 `ble_interval` (连接态 30ms，广播态 100ms) 纳入 `expected_idle_ticks` 的核心估算因子（`min(task, timer, ble_interval, next_vsync)`），确保低功耗切换不破坏蓝牙通信时序。在 BLE 处于 `CONNECTED` 高频同步态时，强制禁止系统进入 Tickless 深度睡眠，仅执行普通的 `WFI` 空闲挂起，以保护高频蓝牙链路的连贯性。
 
 ---
 
@@ -336,7 +337,7 @@ class KernelHeap {
 |------|------|---------|
 | **Mutex** | 优先级继承（PI），递归加锁，可配置超时唤醒，sleep(1)让出，UniqueLock RAII | NuttX |
 | **Semaphore** | 计数信号量，try_wait() ISR 安全 | FreeRTOS |
-| **MessageQueue** | 生产者-消费者，try_push/try_pop 非阻塞 | ThreadX |
+| **MessageQueue** | 无锁单生产者单消费者 (SPSC) 环形队列，支持内存屏障，免去中断锁，try_push/try_pop 非阻塞 | ThreadX |
 | **TaskNotify** | 32 位直接通知，零内存分配，ISR 极速 | FreeRTOS |
 | **Signal** | POSIX signal/kill/raise，16 路位图 | NuttX |
 
@@ -383,8 +384,10 @@ sys_thread_t → TaskControlBlock*        // 调度器任务
 支持 DHCP 动态获取 IP、BSD Socket API、Netconn API。Shell 提供 `ifconfig`/`udpsend` 命令，内置 UDP Echo Server 测试。
 
 **网卡接收防死锁与 OOB 加固**：
-- **最大长度负数保护**：在 L2 以太网驱动 `receive_frame` 接口中，对传入的 `max_len` 进行有符号校验（`max_len <= 0` 直接返回），防止无符号强制转型绕过导致的堆缓冲区溢出。
+- **最大长度负数保护**：在 L2 以太网驱动 `receive_frame` 接口中，对传入 of `max_len` 进行有符号校验（`max_len <= 0` 直接返回），防止无符号强制转型绕过导致的堆缓冲区溢出。
 - **网卡死锁防御**：当读取到硬件帧大小超出 `max_len` 或异常时，除了清除中断标志，额外使用循环强制从数据寄存器中**排空（drain）**该包剩余字节，避免以太网控制器 FIFO 阻塞，彻底解决了因网络畸形包注入导致的中断挂死与网卡死锁。
+- **以太网驱动线程安全与对齐**：使用独立 `rx_mutex_` 与 `tx_mutex_` 隔离底层硬件寄存器的并发访问；数据包 FIFO 传输由原先的逐字节遍历拷贝升级为 **4字节对齐 `memcpy`**，避免因硬件总线对齐要求引发的 HardFault；改写 MAC 发送控制脉冲，直接覆盖写入，避免竞态条件。
+- **lwIP 核心锁保护**：启用 `LWIP_TCPIP_CORE_LOCKING`，强制全系统 Socket 访问在内核核心锁同步下运行，杜绝多任务同时读写 socket 产生的数据错乱。
 
 ### 设备驱动框架
 
@@ -458,14 +461,19 @@ CMake 配置 `-DLUA_32BITS=1` 适配 32 位平台，裁剪 `lua.c`/`luac.c`/`lio
 
 ```cpp
 class DistributedSoftBus {
-    void init();                // UDP socket + SO_BROADCAST + bind 8899
-    void broadcast_beacon();    // 广播 {"event":"beacon","device_id":"aurora_watch_01","cap":["display","touch"]}
-    void listener_task();       // 阻塞接收 → JsonParser 解析 → DeviceRouteTable 注册
+    void init();                // UDP socket + SO_BROADCAST + IP_MULTICAST_LOOP(0) + bind 8899
+    void broadcast_beacon();    // 广播加密信标，防止重放与伪造
+    void listener_task();       // 阻塞接收 → JsonParser 解析 → 严格检验 → DeviceRouteTable 注册
 };
 
-**分布式协议栈安全隔离**：
+**分布式协议栈与设备路由表安全加固**：
 - **零拷贝 JSON 解析器 OOB 保护**：在 `JsonParser::get_raw_value` 中增加前导字符防越界校验 `*val_start == '\0'`。一旦 JSON 键名后紧跟空字符（例如网络畸形截断报文），解析器将立即中断并快速失败，防止指针跳过空字符读取未授权相邻内存区。
-- **设备路由表抗污染**：为 `DeviceRouteTable::register_or_update_device` 添加严格的 `!ip || !dev_id || !cap` 空指针入参校验，确保即使网络层报文解析为空也无法向路由表写入非法数据，保证系统在多设备局域网游牧中的稳定性。
+- **设备路由表抗污染**：为 `DeviceRouteTable::register_or_update_device` 添加严格的 `!ip || !dev_id || !cap` 空指针入参校验，确保即使网络层报文解析为空也无法向路由表写入非法数据。
+- **安全认证与白名单过滤**：移除硬编码的鉴权 Token，引入 **Challenge-Response 挑战应答 + HMAC-SHA256 签名机制**；增加 `device_id` 严格全字母及 `strnlen` 长度校验；增加能力集 `cap` 的正则白名单过滤（仅允许 `^[a-z_,\[\"]+$`），拒绝非合规的特殊控制字符。
+- **自发广播过滤**：在 UDP Socket 初始化中利用 `IP_MULTICAST_LOOP = 0` 禁用本地回环，防止本机软总线接收并处理自身发送的发现广播。
+- **路由表并发控制与 LRU 淘汰**：增加 `table_mutex_` 对设备路由表进行互斥读写控制；引入 LRU 机制，自动清理 `now - last_seen > 30秒` 的不活跃外部设备。
+- **流量异常与 DDoS 流量防御**：为路由表注册添加 `5次/秒` 的阈值限制，超出限额的注册请求直接丢弃，防止异常网络心跳或恶意设备发起泛洪攻击。
+- **非阻塞 I/O 隔离**：从核心网络包解析和注册路径中彻底移除阻塞式的串口/Flash I/O 操作，将其改由独立的后台 Dump 定时任务（`dump_routes`）定期调用，完全释放网络接收的吞吐性能。
 ```
 
 ---
@@ -617,6 +625,12 @@ python scripts/genconfig.py
 - [x] 2D 绘图引擎（Renderer2D：直线/圆/弧/三角形/圆角矩形/文本/混色）
 - [x] Tickless 真实硬件唤醒定时器
 - [x] 充电管理驱动
+- [x] 以太网与网络协议栈安全加固 (4字节对齐, 独立锁保护, lwIP core locking)
+- [x] 分布式软总线 Challenge-Response 鉴权与正则白名单防御
+- [x] 设备路由表 LRU 淘汰、DDoS 限流与非阻塞 Dumping 设计
+- [x] 无锁 Single-Producer-Single-Consumer (SPSC) 环形消息队列 (适配 BLE 中断)
+- [x] 蓝牙 Security Mode 1 Level 3 配对认证与 Lua 签名验签
+- [x] 蓝牙状态联动的智能 Tickless 睡眠决策与休眠窗口动态调节
 
 ### Phase 3: 手表智能化（12-18 个月）— 📅 部分提前
 
