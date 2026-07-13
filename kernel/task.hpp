@@ -72,6 +72,7 @@ struct TaskControlBlock {
 extern "C" {
     extern TaskControlBlock* volatile g_current_tcb_ptr;
     extern TaskControlBlock* volatile g_next_tcb_ptr;
+    extern volatile uint32_t g_switch_start_cycle;
 }
 
 struct IrqGuard {
@@ -251,6 +252,8 @@ public:
     // =========================================================================
     void schedule() {
         if (!started_ || task_count <= 1) return;
+
+        g_switch_start_cycle = Arch::get_cycle();
 
         // 【安全信号拦截点】
         dispatch_signals(&tasks[current_task_index]);

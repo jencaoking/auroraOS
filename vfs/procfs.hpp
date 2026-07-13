@@ -4,6 +4,7 @@
 #include "vfs.hpp"
 #include "memory.hpp"
 #include "task.hpp"
+#include "../metrics/metrics.hpp"
 
 // ProcFS 节点基类：只读，不支持写
 class ProcNode : public VNode {
@@ -39,6 +40,7 @@ public:
         append_str("----------------------\n");
         append_str("MemTotal:  "); append_num(total_mem); append_str(" Bytes\n");
         append_str("MemFree:   "); append_num(free_mem); append_str(" Bytes\n");
+        append_str("Defrag:    "); append_num(Metrics::get_heap_defrags()); append_str(" times\n");
         
         buf[pos] = '\0';
         return pos;
@@ -90,6 +92,116 @@ public:
         }
         Arch::enable_interrupts();
         
+        buf[pos] = '\0';
+        return pos;
+    }
+};
+
+// ==========================================
+// Latency 节点: /proc/latency
+// ==========================================
+class LatencyNode : public ProcNode {
+public:
+    int read(char* buf, int len, int offset, void* priv) override {
+        if (offset > 0) return 0;
+        int pos = 0;
+        auto append_str = [&](const char* s) { while (*s && pos < len - 1) buf[pos++] = *s++; };
+        auto append_num = [&](uint32_t num) {
+            char temp[16]; int i = 0;
+            if (num == 0) { temp[i++] = '0'; }
+            while (num > 0) { temp[i++] = (num % 10) + '0'; num /= 10; }
+            while (i > 0 && pos < len - 1) buf[pos++] = temp[--i];
+        };
+
+        append_str("ctx_switch avg="); append_num(Metrics::get_recorder(METRIC_CTX_SWITCH).get_avg_us());
+        append_str("us max="); append_num(Metrics::get_recorder(METRIC_CTX_SWITCH).get_max_us());
+        append_str("us p99="); append_num(Metrics::get_recorder(METRIC_CTX_SWITCH).get_p99_us());
+        append_str("us count="); append_num(Metrics::get_recorder(METRIC_CTX_SWITCH).get_count());
+        
+        append_str("\nirq_latency avg="); append_num(Metrics::get_recorder(METRIC_IRQ_LATENCY).get_avg_us());
+        append_str("us max="); append_num(Metrics::get_recorder(METRIC_IRQ_LATENCY).get_max_us());
+        append_str("us p99="); append_num(Metrics::get_recorder(METRIC_IRQ_LATENCY).get_p99_us());
+        append_str("us count="); append_num(Metrics::get_recorder(METRIC_IRQ_LATENCY).get_count());
+        
+        append_str("\nheap_64b avg="); append_num(Metrics::get_recorder(METRIC_HEAP_64B).get_avg_us());
+        append_str("us max="); append_num(Metrics::get_recorder(METRIC_HEAP_64B).get_max_us());
+        append_str("us p99="); append_num(Metrics::get_recorder(METRIC_HEAP_64B).get_p99_us());
+        append_str("us count="); append_num(Metrics::get_recorder(METRIC_HEAP_64B).get_count());
+        append_str("\n");
+        buf[pos] = '\0';
+        return pos;
+    }
+};
+
+// ==========================================
+// Power 节点: /proc/power
+// ==========================================
+class PowerNode : public ProcNode {
+public:
+    int read(char* buf, int len, int offset, void* priv) override {
+        if (offset > 0) return 0;
+        int pos = 0;
+        auto append_str = [&](const char* s) { while (*s && pos < len - 1) buf[pos++] = *s++; };
+        auto append_num = [&](uint32_t num) {
+            char temp[16]; int i = 0;
+            if (num == 0) { temp[i++] = '0'; }
+            while (num > 0) { temp[i++] = (num % 10) + '0'; num /= 10; }
+            while (i > 0 && pos < len - 1) buf[pos++] = temp[--i];
+        };
+
+        append_str("sleep_ratio "); append_num(Metrics::get_power_profiler().get_sleep_ratio());
+        append_str("% sleep_count "); append_num(Metrics::get_power_profiler().get_sleep_count());
+        // For dirty ratio, we stored percentage directly in the cycles field.
+        // We will just use max_cycles since it is a raw value (unscaled by cycles_per_us).
+        // Wait, max_us divides by cycles_per_us! We should just get average without dividing.
+        uint32_t dirty_ratio = Metrics::get_recorder(METRIC_DIRTY_RATIO).get_count() > 0 ? 
+            (Metrics::get_recorder(METRIC_DIRTY_RATIO).get_avg_us() * Arch::get_cycles_per_us()) : 0;
+        append_str("\ndirty_ratio "); append_num(dirty_ratio);
+        append_str("%\n");
+        buf[pos] = '\0';
+        return pos;
+    }
+};
+
+// ==========================================
+// Network 节点: /proc/net
+// ==========================================
+class NetNode : public ProcNode {
+public:
+    int read(char* buf, int len, int offset, void* priv) override {
+        if (offset > 0) return 0;
+        int pos = 0;
+        auto append_str = [&](const char* s) { while (*s && pos < len - 1) buf[pos++] = *s++; };
+        auto append_num = [&](uint32_t num) {
+            char temp[16]; int i = 0;
+            if (num == 0) { temp[i++] = '0'; }
+            while (num > 0) { temp[i++] = (num % 10) + '0'; num /= 10; }
+            while (i > 0 && pos < len - 1) buf[pos++] = temp[--i];
+        };
+        append_str("udp_drops "); append_num(Metrics::get_net_drops());
+        append_str("\n");
+        buf[pos] = '\0';
+        return pos;
+    }
+};
+
+// ==========================================
+// Softbus 节点: /proc/softbus
+// ==========================================
+class SoftbusNode : public ProcNode {
+public:
+    int read(char* buf, int len, int offset, void* priv) override {
+        if (offset > 0) return 0;
+        int pos = 0;
+        auto append_str = [&](const char* s) { while (*s && pos < len - 1) buf[pos++] = *s++; };
+        auto append_num = [&](uint32_t num) {
+            char temp[16]; int i = 0;
+            if (num == 0) { temp[i++] = '0'; }
+            while (num > 0) { temp[i++] = (num % 10) + '0'; num /= 10; }
+            while (i > 0 && pos < len - 1) buf[pos++] = temp[--i];
+        };
+        append_str("registers "); append_num(Metrics::get_softbus_registers());
+        append_str("\n");
         buf[pos] = '\0';
         return pos;
     }

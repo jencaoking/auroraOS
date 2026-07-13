@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include "task.hpp"
 #include "arch_api.hpp"
+#include "../metrics/metrics.hpp"
 
 class KernelHeap {
 private:
@@ -56,6 +57,15 @@ public:
 
     // 分配内存
     void* allocate(size_t size) {
+        uint32_t t0 = Arch::get_cycle();
+        void* p = allocate_impl(size);
+        uint32_t dt = Arch::get_cycle() - t0;
+        if (size <= 64) Metrics::record(METRIC_HEAP_64B, dt);
+        return p;
+    }
+
+private:
+    void* allocate_impl(size_t size) {
         IrqGuard lock; // CP.20: RAII 线程安全保护，改用关中断自旋锁避免死锁
         size_t size_orig = size;
         // 8字节对齐
@@ -110,6 +120,7 @@ private:
     }
 
     void defragment_internal() {
+        Metrics::inc_heap_defrag();
         BlockHeader* current = head_block;
         while (current != nullptr && current->next != nullptr) {
             if (current->is_free && current->next->is_free) {

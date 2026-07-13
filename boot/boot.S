@@ -125,6 +125,10 @@ PendSV_Handler:
     
     msr psp, r0                 @ 将新栈顶指针恢复给线程栈指针 (PSP)
     
+    push {lr}
+    bl pendsv_metrics_hook
+    pop {lr}
+    
     cpsie i                     @ 2. 重新开启全局中断
     bx lr                       @ 3. 硬件自动弹出剩下寄存器，并跳转回新线程的 PC 处继续执行！
 #endif

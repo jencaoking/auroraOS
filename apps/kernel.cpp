@@ -596,9 +596,13 @@ extern "C" void kernel_main(void) {
     // DeviceRegistry::instance().register_device(&g_health_sensor);
     
 #ifdef CONFIG_FS_PROCFS
-    // 挂载 ProcFS 虚拟节点
+    // Mount ProcFS nodes
     VfsManager::instance().mount("/proc/meminfo", new MemInfoNode());
     VfsManager::instance().mount("/proc/taskinfo", new TaskInfoNode());
+    VfsManager::instance().mount("/proc/latency", new LatencyNode());
+    VfsManager::instance().mount("/proc/power", new PowerNode());
+    VfsManager::instance().mount("/proc/net", new NetNode());
+    VfsManager::instance().mount("/proc/softbus", new SoftbusNode());
 #endif
     
     // 初始化调度器

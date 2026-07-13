@@ -12,6 +12,7 @@
 #include "../task.hpp"
 #include "../timer.hpp"
 #include "../../net/ble/ble_stack.hpp"
+#include "../../metrics/metrics.hpp"
 
 // ========================================================
 // 5 级电源状态定义
@@ -217,7 +218,12 @@ public:
             Arch::start_wakeup_timer(expected_idle_ticks);
 
             // 4. 进入带状态保持的深度睡眠 (Deep Sleep)
+            uint32_t sleep_enter = Arch::get_cycle();
             Arch::wait_for_interrupt(); 
+            uint32_t slept = Arch::get_cycle() - sleep_enter;
+            if (Metrics::is_active()) {
+                Metrics::get_power_profiler().add_sleep_time(slept);
+            }
 
             // ================= CPU 在此被硬件定时器或外部事件唤醒 =================
 

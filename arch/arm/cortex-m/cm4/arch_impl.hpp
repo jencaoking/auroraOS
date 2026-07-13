@@ -22,6 +22,11 @@ namespace Arch {
     constexpr uint32_t  SYST_CSR_TICKINT   = (1UL << 1);
     constexpr uint32_t  SYST_CSR_CLKSOURCE = (1UL << 2);
 
+    // ── DWT 周期计数器寄存器 ──────────
+    constexpr uintptr_t DEMCR_ADDR      = 0xE000EDFCU;
+    constexpr uintptr_t DWT_CTRL_ADDR   = 0xE0001000U;
+    constexpr uintptr_t DWT_CYCCNT_ADDR = 0xE0001004U;
+
     // =====================================================================
     // 底层内联汇编控制
     // =====================================================================
@@ -58,6 +63,20 @@ namespace Arch {
         __asm__ volatile ("wfi" : : : "memory");
     }
 
+    inline void init_dwt() {
+        *reinterpret_cast<volatile uint32_t*>(DEMCR_ADDR) |= (1UL << 24); // TRCENA
+        *reinterpret_cast<volatile uint32_t*>(DWT_CYCCNT_ADDR) = 0;
+        *reinterpret_cast<volatile uint32_t*>(DWT_CTRL_ADDR) |= 1;        // CYCCNTENA
+    }
+
+    inline uint32_t get_cycle() {
+        return *reinterpret_cast<volatile uint32_t*>(DWT_CYCCNT_ADDR);
+    }
+
+    inline uint32_t get_cycles_per_us() {
+        return BOARD_SYSCLK_FREQ / 1000000;
+    }
+
     // =====================================================================
     // SysTick 初始化：配置周期性系统心跳定时器
     //
@@ -79,6 +98,8 @@ namespace Arch {
         *syst_rvr = (BOARD_SYSCLK_FREQ / hz) - 1;           // 2. 设定重载周期
         *syst_cvr = 0;                                       // 3. 清零当前值
         *syst_csr = SYST_CSR_CLKSOURCE | SYST_CSR_TICKINT | SYST_CSR_ENABLE; // 4. 启动
+
+        init_dwt();                                          // 5. 启动 DWT
     }
 
     inline void disable_systick() {

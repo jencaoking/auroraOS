@@ -6,17 +6,28 @@
 #include "work_queue.hpp"
 #include "mpu.hpp"
 #include "frame_scheduler_v2.hpp"
+#include "../metrics/metrics.hpp"
+
+volatile uint32_t isr_enter_cycle = 0;
 
 // 供 PendSV 汇编读取的两个全局 TCB 指针
 // 声明为非 volatile：汇编直接使用符号地址，编译器临界区内通过 Arch:: 保护
 extern "C" {
     TaskControlBlock* volatile g_current_tcb_ptr = nullptr;
     TaskControlBlock* volatile g_next_tcb_ptr    = nullptr;
+    volatile uint32_t g_switch_start_cycle = 0;
 
     // 由 PendSV_Handler 调用的 MPU 动态沙盒切换
     void mpu_switch_sandbox(TaskControlBlock* next) {
         if (next && next->size_pow2 > 0) {
             MPU::instance().update_user_sandbox(next->stack_base, next->size_pow2);
+        }
+    }
+
+    void pendsv_metrics_hook() {
+        if (g_switch_start_cycle > 0) {
+            Metrics::record(METRIC_CTX_SWITCH, Arch::get_cycle() - g_switch_start_cycle);
+            g_switch_start_cycle = 0;
         }
     }
 }
@@ -30,6 +41,7 @@ extern "C" {
     // frame 是硬件自动压栈的寄存器快照，通过它读取系统调用参数
     // ================================================================
     void SVC_Handler_C(InterruptFrame* frame) {
+        isr_enter_cycle = Arch::get_cycle();
         // 通过 PC 回溯到 SVC 指令，提取 8 位系统调用号
         const uint16_t svc_instr = reinterpret_cast<const uint16_t*>(frame->pc)[-1];
         const uint8_t  svc_number = static_cast<uint8_t>(svc_instr & 0xFF);
@@ -92,6 +104,7 @@ extern "C" bool frame_scheduler_is_task_allowed(uint8_t priority) {
 }
 
 void SysTick_Handler(void) {
+    isr_enter_cycle = Arch::get_cycle();
     tick_count++;
     
     // 1. 驱动软件定时器引擎

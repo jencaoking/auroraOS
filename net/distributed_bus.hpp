@@ -7,6 +7,7 @@
 #include <string.h>
 #include "../utils/json_parser.hpp"
 #include "device_route_table.hpp"
+#include "../metrics/metrics.hpp"
 
 #include "../kernel/timer.hpp"
 
@@ -139,6 +140,7 @@ public:
                         DeviceRouteTable::instance().register_or_update_device(
                             ip_str, device_id, cap_array, current_tick
                         );
+                        Metrics::inc_softbus_register();
                     }
                 }
             }

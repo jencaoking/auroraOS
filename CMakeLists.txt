@@ -66,6 +66,7 @@ set(SOURCES
     kernel/memory.cpp
     kernel/libc.cpp
     kernel/posix.cpp
+    metrics/metrics.cpp
 )
 
 if(BOARD STREQUAL "lm3s6965-qb")

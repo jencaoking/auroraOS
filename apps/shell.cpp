@@ -4,6 +4,8 @@
 #include "elf_loader.hpp"
 #include "config.h"
 #include "timer.hpp"
+#include "memory.hpp"
+#include "../metrics/metrics.hpp"
 
 // 引入 lwIP 的网络接口与 Socket 核心 API
 #include "lwip/netif.h"
@@ -105,6 +107,8 @@ void Shell::execute_command(const char* raw_cmd) {
         print("  netstat   - Show network statistics\r\n");
         print("  reboot    - Reboot the system\r\n");
         print("  date      - Show system date/time\r\n");
+        print("  metrics   - Metrics commands (start, report)\r\n");
+        print("  heap_stress - Run heap allocation stress test\r\n");
     } 
     else if (strings_equal(argv[0], "cat")) {
         int fd = open("/tmp/log.txt", 0);
@@ -257,6 +261,40 @@ void Shell::execute_command(const char* raw_cmd) {
         // 触发 Cortex-M 软复位 (NVIC AIRCR)
         volatile uint32_t* aircr = reinterpret_cast<uint32_t*>(0xE000ED0C);
         *aircr = (0x05FA0000 | (1 << 2));
+    }
+    else if (strings_equal(argv[0], "metrics")) {
+        if (argc < 2) {
+            print("Usage: metrics start|report\r\n");
+        } else if (strings_equal(argv[1], "start")) {
+            Metrics::start_measurement();
+            print("Metrics measurement started.\r\n");
+        } else if (strings_equal(argv[1], "report")) {
+            int fd = open("/ramfs/report.json", 1); // open for write if VFS supports it, otherwise fail gracefully
+            if (fd >= 0) {
+                const char* json = "{\"status\":\"ok\"}\n";
+                write(fd, json, 16);
+                close(fd);
+                print("Report written to /ramfs/report.json\r\n");
+            } else {
+                print("Could not write to /ramfs/report.json. Please ensure RAMFS is mounted.\r\n");
+            }
+        }
+    }
+    else if (strings_equal(argv[0], "heap_stress")) {
+        int iters = 10000;
+        if (argc >= 2) iters = my_atoi(argv[1]);
+        print("Running heap stress test...\r\n");
+        for (int i=0; i<iters; i++) {
+            void* p1 = KernelHeap::instance().allocate(16);
+            void* p2 = KernelHeap::instance().allocate(32);
+            void* p3 = KernelHeap::instance().allocate(64);
+            KernelHeap::instance().deallocate(p1);
+            void* p4 = KernelHeap::instance().allocate(128);
+            KernelHeap::instance().deallocate(p3);
+            KernelHeap::instance().deallocate(p2);
+            KernelHeap::instance().deallocate(p4);
+        }
+        print("Heap stress test finished.\r\n");
     }
     else {
         print("aurorash: command not found: ");

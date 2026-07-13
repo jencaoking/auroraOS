@@ -3,6 +3,7 @@
 #include "syscall.hpp"
 #include "autoconf.h"
 #include "config/net_config.h"
+#include "../metrics/metrics.hpp"
 #include <string.h>
 
 extern Mutex uart_mutex;
@@ -77,6 +78,7 @@ int StellarisEth::receive_frame(uint8_t* buffer, int max_len) {
     // Stellaris 接收 FIFO 的第一个字是：帧长度 (减去 CRC 的实际数据大小)
     uint32_t frame_len = *mac_data_;
     if (frame_len > static_cast<uint32_t>(max_len) || frame_len == 0) {
+        Metrics::inc_net_drop();
         // [安全加固] 数据帧异常，必须排空 FIFO 里的这包数据，否则硬件 MAC 会死锁
         int words_to_discard = (frame_len + 3) / 4;
         for (int i = 0; i < words_to_discard; i++) {
