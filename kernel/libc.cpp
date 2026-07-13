@@ -179,9 +179,15 @@ void* realloc(void* ptr, size_t size) {
     if (!ptr) {
         return malloc(size);
     }
+    
+    // 先获取 old_size，避免内部锁重入
+    size_t old_size = KernelHeap::instance().get_requested_size(ptr);
+    if (old_size == 0) {
+        return nullptr; // 无效指针
+    }
+    
     void* new_ptr = malloc(size);
     if (new_ptr) {
-        size_t old_size = KernelHeap::instance().get_requested_size(ptr);
         size_t copy_size = (old_size < size) ? old_size : size;
         if (copy_size > 0) {
             memcpy(new_ptr, ptr, copy_size);
@@ -205,8 +211,27 @@ int abs(int x) {
 }
 
 float strtof(const char* nptr, char** endptr) {
+    // 简易 strtof 实现
+    float res = 0.0f;
+    int sign = 1;
+    if (*nptr == '-') { sign = -1; nptr++; }
+    else if (*nptr == '+') { nptr++; }
+    
+    while (*nptr >= '0' && *nptr <= '9') {
+        res = res * 10.0f + (*nptr - '0');
+        nptr++;
+    }
+    if (*nptr == '.') {
+        nptr++;
+        float frac = 0.1f;
+        while (*nptr >= '0' && *nptr <= '9') {
+            res += (*nptr - '0') * frac;
+            frac *= 0.1f;
+            nptr++;
+        }
+    }
     if (endptr) *endptr = const_cast<char*>(nptr);
-    return 0.0f;
+    return res * sign;
 }
 
 // 极简 math.h 占位，供 Lua lvm 引擎链接通过
@@ -216,8 +241,16 @@ float floorf(float x) {
 }
 
 float powf(float base, float exp) {
-    (void)base; (void)exp;
-    return 0.0f;
+    // 极简 powf：仅支持整数指数
+    if (exp == 0.0f) return 1.0f;
+    int e = static_cast<int>(exp);
+    float res = 1.0f;
+    if (e > 0) {
+        for (int i = 0; i < e; i++) res *= base;
+    } else {
+        for (int i = 0; i < -e; i++) res /= base;
+    }
+    return res;
 }
 
 float fmodf(float x, float y) {

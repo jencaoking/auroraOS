@@ -25,12 +25,19 @@ inline int kill(uint32_t target_task_id, int sig) {
     if (!target) return -1;
 
     // 在位图中打上对应信号的标记
-    target->pending_signals |= (1 << sig);
+    {
+        IrqGuard guard;
+        target->pending_signals |= (1 << sig);
+    }
 
     if (sig == SIGKILL) {
-        target->state = TaskState::Terminated;
-    } else if (target->state == TaskState::Sleeping) {
-        target->state = TaskState::Ready;
+        // Will be handled in dispatch_signals by the scheduler, but we shouldn't directly tear the state here.
+        // Actually, if we kill a sleeping or blocked task, we need it to wake up to process the signal.
+        if (target->state != TaskState::Ready && target->state != TaskState::Running) {
+            Scheduler::instance().set_task_state(target->id, TaskState::Ready);
+        }
+    } else if (target->state == TaskState::Sleeping || target->state == TaskState::Blocked_On_Notify) {
+        Scheduler::instance().set_task_state(target->id, TaskState::Ready);
     }
 
     Scheduler::instance().schedule();

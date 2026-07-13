@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include "mutex.hpp"
+#include "task.hpp"
 
 class KernelHeap {
 private:
@@ -19,7 +19,6 @@ private:
     BlockHeader* head_block = nullptr;
     size_t total_free_memory = 0;
     size_t total_size = 0;
-    Mutex heap_mutex_;        // 保护整个全局堆的互斥锁
 
 public:
     KernelHeap() = default;
@@ -36,9 +35,9 @@ public:
         uintptr_t start = reinterpret_cast<uintptr_t>(start_addr);
         uintptr_t end = reinterpret_cast<uintptr_t>(end_addr);
 
-        // 4字节对齐
-        start = (start + 3) & ~3;
-        end = end & ~3;
+        // 8字节对齐
+        start = (start + 7) & ~7;
+        end = end & ~7;
 
         head_block = reinterpret_cast<BlockHeader*>(start);
         head_block->magic = HEAP_MAGIC;
@@ -56,10 +55,10 @@ public:
 
     // 分配内存
     void* allocate(size_t size) {
-        LockGuard lock(heap_mutex_); // CP.20: RAII 线程安全保护
+        IrqGuard lock; // CP.20: RAII 线程安全保护，改用关中断自旋锁避免死锁
         size_t size_orig = size;
-        // 4字节对齐
-        size = (size + 3) & ~3;
+        // 8字节对齐
+        size = (size + 7) & ~7;
         size_t required_space = size + sizeof(BlockHeader);
 
         void* result = try_allocate_internal(size_orig, required_space);
@@ -77,8 +76,10 @@ private:
         BlockHeader* current = head_block;
         while (current != nullptr) {
             if (current->is_free && current->size >= required_space) {
+                bool did_split = false;
                 // 如果剩余空间足够切分，就分裂该块 (Split Block)
-                if (current->size >= required_space + sizeof(BlockHeader) + 4) {
+                if (current->size >= required_space + sizeof(BlockHeader) + 8) {
+                    did_split = true;
                     BlockHeader* next_block = reinterpret_cast<BlockHeader*>(
                         reinterpret_cast<uintptr_t>(current) + required_space
                     );
@@ -94,7 +95,11 @@ private:
 
                 current->is_free = false;
                 current->requested_size = size_orig; // 记录原始请求大小
-                total_free_memory -= current->size;
+                if (did_split) {
+                    total_free_memory -= required_space;
+                } else {
+                    total_free_memory -= (current->size - sizeof(BlockHeader));
+                }
                 // 返回越过 BlockHeader 之后的实际可用内存地址
                 return reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(current) + sizeof(BlockHeader));
             }
@@ -108,6 +113,7 @@ private:
         while (current != nullptr && current->next != nullptr) {
             if (current->is_free && current->next->is_free) {
                 current->size += current->next->size;
+                total_free_memory += sizeof(BlockHeader); // 恢复一个 header 的空间
                 current->next = current->next->next;
             } else {
                 current = current->next;
@@ -116,14 +122,14 @@ private:
     }
 public:
     void defragment() {
-        LockGuard lock(heap_mutex_);
+        IrqGuard lock;
         defragment_internal();
     }
 
     // 释放内存
     void deallocate(void* ptr) {
         if (!ptr) return;
-        LockGuard lock(heap_mutex_); // CP.20: RAII 线程安全保护
+        IrqGuard lock; // CP.20: RAII 线程安全保护
 
         BlockHeader* target = reinterpret_cast<BlockHeader*>(
             reinterpret_cast<uintptr_t>(ptr) - sizeof(BlockHeader)
@@ -147,14 +153,14 @@ public:
 
         target->is_free = true;
         target->requested_size = 0;
-        total_free_memory += target->size;
+        total_free_memory += (target->size - sizeof(BlockHeader));
         // O(1) deallocation: lazy coalescing happens during allocate()
     }
 
     // 获取已分配内存块的原始请求大小
     size_t get_requested_size(void* ptr) {
         if (!ptr) return 0;
-        LockGuard lock(heap_mutex_);
+        IrqGuard lock;
         BlockHeader* target = reinterpret_cast<BlockHeader*>(
             reinterpret_cast<uintptr_t>(ptr) - sizeof(BlockHeader)
         );

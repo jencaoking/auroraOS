@@ -75,7 +75,7 @@ public:
 
     // 1. 供应用层调用的 API：创建并启动定时器
     int start_timer(uint32_t period_ticks, TimerType type, TimerCallback cb, void* arg = nullptr) {
-        Arch::disable_interrupts();
+        IrqGuard guard;
         for (int i = 0; i < MAX_TIMERS; i++) {
             if (!timers_[i].active) {
                 timers_[i].period_ticks = period_ticks;
@@ -85,19 +85,16 @@ public:
                 timers_[i].expire_tick = current_tick_ + period_ticks;
                 timers_[i].active = true;
                 
-                Arch::enable_interrupts();
                 return i; // 返回定时器 ID
             }
         }
-        Arch::enable_interrupts();
         return -1; // 定时器槽位已满
     }
 
     void stop_timer(int id) {
         if (id >= 0 && id < MAX_TIMERS) {
-            Arch::disable_interrupts();
+            IrqGuard guard;
             timers_[id].active = false;
-            Arch::enable_interrupts();
         }
     }
 
@@ -126,26 +123,34 @@ public:
             // 绝大多数时间，这个线程都在这里 0 功耗休眠阻塞
             wakeup_sem_.wait(); 
 
-            Arch::disable_interrupts();
-            uint32_t tick_now = current_tick_;
-            Arch::enable_interrupts();
+            uint32_t tick_now;
+            {
+                IrqGuard guard;
+                tick_now = current_tick_;
+            }
 
             for (int i = 0; i < MAX_TIMERS; i++) {
-                if (timers_[i].active && tick_now >= timers_[i].expire_tick) {
-                    
-                    // a. 真正执行用户的耗时回调（脱离了中断上下文，极其安全！）
-                    if (timers_[i].callback) {
-                        timers_[i].callback(timers_[i].arg);
+                TimerCallback cb = nullptr;
+                void* arg = nullptr;
+                
+                {
+                    IrqGuard guard;
+                    if (timers_[i].active && tick_now >= timers_[i].expire_tick) {
+                        cb = timers_[i].callback;
+                        arg = timers_[i].arg;
+                        
+                        // b. 根据模式决定是自动重启还是销毁
+                        if (timers_[i].type == TimerType::Periodic) {
+                            timers_[i].expire_tick += timers_[i].period_ticks; // 避免时钟漂移
+                        } else {
+                            timers_[i].active = false;
+                        }
                     }
-                    
-                    // b. 根据模式决定是自动重启还是销毁
-                    Arch::disable_interrupts();
-                    if (timers_[i].type == TimerType::Periodic) {
-                        timers_[i].expire_tick = tick_now + timers_[i].period_ticks;
-                    } else {
-                        timers_[i].active = false;
-                    }
-                    Arch::enable_interrupts();
+                }
+                
+                // a. 真正执行用户的耗时回调（脱离了中断上下文，极其安全！）
+                if (cb) {
+                    cb(arg);
                 }
             }
         }

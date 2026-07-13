@@ -34,6 +34,7 @@ public:
     void disable() {
         __asm__ volatile ("dmb\n\t" : : : "memory");
         *reg_ctrl = 0;
+        __asm__ volatile ("dsb\n\t" "isb\n\t" : : : "memory");
     }
 
     // 启用 MPU，并开启硬件默认背景区（保证在没有配到的区域里，特权态依然可以正常操作硬件）
@@ -50,7 +51,14 @@ public:
 
     // 配置单个保护区域
     // region_num: 0~7 | base_addr: 需与 size 对齐 | size_power_of_2: 例如 256字节为 8 (2^8=256)
-    void configure_region(uint8_t region_num, uintptr_t base_addr, uint8_t size_power_of_2, uint32_t ap, bool execute_never = false) {
+    void configure_region(uint8_t region_num, uintptr_t base_addr, uint8_t size_power_of_2, uint32_t ap, bool execute_never = false, bool is_device = false) {
+        // Ensure base_addr is aligned to size
+        uint32_t alignment_mask = (1 << size_power_of_2) - 1;
+        if (base_addr & alignment_mask) {
+            // Not aligned, behavior undefined or error. We'll force align for safety here or assert
+            base_addr &= ~alignment_mask;
+        }
+        
         *reg_rnr = region_num;
         *reg_rbar = base_addr & ~0x1F; // 清空低5位配置位，只留下基地址
 
@@ -58,8 +66,13 @@ public:
         rasr_val |= ((size_power_of_2 - 1) & 0x1F) << 1; // 设定内存区域大小
         rasr_val |= (ap & 0x7) << 24; // 设定访问权限
         
-        // 开启普通 SRAM 的 Cache 和 Buffer 属性 (加速内存读写)
-        rasr_val |= (1 << 17) | (1 << 16); 
+        if (is_device) {
+            // Device memory attributes (B=1, C=0, TEX=0)
+            rasr_val |= (1 << 16); 
+        } else {
+            // Normal memory attributes (Write-Back, Read/Write allocate)
+            rasr_val |= (1 << 17) | (1 << 16); 
+        }
 
         if (execute_never) {
             rasr_val |= (1 << 28); // Bit 28: XN (Execute Never) 严禁执行命令，防止缓冲区溢出攻击！
@@ -70,8 +83,8 @@ public:
 
     // 动态更新用户任务的专属沙盒区域（在进程上下文切换 PendSV 时被迅速调用）
     void update_user_sandbox(uintptr_t stack_base, uint8_t size_power_of_2) {
-        // 使用 Region 2 作为当前运行用户的动态栈沙盒
-        configure_region(2, stack_base, size_power_of_2, AP_ALL_RW, true);
+        // 使用 Region 7 作为当前运行用户的动态栈沙盒以避免与可能的 Region 2 冲突
+        configure_region(7, stack_base, size_power_of_2, AP_ALL_RW, true, false);
     }
 };
 

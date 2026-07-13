@@ -138,14 +138,17 @@ public:
 
         // 2. 息屏深睡期的抬腕唤醒检测联动
         if (current_state_ == PowerState::IDLE || current_state_ == PowerState::SLEEP) {
-            // 从加速计获取 Z 轴实时加速度 (单位: mg)
+            // 通过传感器框架非阻塞读取或在守护任务中读取。为了防止阻塞 on_tick，
+            // 真实情况应该是传感器通过外部中断或 WorkQueue 提交给这里的唤醒逻辑。
+            // 假设这里的 read 是立刻返回缓存值（非阻塞），我们保留它，
+            // 但建议将 I2C 读取彻底移入后台任务。
             int32_t z_mg = 0;
             SensorData acc_data;
             if (SensorManager::instance().get_accel_sensor().read(&acc_data)) {
                 z_mg = acc_data.payload.accel.z;
             }
 
-            // 如果满足 1g 防抖抬腕模式识别，瞬间拉起系统到 Active
+            // 如果满足防抖抬腕模式识别，瞬间拉起系统到 Active
             if (wake_detector_.process_accel_z(z_mg, delta_ticks)) {
                 transition_to(PowerState::ACTIVE);
             }
@@ -172,7 +175,17 @@ public:
         if (current_state_ == PowerState::SLEEP || current_state_ == PowerState::CRITICAL) {
             uint32_t expected_task_ticks = Scheduler::instance().get_expected_idle_ticks();
             uint32_t expected_timer_ticks = TimerManager::instance().get_next_expire_ticks();
+            
             uint32_t expected_idle_ticks = expected_task_ticks < expected_timer_ticks ? expected_task_ticks : expected_timer_ticks;
+            
+            // 加入帧调度器的剩余时间限制
+            uint32_t fps = FrameSchedulerV2::instance().get_fps();
+            if (fps > 0) {
+                uint32_t frame_ticks = FrameSchedulerV2::instance().get_ticks_to_next_frame();
+                if (frame_ticks < expected_idle_ticks) {
+                    expected_idle_ticks = frame_ticks;
+                }
+            }
             
             // 硬件寄存器防溢出保护
             if (expected_idle_ticks > TICKLESS_MAX_SLEEP) {

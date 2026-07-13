@@ -74,6 +74,15 @@ extern "C" {
     extern TaskControlBlock* volatile g_next_tcb_ptr;
 }
 
+struct IrqGuard {
+    uint32_t primask_;
+    IrqGuard() { primask_ = Arch::irq_save(); }
+    ~IrqGuard() { Arch::irq_restore(primask_); }
+    IrqGuard(const IrqGuard&) = delete;
+    IrqGuard& operator=(const IrqGuard&) = delete;
+};
+
+
 class Scheduler {
 public:
     // 单例：遵循 I.3，避免多实例造成调度器状态不一致
@@ -88,9 +97,14 @@ public:
         started_ = false;
         ready_bitmask = 0;
         for (int i = 0; i < 5; i++) ready_head[i] = -1;
+        for (int i = 0; i < MAX_TASKS; i++) {
+            tasks[i].next_ready = -1;
+            tasks[i].prev_ready = -1;
+        }
     }
 
     void push_ready(uint32_t task_index) {
+        IrqGuard guard;
         TaskControlBlock& tcb = tasks[task_index];
         uint8_t prio = static_cast<uint8_t>(tcb.current_priority);
         int8_t head = ready_head[prio];
@@ -113,6 +127,7 @@ public:
     }
 
     void remove_ready(uint32_t task_index) {
+        IrqGuard guard;
         TaskControlBlock& tcb = tasks[task_index];
         uint8_t prio = static_cast<uint8_t>(tcb.current_priority);
         
@@ -136,6 +151,7 @@ public:
     }
 
     void set_task_state(uint32_t id, TaskState new_state) {
+        IrqGuard guard;
         if (id >= task_count) return;
         TaskControlBlock& tcb = tasks[id];
         if (tcb.state == new_state) return;
@@ -150,6 +166,7 @@ public:
     }
 
     void set_task_priority(uint32_t id, TaskPriority new_prio) {
+        IrqGuard guard;
         if (id >= task_count) return;
         TaskControlBlock& tcb = tasks[id];
         if (tcb.current_priority == new_prio) return;
@@ -239,10 +256,13 @@ public:
         dispatch_signals(&tasks[current_task_index]);
 
         // ── 时间片轮转：如果当前任务仍然就绪且处于队首，将其移至队尾
-        if (tasks[current_task_index].state == TaskState::Ready) {
-            uint8_t p = static_cast<uint8_t>(tasks[current_task_index].current_priority);
-            if (ready_head[p] == static_cast<int8_t>(current_task_index)) {
-                ready_head[p] = tasks[current_task_index].next_ready;
+        {
+            IrqGuard guard;
+            if (tasks[current_task_index].state == TaskState::Ready) {
+                uint8_t p = static_cast<uint8_t>(tasks[current_task_index].current_priority);
+                if (ready_head[p] == static_cast<int8_t>(current_task_index)) {
+                    ready_head[p] = tasks[current_task_index].next_ready;
+                }
             }
         }
 
@@ -315,11 +335,6 @@ public:
                 }
             }
         }
-        
-        // 同时还要去查一下软件定时器管理器（TimerManager），看有没有定时器更早到期
-        // uint32_t timer_ticks = TimerManager::instance().get_next_expire_ticks();
-        // if (timer_ticks < min_ticks) min_ticks = timer_ticks;
-
         return min_ticks;
     }
 

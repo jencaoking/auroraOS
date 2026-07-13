@@ -62,7 +62,9 @@ public:
     // 将设备注册到 /dev/ 路径下
     bool register_device(Device* dev) {
         // 构造虚拟路径，如 "/dev/uart0"
-        char path[32] = "/dev/";
+        char* path = (char*)malloc(32);
+        if (!path) return false;
+        path[0] = '/'; path[1] = 'd'; path[2] = 'e'; path[3] = 'v'; path[4] = '/';
         int i = 5, j = 0;
         const char* name = dev->get_name();
         while (name[j] && i < 31) {

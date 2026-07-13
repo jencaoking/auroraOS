@@ -21,7 +21,7 @@ private:
     uint32_t frame_period_ticks_;     // 单帧对应的系统 Tick 数
     uint32_t current_frame_tick_;     // 当前帧内已流逝的 Tick 数
     
-    bool     in_active_render_window_;
+    volatile bool in_active_render_window_;
     uint32_t render_task_id_;         // 绑定的表盘 UI 主任务 TID
 
     inline void disable_interrupts() { Arch::disable_interrupts(); }
@@ -52,6 +52,11 @@ public:
         current_fps_ = fps;
         if (fps > 0) {
             frame_period_ticks_ = 1000 / fps; // 动态重算帧时间窗
+            // Wake up render task if it was suspended
+            TaskControlBlock* render_task = Scheduler::instance().get_task_by_id(render_task_id_);
+            if (render_task && render_task->state == TaskState::Suspended) {
+                Scheduler::instance().set_task_state(render_task_id_, TaskState::Ready);
+            }
         } else {
             // 0fps 状态：彻底关闭 UI 帧率推进机制
             frame_period_ticks_ = 0xFFFFFFFF; 
@@ -61,6 +66,11 @@ public:
     }
 
     uint32_t get_fps() const { return current_fps_; }
+
+    uint32_t get_ticks_to_next_frame() const {
+        if (current_fps_ == 0 || frame_period_ticks_ <= current_frame_tick_) return 0;
+        return frame_period_ticks_ - current_frame_tick_;
+    }
 
     // 接入硬件 SysTick 心跳
     void on_tick(uint32_t delta_ticks) {
