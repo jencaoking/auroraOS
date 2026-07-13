@@ -70,26 +70,31 @@ private:
             }
         }
 
-        // 3. 载入新物理页到该缓存槽位
-        pool_[oldest_idx].block_addr = block_addr;
-        pool_[oldest_idx].page_offset = page_offset;
-        pool_[oldest_idx].is_valid = true;
+        // 3. 将槽位先标记为无效（在解锁 I/O 窗口期间，其他线程对此槽位的
+        //    命中检测将得到 is_valid=false，从而不会读到未填充的陈旧数据）。
+        pool_[oldest_idx].is_valid = false;
         pool_[oldest_idx].is_dirty = false;
-        pool_[oldest_idx].last_access_tick = ++tick_counter_;
 
-        if (!for_write) {
-            // P0 Fix: Unlock before I/O
-            cache_mutex_.unlock();
-            flash_.read_blocks(block_addr, page_offset, pool_[oldest_idx].data, flash_.get_page_size());
-            cache_mutex_.lock();
-        } else {
-            // P0 Fix: NOR Flash 不需要写前强制读背景页（对于本用例的局部更新可通过直接写或擦除，
-            // 但如果擦除粒度是 block 而写粒度是 page，读回旧数据是必须的。
-            // 无论如何，在 IO 时释放锁以避免 UI 掉帧。
-            cache_mutex_.unlock();
-            flash_.read_blocks(block_addr, page_offset, pool_[oldest_idx].data, flash_.get_page_size());
-            cache_mutex_.lock();
+        // 4. 在持锁状态下解锁，使用栈上临时缓冲区执行 flash 读取，
+        //    避免在 I/O 期间 UI 任务因等锁而掉帧。
+        //    page_size 已被 read()/write() 截断至 ≤256，与 tmp_data 对齐。
+        uint8_t tmp_data[256];
+        uint32_t page_size = flash_.get_page_size();
+        if (page_size > 256) page_size = 256;
+
+        cache_mutex_.unlock();
+        flash_.read_blocks(block_addr, page_offset, tmp_data, page_size);
+        cache_mutex_.lock();
+
+        // 5. I/O 完成后，在持锁的原子步骤里将数据与元数据一并写入槽位，
+        //    最后才翻 is_valid 对外可见。
+        for (uint32_t i = 0; i < page_size; i++) {
+            pool_[oldest_idx].data[i] = tmp_data[i];
         }
+        pool_[oldest_idx].block_addr      = block_addr;
+        pool_[oldest_idx].page_offset     = page_offset;
+        pool_[oldest_idx].last_access_tick = ++tick_counter_;
+        pool_[oldest_idx].is_valid        = true; // ← 数据确认有效后才对外可见
 
         return oldest_idx;
     }

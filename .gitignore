@@ -3,10 +3,15 @@
 # Build directories
 build/
 build_tests/
+tests/build/
 tests/build2/
 build_qemu/
 build_miband/
 build_miband8/
+build_host/
+build_target/
+coverage_report/
+coverage.info
 bin/
 out/
 

@@ -55,6 +55,14 @@ public:
         }
         return false;
     }
+
+    // 显式重置检测器状态。
+    // 必须在设备离开 IDLE/SLEEP 进入 ACTIVE/DIM 时调用，防止上一段休眠期
+    // 积累的 steady_ticks_ 残留到下一轮休眠，导致虚假抬腕唤醒。
+    void reset() {
+        steady_ticks_        = 0;
+        is_looking_at_watch_ = false;
+    }
 };
 
 // ========================================================
@@ -113,6 +121,13 @@ public:
     // 强制状态转换 (供触控按键中断、手势引擎或外部通知调用)
     void transition_to(PowerState new_state) {
         if (current_state_ == new_state) return;
+
+        // 离开 IDLE 或 SLEEP 时重置抬腕检测器，防止上一轮息屏期
+        // 积累的 steady_ticks_ 残留到下一轮，导致虚假唤醒触发。
+        if (current_state_ == PowerState::IDLE || current_state_ == PowerState::SLEEP) {
+            wake_detector_.reset();
+        }
+
         current_state_ = new_state;
         state_ticks_ = 0;
         apply_state_hardware(current_state_);

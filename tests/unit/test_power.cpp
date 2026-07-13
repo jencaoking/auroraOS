@@ -161,3 +161,80 @@ TEST_F(ChargingManagerTest, WristWakeDetectorIntegration) {
     // OR it could dim immediately. Let's see what the system does...
     // The current mock just expects normal timeout logic for falling back.
 }
+
+// =============================================================================
+// WristWakeDetector reset regression tests
+//
+// Reproduces the bug where steady_ticks_ accumulated during one IDLE/SLEEP
+// window could carry over into the next, causing a spurious wrist-wake on the
+// very first tick even though the wrist was never held steady for a full second.
+// =============================================================================
+
+TEST_F(ChargingManagerTest, WristWakeDetector_NoSpuriousWakeAfterIdleActiveIdle) {
+    MockBatteryDriver* mock = ChargingManager::instance().get_mock_driver();
+    SensorManager::instance().get_accel_sensor().power_up();
+
+    mock->set_voltage(4000);
+    mock->set_plugged(false);
+
+    // ── Phase 1: Go to IDLE and accumulate 900 ms of steady wrist data
+    //    (below the 1000 ms trigger threshold).
+    PowerManager::instance().transition_to(PowerState::IDLE);
+    for (int i = 0; i < 30; i++) { // 30 × 30 ms = 900 ms
+        SensorManager::instance().get_accel_sensor().set_mock_data(0, 0, 980);
+        PowerManager::instance().on_tick(30);
+    }
+    EXPECT_EQ(PowerManager::instance().get_state(), PowerState::IDLE);
+
+    // ── Phase 2: External event (e.g. button press) forces ACTIVE.
+    //    transition_to() must call wake_detector_.reset() here.
+    PowerManager::instance().transition_to(PowerState::ACTIVE);
+    EXPECT_EQ(PowerManager::instance().get_state(), PowerState::ACTIVE);
+
+    // ── Phase 3: Re-enter IDLE (e.g. timeout).
+    PowerManager::instance().transition_to(PowerState::IDLE);
+
+    // ── Phase 4: Feed a single short tick with wrist-up pose.
+    //    If steady_ticks_ was NOT reset, the leftover 900 ms + 30 ms = 930 ms
+    //    would still be below 1000 ms, so no wake yet.  But if we feed 100 ms
+    //    it would cross 1000 ms and fire — proving residual state carries over.
+    //    After the fix, the detector starts fresh and 100 ms alone is < 1000 ms,
+    //    so the system must stay in IDLE.
+    SensorManager::instance().get_accel_sensor().set_mock_data(0, 0, 980);
+    PowerManager::instance().on_tick(100);
+
+    // Must still be IDLE — 100 ms of stable data is not enough to wake.
+    EXPECT_EQ(PowerManager::instance().get_state(), PowerState::IDLE);
+}
+
+TEST_F(ChargingManagerTest, WristWakeDetector_NoSpuriousWakeAfterSleepActiveSleep) {
+    MockBatteryDriver* mock = ChargingManager::instance().get_mock_driver();
+    SensorManager::instance().get_accel_sensor().power_up();
+
+    mock->set_voltage(4000);
+    mock->set_plugged(false);
+
+    // ── Phase 1: Go to SLEEP and accumulate 900 ms of steady wrist data.
+    PowerManager::instance().transition_to(PowerState::SLEEP);
+    for (int i = 0; i < 30; i++) { // 30 × 30 ms = 900 ms
+        SensorManager::instance().get_accel_sensor().set_mock_data(0, 0, 980);
+        PowerManager::instance().on_tick(30);
+    }
+    EXPECT_EQ(PowerManager::instance().get_state(), PowerState::SLEEP);
+
+    // ── Phase 2: Charge cable plugged in, forces ACTIVE.
+    mock->set_plugged(true);
+    PowerManager::instance().on_tick(1000); // triggers has_just_plugged() path
+    EXPECT_EQ(PowerManager::instance().get_state(), PowerState::ACTIVE);
+
+    // ── Phase 3: Re-enter SLEEP.
+    PowerManager::instance().transition_to(PowerState::SLEEP);
+
+    // ── Phase 4: Feed 100 ms with wrist-up pose.
+    //    Must NOT trigger wake — the detector must have been reset.
+    SensorManager::instance().get_accel_sensor().set_mock_data(0, 0, 980);
+    PowerManager::instance().on_tick(100);
+
+    EXPECT_EQ(PowerManager::instance().get_state(), PowerState::SLEEP);
+}
+

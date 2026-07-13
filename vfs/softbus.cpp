@@ -15,17 +15,21 @@ bool SerialRpcBus::strings_equal(const char* s1, const char* s2) const {
     return (*s1 == '\0' && *s2 == '\0');
 }
 
-bool SerialRpcBus::verify_auth(const char* payload) const {
-    // 简单的认证检查，假定合法的 payload 必须以 AURORA_RPC_KEY 打头
+// 验证凭证前缀并返回数据正文起始指针。
+// 返回 nullptr 表示验证失败；返回非 nullptr 表示验证通过，
+// 指向跳过 "AURORA_RPC_KEY" 及可选 ':' 分隔符后的数据正文。
+// 这样 handler 收到的 payload 不含凭证信息，且凭证不会暴露给各服务。
+const char* SerialRpcBus::verify_auth(const char* payload) const {
     const char* key = "AURORA_RPC_KEY";
+    const char* p   = payload;
     while (*key) {
-        if (*key != *payload) return false;
+        if (*key != *p) return nullptr; // 前缀不匹配，拒绝
         key++;
-        payload++;
+        p++;
     }
-    // 认证通过后，如果格式是 "AURORA_RPC_KEY:data"，那么数据部分在后续。
-    // 为了简单，我们只校验是否包含正确的凭证前缀。
-    return true;
+    // 跳过可选的 ':' 或 ' ' 分隔符，使 handler 直接拿到业务数据
+    if (*p == ':' || *p == ' ') p++;
+    return p;
 }
 
 bool SerialRpcBus::register_service(const char* cmd, RpcCallback handler) {
@@ -56,7 +60,8 @@ void SerialRpcBus::send_request(const char* cmd, const char* payload) {
 }
 
 void SerialRpcBus::dispatch(const char* cmd, const char* payload) {
-    if (!verify_auth(payload)) {
+    const char* data = verify_auth(payload);
+    if (!data) {
         int fd = VfsManager::instance().open("/dev/uart0", 0);
         if (fd >= 0) {
             const char* msg = "[SerialRpcBus] Unauthorized RPC attempt blocked.\n";
@@ -68,8 +73,8 @@ void SerialRpcBus::dispatch(const char* cmd, const char* payload) {
 
     for (int i = 0; i < service_count_; i++) {
         if (strings_equal(services_[i].cmd, cmd)) {
-            // 匹配成功，触发远程调用
-            services_[i].handler(payload);
+            // 传入剥离凭证前缀后的数据正文，handler 无需自行解析前缀
+            services_[i].handler(data);
             return;
         }
     }

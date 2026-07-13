@@ -86,6 +86,7 @@ endif()
 
 if(CONFIG_VFS)
     list(APPEND SOURCES vfs/vfs.cpp)
+    list(APPEND SOURCES vfs/softbus.cpp)   # SerialRpcBus UART RPC 总线
     if(CONFIG_FS_RAMFS)
         list(APPEND SOURCES vfs/ramfs.cpp)
     endif()

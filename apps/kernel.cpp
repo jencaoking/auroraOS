@@ -580,15 +580,16 @@ extern "C" void kernel_main(void) {
     VfsManager::instance().init();
 
 #ifdef CONFIG_FS_RAMFS
-    RamFile* temp_file = new RamFile(1024);
-    RamFile* elf_file = new RamFile(1024);
-    VfsManager::instance().mount("/tmp/log.txt", (VNode*)temp_file);
-    VfsManager::instance().mount("/tmp/app.elf", (VNode*)elf_file);
+    static RamFile temp_file(1024);
+    static RamFile elf_file(1024);
+    VfsManager::instance().mount("/tmp/log.txt", &temp_file);
+    VfsManager::instance().mount("/tmp/app.elf", &elf_file);
 #endif
 
 #ifdef CONFIG_DEVICE_UART
     // 挂载 设备 和 /tmp 目录下的虚拟文件
-    DeviceRegistry::instance().register_device(new UartDevice("uart0"));
+    static UartDevice uart0_dev("uart0");
+    DeviceRegistry::instance().register_device(&uart0_dev);
 #endif
     DeviceRegistry::instance().register_device(&g_oled);
     DeviceRegistry::instance().register_device(&g_touch);
@@ -597,12 +598,18 @@ extern "C" void kernel_main(void) {
     
 #ifdef CONFIG_FS_PROCFS
     // Mount ProcFS nodes
-    VfsManager::instance().mount("/proc/meminfo", new MemInfoNode());
-    VfsManager::instance().mount("/proc/taskinfo", new TaskInfoNode());
-    VfsManager::instance().mount("/proc/latency", new LatencyNode());
-    VfsManager::instance().mount("/proc/power", new PowerNode());
-    VfsManager::instance().mount("/proc/net", new NetNode());
-    VfsManager::instance().mount("/proc/softbus", new SoftbusNode());
+    static MemInfoNode meminfo_node;
+    VfsManager::instance().mount("/proc/meminfo", &meminfo_node);
+    static TaskInfoNode taskinfo_node;
+    VfsManager::instance().mount("/proc/taskinfo", &taskinfo_node);
+    static LatencyNode latency_node;
+    VfsManager::instance().mount("/proc/latency", &latency_node);
+    static PowerNode power_node;
+    VfsManager::instance().mount("/proc/power", &power_node);
+    static NetNode net_node;
+    VfsManager::instance().mount("/proc/net", &net_node);
+    static SoftbusNode softbus_node;
+    VfsManager::instance().mount("/proc/softbus", &softbus_node);
 #endif
     
     // 初始化调度器
@@ -620,8 +627,8 @@ extern "C" void kernel_main(void) {
     constexpr uint32_t STACK_SIZE_TEST = 128;
     constexpr uint32_t STACK_SIZE_DAEMON = 256;
 
-    uint32_t* idle_stack  = new uint32_t[STACK_SIZE_IDLE];
-    uint32_t* shell_stack = new uint32_t[STACK_SIZE_SHELL];
+    static uint32_t idle_stack[STACK_SIZE_IDLE];
+    static uint32_t shell_stack[STACK_SIZE_SHELL];
 
     // 1. 空闲进程：优先级最低，负责 CPU 低功耗兜底
     if (!Scheduler::instance().create_task(idle_task_entry, idle_stack, STACK_SIZE_IDLE * sizeof(uint32_t),
@@ -637,34 +644,40 @@ extern "C" void kernel_main(void) {
     }
 
     // 3. PI Mutex 测试任务
-    Scheduler::instance().create_task(pi_test_low, new uint32_t[STACK_SIZE_TEST], STACK_SIZE_TEST*sizeof(uint32_t), TaskPriority::Low);
-    Scheduler::instance().create_task(pi_test_mid, new uint32_t[STACK_SIZE_TEST], STACK_SIZE_TEST*sizeof(uint32_t), TaskPriority::Normal);
-    Scheduler::instance().create_task(pi_test_high, new uint32_t[STACK_SIZE_TEST], STACK_SIZE_TEST*sizeof(uint32_t), TaskPriority::High);
+    static uint32_t pi_low_stack[STACK_SIZE_TEST];
+    static uint32_t pi_mid_stack[STACK_SIZE_TEST];
+    static uint32_t pi_high_stack[STACK_SIZE_TEST];
+    Scheduler::instance().create_task(pi_test_low, pi_low_stack, STACK_SIZE_TEST*sizeof(uint32_t), TaskPriority::Low);
+    Scheduler::instance().create_task(pi_test_mid, pi_mid_stack, STACK_SIZE_TEST*sizeof(uint32_t), TaskPriority::Normal);
+    Scheduler::instance().create_task(pi_test_high, pi_high_stack, STACK_SIZE_TEST*sizeof(uint32_t), TaskPriority::High);
 
     // 4. Hacker App Task (带有 MPU 沙盒隔离保护的测试线程)
     Scheduler::instance().create_task(hacker_app_task, reinterpret_cast<uint32_t*>(hacker_stack), sizeof(hacker_stack), TaskPriority::Low, 10);
 
     // 5. Task Notify & POSIX Signal Test Tasks
-    TaskControlBlock* rx_tcb = Scheduler::instance().create_task(receiver_task, new uint32_t[STACK_SIZE_TEST], STACK_SIZE_TEST*sizeof(uint32_t), TaskPriority::Normal);
+    static uint32_t rx_stack[STACK_SIZE_TEST];
+    static uint32_t tx_stack[STACK_SIZE_TEST];
+    TaskControlBlock* rx_tcb = Scheduler::instance().create_task(receiver_task, rx_stack, STACK_SIZE_TEST*sizeof(uint32_t), TaskPriority::Normal);
     if (rx_tcb) g_receiver_task_id = rx_tcb->id;
-    Scheduler::instance().create_task(sender_task, new uint32_t[STACK_SIZE_TEST], STACK_SIZE_TEST*sizeof(uint32_t), TaskPriority::Normal);
+    Scheduler::instance().create_task(sender_task, tx_stack, STACK_SIZE_TEST*sizeof(uint32_t), TaskPriority::Normal);
 
     // 6. 蓝河 Frame-Aware Scheduler 任务注册
-    uint32_t* ui_stack = new uint32_t[STACK_SIZE_TEST];
+    static uint32_t ui_stack[STACK_SIZE_TEST];
     uint32_t ui_tid = FrameSchedulerV2::instance().create_frame_task(ui_render_task, ui_stack, STACK_SIZE_TEST * sizeof(uint32_t), TaskPriority::Realtime);
 
-    uint32_t* sensor_stack = new uint32_t[STACK_SIZE_TEST];
+    static uint32_t sensor_stack[STACK_SIZE_TEST];
     FrameSchedulerV2::instance().create_frame_task(sensor_log_task, sensor_stack, STACK_SIZE_TEST * sizeof(uint32_t), TaskPriority::Normal);
 
     // 7. 光子存储写聚合测试任务
-    uint32_t* storage_stack = new uint32_t[STACK_SIZE_SHELL];
+    static uint32_t storage_stack[STACK_SIZE_SHELL];
     Scheduler::instance().create_task(storage_test_task, storage_stack, STACK_SIZE_SHELL * sizeof(uint32_t), TaskPriority::Normal);
 
     // 8. Phase 3: AI 意图引擎守护进程与 Lua 小程序
-    Scheduler::instance().create_task(system_daemon_task, new uint32_t[STACK_SIZE_DAEMON], STACK_SIZE_DAEMON * sizeof(uint32_t), TaskPriority::High);
+    static uint32_t daemon_stack[STACK_SIZE_DAEMON];
+    Scheduler::instance().create_task(system_daemon_task, daemon_stack, STACK_SIZE_DAEMON * sizeof(uint32_t), TaskPriority::High);
     
     // Lua 虚拟机需要较大的栈
-    uint32_t* lua_stack = new uint32_t[2048];
+    static uint32_t lua_stack[2048];
     uint32_t tid_lua = FrameSchedulerV2::instance().create_frame_task(
         lua_app_task, lua_stack, 2048 * sizeof(uint32_t), TaskPriority::Realtime
     );
@@ -675,17 +688,20 @@ extern "C" void kernel_main(void) {
 
 #ifdef CONFIG_TIMER_MANAGER
     // 4. 定时器守护进程与测试 App
-    Scheduler::instance().create_task(timer_daemon_entry, new uint32_t[STACK_SIZE_DAEMON], STACK_SIZE_DAEMON*sizeof(uint32_t), TaskPriority::Realtime);
-    Scheduler::instance().create_task(posix_app_task, new uint32_t[STACK_SIZE_DAEMON], STACK_SIZE_DAEMON*sizeof(uint32_t), TaskPriority::Low);
+    static uint32_t timer_daemon_stack[STACK_SIZE_DAEMON];
+    static uint32_t posix_app_stack[STACK_SIZE_DAEMON];
+    Scheduler::instance().create_task(timer_daemon_entry, timer_daemon_stack, STACK_SIZE_DAEMON*sizeof(uint32_t), TaskPriority::Realtime);
+    Scheduler::instance().create_task(posix_app_task, posix_app_stack, STACK_SIZE_DAEMON*sizeof(uint32_t), TaskPriority::Low);
 #endif
 
 #ifdef CONFIG_WORK_QUEUE
     // 5. 工作队列守护进程 (使用 High 优先级)
-    Scheduler::instance().create_task(workqueue_daemon_entry, new uint32_t[STACK_SIZE_DAEMON], STACK_SIZE_DAEMON*sizeof(uint32_t), TaskPriority::High);
+    static uint32_t workq_daemon_stack[STACK_SIZE_DAEMON];
+    Scheduler::instance().create_task(workqueue_daemon_entry, workq_daemon_stack, STACK_SIZE_DAEMON*sizeof(uint32_t), TaskPriority::High);
 #endif
 
     // 【新增】创建独立的网络 DHCP 客户端线程
-    uint32_t* net_stack = new uint32_t[1024]; // lwIP 比较吃栈，给大一点 (4KB)
+    static uint32_t net_stack[1024]; // lwIP 比较吃栈，给大一点 (4KB)
     sched.create_task(network_task_entry, net_stack, 1024 * sizeof(uint32_t), TaskPriority::Realtime);
 
     // 启动调度器：正确引导第一个任务（通过 PSP/bx 跳入，不破坏栈帧）

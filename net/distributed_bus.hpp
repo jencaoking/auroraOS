@@ -17,11 +17,22 @@ private:
     static constexpr uint16_t SOFTBUS_PORT = 8899; // 软总线专属发现端口
 
     // ========================================================
-    // Placeholder for Challenge-Response + HMAC-SHA256
+    // HMAC-SHA256 验证（安全封闭状态）
+    //
+    // 当前状态：注册路径已安全关闭。
+    // 原实现只是将 hash 与写死字符串 "hmac_sha256_result" 做 strcmp，
+    // challenge（device_id）完全未参与计算，任何设备重放该固定 JSON
+    // 即可绕过验证——这是一个高危安全漏洞，不是占位符。
+    //
+    // 启用条件：接入真实 HMAC-SHA256 库（如 mbedTLS hmac_sha256()），
+    // 用 challenge 和预共享密钥计算 HMAC，再与 hash 比对，
+    // 然后删除此注释并移除 (void) 抑制。
     // ========================================================
     bool verify_hmac_sha256(const char* challenge, const char* hash) {
-        // Dummy verification. Real impl would compute HMAC-SHA256
-        return strcmp(hash, "hmac_sha256_result") == 0;
+        (void)challenge; // 真实实现中作为 HMAC 消息输入
+        (void)hash;      // 真实实现中与 HMAC 计算结果比对
+        // 注册路径已封闭：返回 false 直到真实 HMAC-SHA256 实现就绪。
+        return false;
     }
 
     bool validate_cap(const char* cap) {
@@ -89,8 +100,11 @@ public:
         broadcast_addr.sin_port = lwip_htons(SOFTBUS_PORT);
         broadcast_addr.sin_addr.s_addr = lwip_htonl(INADDR_BROADCAST); // 255.255.255.255
 
-        // 构建超级终端设备凭证 (JSON/RPC 风格)，使用全字母 device_id 并携带 hmac_sha256 结果
-        const char* beacon_payload = "{\"event\":\"beacon\",\"device_id\":\"aurorawatch\",\"cap\":[\"display\",\"touch\"],\"auth\":\"hmac_sha256_result\"}";
+        // 构建超级终端设备凭证 (JSON/RPC 风格)
+        // auth 字段使用 "DISABLED" 标记，防止本机信标被其他运行旧版本的
+        // 节点误认为合法（旧版本固定接受 "hmac_sha256_result"）。
+        // 真实 HMAC 实现就绪后，此字段应替换为动态计算的 HMAC-SHA256 值。
+        const char* beacon_payload = "{\"event\":\"beacon\",\"device_id\":\"aurorawatch\",\"cap\":[\"display\",\"touch\"],\"auth\":\"DISABLED\"}";
         
         lwip_sendto(udp_socket_, beacon_payload, strlen(beacon_payload), 0,
                     (struct sockaddr*)&broadcast_addr, sizeof(broadcast_addr));

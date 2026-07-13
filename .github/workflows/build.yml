@@ -1,9 +1,14 @@
 name: Build and Measure Metrics
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ main, miband ]
+  pull_request:
+    branches: [ main, miband ]
+  workflow_dispatch:
 
 jobs:
-  build:
+  build_and_test:
     runs-on: ubuntu-22.04
     
     steps:
@@ -12,24 +17,69 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y gcc-arm-none-eabi cmake qemu-system-arm python3 make python3-pip
-        pip3 install kconfiglib
+        sudo apt-get install -y gcc-arm-none-eabi cmake qemu-system-arm python3 make python3-pip clang-tidy cppcheck lcov gcc g++
+        pip3 install kconfiglib pexpect
         
-    - name: Configure CMake
-      run: cmake -DBOARD=lm3s6965-qb .
+    - name: Static Analysis
+      run: |
+        clang-tidy --checks='-*,cppcoreguidelines-*,readability-*,bugprone-*' kernel/*.cpp || true
+        cppcheck --enable=all --inconclusive --std=c++11 kernel/*.cpp || true
+        
+    - name: Configure CMake (Host Test Build)
+      run: |
+        mkdir -p build_host && cd build_host
+        cmake -DAURORA_HOST_TEST=ON -DENABLE_COVERAGE=ON ../tests
+        
+    - name: Build and Run Host Tests (Coverage)
+      run: |
+        cd build_host
+        make -j8
+        ./aurora_tests
+        lcov --capture --directory . --output-file coverage.info
+        genhtml coverage.info --output-directory coverage_report
+        
+    - name: Configure CMake (Target Build)
+      run: |
+        mkdir -p build_target && cd build_target
+        cmake -DBOARD=lm3s6965-qb ..
       
-    - name: Build
-      run: make -j8
+    - name: Build Target
+      run: |
+        cd build_target
+        make -j8
       
     - name: Run QEMU and Collect Metrics
       run: |
-        timeout 30s qemu-system-arm -M lm3s6965evb -cpu cortex-m4 -nographic -icount shift=3,align=on -rtc clock=vm -kernel auroraOS.elf -semihosting | tee metrics.log || true
+        cd build_target
+        timeout 30s qemu-system-arm -M lm3s6965evb -cpu cortex-m4 -nographic -icount shift=3,align=on -rtc clock=vm -kernel auroraOS.elf -semihosting | tee ../metrics.log || true
         
     - name: Parse Metrics
       run: python3 scripts/parse_metrics.py metrics.log --md report.md
       
-    - name: Upload Report
+    - name: Run HIL Script
+      run: |
+        cd build_target
+        python3 ../scripts/hil_runner.py
+        
+    - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: metrics-report
-        path: report.md
+        name: build-artifacts
+        path: |
+          report.md
+          build_target/auroraOS.elf
+          build_host/coverage_report/
+
+  release:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-22.04
+    needs: build_and_test
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: build_target/auroraOS.elf
+          body: "Manual build release of auroraOS"

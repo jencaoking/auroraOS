@@ -51,7 +51,9 @@ private:
 
     void dispatch(const char* cmd, const char* payload);
     bool strings_equal(const char* s1, const char* s2) const;
-    bool verify_auth(const char* payload) const;
+    // 返回 nullptr 表示验证失败；返回非 nullptr 表示验证通过，
+    // 指针指向剥离凭证前缀（及可选分隔符）后的数据正文起始位置。
+    const char* verify_auth(const char* payload) const;
 };
 
 #endif

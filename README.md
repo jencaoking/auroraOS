@@ -609,6 +609,9 @@ python scripts/genconfig.py
 - [x] 内核内存堆双重释放拦截（魔数）与 realloc 越界读取修复
 - [x] irq_save/restore 扩展
 - [x] 消息队列优先级 (紧急插队 push_urgent)
+- [x] 测试框架升级 (集成测试, OOM 压力测试, HIL QEMU 自动化)
+- [x] CI/CD 强化 (clang-tidy, cppcheck, gcov, 自动 release)
+- [x] 内存确定性固化 (CONFIG_NO_DYNAMIC_ALLOCATION 无动态分配模式)
 
 ### Phase 2: 手表原型（6-12 个月）— 🎉 100% 完成
 

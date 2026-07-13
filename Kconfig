@@ -40,6 +40,12 @@ config TICK_RATE_HZ
     help
       The frequency of the system tick interrupt in Hz.
 
+config NO_DYNAMIC_ALLOCATION
+    bool "Disable Dynamic Memory Allocation"
+    default y
+    help
+      If enabled, all new/malloc calls will trigger a panic. Enforces static memory allocation.
+
 endmenu
 
 menu "File Systems"

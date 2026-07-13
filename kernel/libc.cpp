@@ -107,8 +107,18 @@ void sys_print_c(const char* str) {
 }
 
 #include "memory.hpp"
+#ifndef AURORA_HOST_TEST
+#include "autoconf.h"
+#endif
+#include "arch_api.hpp"
+
 void* malloc(size_t size) {
+#ifdef CONFIG_NO_DYNAMIC_ALLOCATION
+    Arch::disable_interrupts();
+    while (true) {} // PANIC: Dynamic allocation is disabled
+#else
     return KernelHeap::instance().allocate(size);
+#endif
 }
 
 void free(void* ptr) {
