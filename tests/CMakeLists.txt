@@ -92,6 +92,7 @@ set(TEST_SOURCES
     unit/test_memory_pool.cpp
     unit/test_ui_engine.cpp
     unit/test_softbus_security.cpp
+    unit/test_firmware_header.cpp
     integration/test_system_boot.cpp
     stress/test_oom_stress.cpp
 )

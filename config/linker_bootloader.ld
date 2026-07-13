@@ -1,6 +1,6 @@
 MEMORY
 {
-    FLASH (rx)  : ORIGIN = 0x00008100, LENGTH = 96K - 256
+    FLASH (rx)  : ORIGIN = 0x00000000, LENGTH = 32K
     RAM   (rwx) : ORIGIN = 0x20000000, LENGTH = 64K
 }
 
@@ -58,8 +58,6 @@ SECTIONS
     __end__ = .;
     _heap_start = .; 
     
-    /* 栈顶依然在 RAM 的末尾 */
     _estack = ORIGIN(RAM) + LENGTH(RAM);
-    /* 【新增】堆的终点等于栈顶减去预留的栈空间大小 */
     _heap_end = _estack - _stack_size;
 }

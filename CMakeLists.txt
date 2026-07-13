@@ -123,6 +123,23 @@ list(APPEND SOURCES ${LUA_SOURCES})
 
 add_executable(auroraOS.elf ${SOURCES})
 
+# Bootloader target
+if(BOARD STREQUAL "lm3s6965-qb")
+    add_executable(bootloader.elf bootloader/boot_main.cpp boot/boot.S)
+    target_include_directories(bootloader.elf PRIVATE 
+        ${CMAKE_SOURCE_DIR}
+        ${CMAKE_SOURCE_DIR}/config
+    )
+    target_link_options(bootloader.elf PRIVATE
+        -T ${CMAKE_SOURCE_DIR}/config/linker_bootloader.ld
+        -nostartfiles
+        -Wl,--gc-sections
+        --specs=nano.specs
+        --specs=nosys.specs
+    )
+    add_dependencies(auroraOS.elf bootloader.elf)
+endif()
+
 # =====================================================================
 # 4. 头文件包含路径
 # =====================================================================
@@ -190,7 +207,7 @@ endif()
 target_compile_definitions(auroraOS.elf PRIVATE LFS_NO_DEBUG LFS_NO_WARN LFS_NO_ERROR LFS_NO_ASSERT)
 
 # =====================================================================
-# 6. 生成固件产物与内存占用报告 (仅针对 miband8)
+# 6. 生成固件产物与内存占用报告
 # =====================================================================
 if(BOARD STREQUAL "miband8")
     add_custom_command(TARGET auroraOS.elf POST_BUILD
@@ -198,5 +215,20 @@ if(BOARD STREQUAL "miband8")
         COMMAND arm-none-eabi-objcopy -O ihex auroraOS.elf auroraOS.hex
         COMMAND arm-none-eabi-size auroraOS.elf
         COMMENT "Building raw binary and hex files, and printing size..."
+    )
+elseif(BOARD STREQUAL "lm3s6965-qb")
+    add_custom_command(TARGET auroraOS.elf POST_BUILD
+        COMMAND arm-none-eabi-objcopy -O binary auroraOS.elf auroraOS.bin
+        COMMAND arm-none-eabi-size auroraOS.elf
+        COMMENT "Building App binary..."
+    )
+    add_custom_command(TARGET bootloader.elf POST_BUILD
+        COMMAND arm-none-eabi-objcopy -O binary bootloader.elf bootloader.bin
+        COMMAND arm-none-eabi-size bootloader.elf
+        COMMENT "Building Bootloader binary..."
+    )
+    add_custom_command(TARGET auroraOS.elf POST_BUILD
+        COMMAND python ${CMAKE_SOURCE_DIR}/scripts/build_image.py bootloader.bin auroraOS.bin flash.bin
+        COMMENT "Packing Secure Boot image: flash.bin"
     )
 endif()
