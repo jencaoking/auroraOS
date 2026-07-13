@@ -13,6 +13,7 @@ extern "C" {
     #include "../3rdparty/lua/lualib.h"
     #include "../3rdparty/lua/lauxlib.h"
 }
+#include "lua_ui_binding.hpp"
 
 // 声明外部全局的图形缓冲引擎 (用于供 Lua 脚本调用画图)
 extern FrameBuffer<128, 128> g_fb;
@@ -134,6 +135,8 @@ public:
         lua_setfield(L_, -2, "print");
 
         lua_setglobal(L_, "aurora"); // 注册全局变量 aurora
+
+        luaopen_aurora_ui(L_); // 注册额外的 UI 控件
 
         return true;
     }

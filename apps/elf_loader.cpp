@@ -4,6 +4,7 @@
 #include "memory.hpp"
 #include "task.hpp"
 #include "syscall.hpp"
+#include "../kernel/symbol_export.hpp"
 
 // We use sys_print since ElfLoader runs in the context of the user task that called it (shell_task).
 // The original prompt used safe_print, but we have migrated to sys_print for isolation.
@@ -134,6 +135,120 @@ bool ElfLoader::load_and_exec(const char* filepath) {
         VfsManager::instance().close(fd);
         return false;
     }
+
+    // --- 第三遍遍历：解析 Section Headers 进行重定位 ---
+    if (ehdr.e_shnum > 0) {
+        sys_print("[ElfLoader] Parsing Section Headers for Relocation...\r\n");
+        Elf32_Shdr* shdrs = new Elf32_Shdr[ehdr.e_shnum];
+        VfsManager::instance().lseek(fd, ehdr.e_shoff, 0);
+        VfsManager::instance().read(fd, reinterpret_cast<char*>(shdrs), ehdr.e_shnum * sizeof(Elf32_Shdr));
+
+        Elf32_Sym* symtab = nullptr;
+        uint32_t sym_count = 0;
+        char* strtab = nullptr;
+
+        for (int i = 0; i < ehdr.e_shnum; i++) {
+            if (shdrs[i].sh_type == SHT_SYMTAB) {
+                sym_count = shdrs[i].sh_size / sizeof(Elf32_Sym);
+                symtab = new Elf32_Sym[sym_count];
+                VfsManager::instance().lseek(fd, shdrs[i].sh_offset, 0);
+                VfsManager::instance().read(fd, reinterpret_cast<char*>(symtab), shdrs[i].sh_size);
+                
+                uint32_t strtab_idx = shdrs[i].sh_link;
+                if (strtab_idx < ehdr.e_shnum) {
+                    strtab = new char[shdrs[strtab_idx].sh_size];
+                    VfsManager::instance().lseek(fd, shdrs[strtab_idx].sh_offset, 0);
+                    VfsManager::instance().read(fd, strtab, shdrs[strtab_idx].sh_size);
+                }
+            }
+        }
+
+        for (int i = 0; i < ehdr.e_shnum; i++) {
+            if (shdrs[i].sh_type == SHT_REL && symtab && strtab) {
+                uint32_t rel_count = shdrs[i].sh_size / sizeof(Elf32_Rel);
+                Elf32_Rel* rels = new Elf32_Rel[rel_count];
+                VfsManager::instance().lseek(fd, shdrs[i].sh_offset, 0);
+                VfsManager::instance().read(fd, reinterpret_cast<char*>(rels), shdrs[i].sh_size);
+
+                for (uint32_t r = 0; r < rel_count; r++) {
+                    uint32_t sym_idx = ELF32_R_SYM(rels[r].r_info);
+                    uint8_t  type    = ELF32_R_TYPE(rels[r].r_info);
+
+                    if (sym_idx >= sym_count) continue;
+                    
+                    Elf32_Sym& sym = symtab[sym_idx];
+                    const char* sym_name = strtab + sym.st_name;
+                    
+                    uintptr_t S = 0;
+                    if (sym.st_shndx == 0) { // UNDEF
+                        for (int k = 0; k < kernel_symtab_size; k++) {
+                            bool match = true;
+                            const char* s1 = sym_name;
+                            const char* s2 = kernel_symtab[k].name;
+                            while (*s1 && *s2) {
+                                if (*s1 != *s2) { match = false; break; }
+                                s1++; s2++;
+                            }
+                            if (match && *s1 == '\0' && *s2 == '\0') {
+                                S = kernel_symtab[k].addr;
+                                break;
+                            }
+                        }
+                        if (S == 0) {
+                            sys_print("[ElfLoader] Error: Unresolved symbol: ");
+                            sys_print(sym_name);
+                            sys_print("\r\n");
+                        }
+                    } else {
+                        S = reinterpret_cast<uintptr_t>(segment_memory) + (sym.st_value - min_vaddr);
+                    }
+
+                    uint32_t P_vaddr = rels[r].r_offset;
+                    uint32_t P_mem_offset = P_vaddr - min_vaddr;
+                    if (P_mem_offset >= total_memsz) continue; 
+
+                    uint32_t* P_ptr = reinterpret_cast<uint32_t*>(segment_memory + P_mem_offset);
+
+                    if (type == R_ARM_ABS32) {
+                        uint32_t A = *P_ptr;
+                        *P_ptr = S + A;
+                    } else if (type == R_ARM_THM_CALL) {
+                        uint16_t* instr = reinterpret_cast<uint16_t*>(P_ptr);
+                        uint16_t hw1 = instr[0];
+                        uint16_t hw2 = instr[1];
+
+                        uint32_t S_bit = (hw1 >> 10) & 1;
+                        uint32_t J1 = (hw2 >> 13) & 1;
+                        uint32_t J2 = (hw2 >> 11) & 1;
+                        uint32_t I1 = ~(J1 ^ S_bit) & 1;
+                        uint32_t I2 = ~(J2 ^ S_bit) & 1;
+
+                        int32_t A = (S_bit << 24) | (I1 << 23) | (I2 << 22) |
+                                    ((hw1 & 0x3FF) << 12) | ((hw2 & 0x7FF) << 1);
+                        if (A & 0x01000000) { A |= 0xFE000000; } 
+
+                        uintptr_t P = reinterpret_cast<uintptr_t>(segment_memory) + P_mem_offset;
+                        int32_t result = S + A - P;
+
+                        uint32_t new_S = (result >> 24) & 1;
+                        uint32_t new_I1 = (result >> 23) & 1;
+                        uint32_t new_I2 = (result >> 22) & 1;
+                        uint32_t new_J1 = ~(new_I1 ^ new_S) & 1;
+                        uint32_t new_J2 = ~(new_I2 ^ new_S) & 1;
+
+                        instr[0] = (hw1 & 0xF800) | (new_S << 10) | ((result >> 12) & 0x3FF);
+                        instr[1] = (hw2 & 0xD000) | (new_J1 << 13) | (new_J2 << 11) | ((result >> 1) & 0x7FF);
+                    }
+                }
+                delete[] rels;
+            }
+        }
+
+        if (strtab) delete[] strtab;
+        if (symtab) delete[] symtab;
+        delete[] shdrs;
+    }
+
     
     // 【硬核必杀技】Cortex-M 架构必须运行在 Thumb 状态，地址最低位一定要置 1！
     uintptr_t thumb_entry = raw_entry | 0x01;

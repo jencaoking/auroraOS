@@ -68,6 +68,7 @@ list(REMOVE_ITEM LUA_SOURCES
 
 set(AURORA_SOURCES_UNDER_TEST
     "${AURORA_ROOT}/vfs/vfs.cpp"
+    "${AURORA_ROOT}/apps/lua_ui_binding.cpp"
     ${LUA_SOURCES}
 )
 
@@ -93,6 +94,8 @@ set(TEST_SOURCES
     unit/test_ui_engine.cpp
     unit/test_softbus_security.cpp
     unit/test_firmware_header.cpp
+    unit/test_lua_ui.cpp
+    unit/test_elf_loader.cpp
     integration/test_system_boot.cpp
     stress/test_oom_stress.cpp
 )

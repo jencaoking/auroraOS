@@ -66,6 +66,8 @@ set(SOURCES
     kernel/memory.cpp
     kernel/libc.cpp
     kernel/posix.cpp
+    kernel/symbol_export.cpp
+    kernel/ota.cpp
     metrics/metrics.cpp
 )
 
@@ -73,6 +75,7 @@ if(BOARD STREQUAL "lm3s6965-qb")
     list(APPEND SOURCES
         apps/shell.cpp
         apps/elf_loader.cpp
+        apps/lua_ui_binding.cpp
         apps/kernel.cpp
         apps/net_app.cpp
     )
