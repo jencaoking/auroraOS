@@ -99,6 +99,7 @@ set(TEST_SOURCES
     unit/test_lua_ui.cpp
     unit/test_elf_loader.cpp
     unit/test_ota_unpack.cpp
+    unit/test_health_algo.cpp
     integration/test_system_boot.cpp
     stress/test_oom_stress.cpp
 )
