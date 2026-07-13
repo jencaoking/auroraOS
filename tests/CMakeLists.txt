@@ -100,6 +100,7 @@ set(TEST_SOURCES
     unit/test_elf_loader.cpp
     unit/test_ota_unpack.cpp
     unit/test_health_algo.cpp
+    unit/test_notification_center.cpp
     integration/test_system_boot.cpp
     stress/test_oom_stress.cpp
 )

@@ -5,7 +5,8 @@
 #include <string.h>
 #include "../../kernel/task.hpp"
 #include "../../kernel/msg_queue.hpp"
-#include "posix.hpp" // For open/write/close logging
+#include "posix.hpp"
+#include "../../apps/notification_center.hpp"
 
 // ========================================================
 // 蓝牙连接状态机
@@ -130,13 +131,12 @@ public:
                     // 断开后立刻重启广播
                     // HalBle::start_advertising(...);
                     break;
-                case 0x03: { // EVENT_DATA_RECEIVED (例如收到手机传来的 Lua 小程序数据包)
+                case 0x03: { // EVENT_DATA_RECEIVED (Lua 小程序数据包)
                     // ========================================================
                     // 安全加固: 对接收到的 Lua 代码数据进行签名验签，防止执行恶意代码
                     // ========================================================
                     bool signature_valid = false;
                     // TODO: 调用实际的 Crypto 库对 payload 进行验签 (如 ECDSA-SHA256)
-                    // 只有持有正确私钥的设备发来的代码才被执行
                     // signature_valid = Crypto::verify_ecdsa(event.payload, ...);
                     
                     if (signature_valid) {
@@ -149,6 +149,16 @@ public:
                             close(fd);
                         }
                     }
+                    break;
+                }
+                case 0x04: { // EVENT_NOTIFICATION_RECEIVED (手机通知推送, TLV 格式)
+                    // 获取系统时钟 (Arch::get_tick 为全局符号，在测试中可 mock)
+                    const uint32_t tick = static_cast<uint32_t>(Arch::get_cycle());
+                    const aurora::Notification n = aurora::BleNotificationParser::parse(
+                        event.payload,
+                        static_cast<uint8_t>(sizeof(event.payload)),
+                        tick);
+                    aurora::NotificationCenter::instance().post(n);
                     break;
                 }
             }
