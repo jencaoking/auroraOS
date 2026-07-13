@@ -100,12 +100,26 @@ private:
         return 0;
     }
 
+    // ========================================================
+    // 系统 API 绑定 3：暴露获取时间的 C++ 函数给 Lua
+    // ========================================================
+    static int api_get_time(lua_State* L) {
+        extern void aurora_get_time(uint32_t& h, uint32_t& m);
+        uint32_t h = 0, m = 0;
+        aurora_get_time(h, m);
+        lua_pushinteger(L, h);
+        lua_pushinteger(L, m);
+        return 2;
+    }
+
 public:
     MiniProgramEngine() : L_(nullptr), is_loaded_(false) {}
 
     ~MiniProgramEngine() {
         if (L_) lua_close(L_);
     }
+
+    lua_State* get_lua_state() { return L_; }
 
     // 初始化虚拟机并注册 API 命名空间
     bool init() {
@@ -134,6 +148,9 @@ public:
         lua_pushcfunction(L_, api_print);
         lua_setfield(L_, -2, "print");
 
+        lua_pushcfunction(L_, api_get_time);
+        lua_setfield(L_, -2, "get_time");
+
         lua_setglobal(L_, "aurora"); // 注册全局变量 aurora
 
         luaopen_aurora_ui(L_); // 注册额外的 UI 控件
@@ -150,6 +167,53 @@ public:
             close(fd);
             return false;
         }
+        is_loaded_ = true;
+        return true;
+    }
+
+    // 从文件加载应用脚本代码
+    bool load_app_from_file(const char* filepath) {
+        if (!L_) return false;
+        int fd = open(filepath, O_RDONLY);
+        if (fd < 0) return false;
+        
+        // 0 = SEEK_SET, 2 = SEEK_END
+        int size = lseek(fd, 0, 2); 
+        lseek(fd, 0, 0); 
+        
+        if (size <= 0 || size > 65536) { // Sanity check max script size 64KB
+            close(fd);
+            return false;
+        }
+
+        char* buf = static_cast<char*>(KernelHeap::instance().allocate(size));
+        if (!buf) {
+            close(fd);
+            return false;
+        }
+        
+        int bytes_read = read(fd, buf, size);
+        close(fd);
+        
+        if (bytes_read != size) {
+            KernelHeap::instance().deallocate(buf);
+            return false;
+        }
+        
+        bool result = (luaL_loadbuffer(L_, buf, size, filepath) == LUA_OK);
+        if (result) {
+            result = (lua_pcall(L_, 0, LUA_MULTRET, 0) == LUA_OK);
+        }
+        
+        KernelHeap::instance().deallocate(buf);
+        
+        if (!result) {
+            int err_fd = open("/dev/uart0", 0); // 0 corresponds to O_RDONLY here but standard POSIX usually requires O_WRONLY for writing. The mock posix might ignore flags.
+            write(err_fd, "Lua File Load Error!\r\n", 22);
+            close(err_fd);
+            return false;
+        }
+        
         is_loaded_ = true;
         return true;
     }

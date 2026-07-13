@@ -232,10 +232,10 @@ public:
 
         // --- 驱动健康算法管线 (无中断保护，纯计算) ---
         if (hr_ready) {
-            health_engine_.on_ppg_sample(hr_data.payload.bpm);
+            (void)health_engine_.on_ppg_sample(hr_data.payload.bpm);
         }
         if (accel_ready) {
-            health_engine_.on_accel_sample(
+            (void)health_engine_.on_accel_sample(
                 accel_data.payload.accel.x,
                 accel_data.payload.accel.y,
                 accel_data.payload.accel.z,

@@ -89,3 +89,8 @@ void WatchApp::on_background_tick(uint32_t delta_ticks) {
         }
     }
 }
+
+// 供全局或 Lua 脚本获取当前模拟时间
+void aurora_get_time(uint32_t& h, uint32_t& m) {
+    WatchApp::instance().get_time(h, m);
+}

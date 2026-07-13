@@ -20,6 +20,11 @@
 FrameBuffer<128, 128> g_fb;
 HeartRateSensor g_health_sensor;
 
+void aurora_get_time(uint32_t& h, uint32_t& m) {
+    h = 10;
+    m = 9;
+}
+
 class LuaVmTest : public ::testing::Test {
 protected:
     static constexpr std::size_t kHeapSize = 128 * 1024; // 128 KB heap for Lua tests
