@@ -34,7 +34,7 @@ public:
     // ========================================================
     // 核心接口：UI 系统调用 read() 获取最新触控数据包
     // ========================================================
-    int read(char* buf, int len, int offset) override {
+    int read(char* buf, int len, int offset, void* priv) override {
         if (len < static_cast<int>(sizeof(TouchPoint))) return 0;
         
         TouchPoint* point = reinterpret_cast<TouchPoint*>(buf);

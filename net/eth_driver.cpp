@@ -3,6 +3,7 @@
 #include "syscall.hpp"
 #include "autoconf.h"
 #include "config/net_config.h"
+#include <string.h>
 
 extern Mutex uart_mutex;
 
@@ -50,8 +51,8 @@ bool StellarisEth::init() {
     *mac_ia1_ = (mac_address_[5] << 8) | mac_address_[4];
 
     // 3. 配置接收控制寄存器 (RCTL):
-    // RXEN (开启接收), AMUL (接收多播), PRMS (混杂模式，捕获局域网所有包)
-    *mac_rctl_ = MAC_RCTL_RXEN | MAC_RCTL_AMUL | MAC_RCTL_PRMS;
+    // RXEN (开启接收), AMUL (接收多播)
+    *mac_rctl_ = MAC_RCTL_RXEN | MAC_RCTL_AMUL;
 
     // 4. 配置发送控制寄存器 (TCTL):
     // TXEN (开启发包), PADEN (自动补齐到60字节), CRC (自动追加硬件 CRC 校验和)
@@ -64,6 +65,7 @@ bool StellarisEth::init() {
 
 // 从网卡硬件 FIFO 读取以太网帧
 int StellarisEth::receive_frame(uint8_t* buffer, int max_len) {
+    LockGuard rx_lock(rx_mutex_);
     // 检查缓冲区合法性
     if (max_len <= 0) return 0;
 
@@ -86,19 +88,16 @@ int StellarisEth::receive_frame(uint8_t* buffer, int max_len) {
     }
 
     // 按 4 字节 (Word) 从 FIFO 读取并填入缓冲区
-    uint32_t* dest_words = reinterpret_cast<uint32_t*>(buffer);
     int words_to_read = frame_len / 4;
     for (int i = 0; i < words_to_read; i++) {
-        dest_words[i] = *mac_data_;
+        uint32_t word = *mac_data_;
+        memcpy(buffer + i * 4, &word, 4);
     }
     
     int remaining_bytes = frame_len % 4;
     if (remaining_bytes > 0) {
         uint32_t last_word = *mac_data_;
-        uint8_t* last_bytes = reinterpret_cast<uint8_t*>(&last_word);
-        for (int i = 0; i < remaining_bytes; i++) {
-            buffer[words_to_read * 4 + i] = last_bytes[i];
-        }
+        memcpy(buffer + words_to_read * 4, &last_word, remaining_bytes);
     }
 
     // 清除硬件接收中断标志位
@@ -108,6 +107,7 @@ int StellarisEth::receive_frame(uint8_t* buffer, int max_len) {
 
 // 将以太网帧写入网卡硬件 FIFO 并触发发包
 bool StellarisEth::send_frame(const uint8_t* buffer, int len) {
+    LockGuard tx_lock(tx_mutex_);
     if (!link_up_ || len <= 0 || len > 1514) return false;
 
     // Stellaris 发送 FIFO 要求先写入两字节的长度，再写入数据
@@ -120,19 +120,18 @@ bool StellarisEth::send_frame(const uint8_t* buffer, int len) {
     // 把余下的数据按字写入 FIFO
     const uint8_t* remaining_data = buffer + 2;
     int remaining_len = len - 2;
-    if (remaining_len <= 0) return true;
-    int words_to_write = (remaining_len + 3) / 4;
-    
-    for (int i = 0; i < words_to_write; i++) {
-        uint32_t word = 0;
-        for (int b = 0; b < 4 && (i * 4 + b) < remaining_len; b++) {
-            word |= (static_cast<uint32_t>(remaining_data[i * 4 + b]) << (b * 8));
+    if (remaining_len > 0) {
+        int words_to_write = (remaining_len + 3) / 4;
+        for (int i = 0; i < words_to_write; i++) {
+            uint32_t word = 0;
+            int copy_len = (remaining_len - i * 4 >= 4) ? 4 : (remaining_len - i * 4);
+            memcpy(&word, remaining_data + i * 4, copy_len);
+            *mac_data_ = word;
         }
-        *mac_data_ = word;
     }
 
     // 触发网卡发送引擎开始把 FIFO 数据送上物理网线！
-    // 取反再重写 Bit 0 (TXEN) 会激活硬件发包脉冲
-    *mac_tctl_ |= (1 << 0);
+    // 改写脉冲寄存器，避免 read-modify-write 带来的竞争问题
+    *mac_tctl_ = MAC_TCTL_TXEN | MAC_TCTL_PADEN | MAC_TCTL_CRC;
     return true;
 }

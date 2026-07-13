@@ -28,7 +28,7 @@ public:
     // 设备的生命周期与控制接口
     virtual int open() { return 0; }
     virtual int close() { return 0; }
-    virtual int ioctl(int /*request*/, void* /*arg*/) override { return -1; }
+    virtual int ioctl(int /*request*/, void* /*arg*/, void* /*priv*/) override { return -1; }
 };
 
 // 字符设备派生类
@@ -37,8 +37,8 @@ public:
     CharDevice(const char* name) : Device(name, DeviceType::Char) {}
     
     // 字符设备按字节流读写
-    virtual int read(char* /*buf*/, int /*len*/, int /*offset*/) override { return -1; }
-    virtual int write(const char* /*buf*/, int /*len*/, int /*offset*/) override { return -1; }
+    virtual int read(char* /*buf*/, int /*len*/, int /*offset*/, void* /*priv*/) override { return -1; }
+    virtual int write(const char* /*buf*/, int /*len*/, int /*offset*/, void* /*priv*/) override { return -1; }
 };
 
 // 块设备派生类

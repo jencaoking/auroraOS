@@ -3,6 +3,7 @@
 
 #include "net_device.hpp"
 #include "board.h"
+#include "../kernel/mutex.hpp"
 
 // Hardware Register Definitions
 #define ETH_MAC_RIS   (BOARD_ETH_MAC_BASE + 0x000)
@@ -39,6 +40,8 @@ private:
     volatile uint32_t* const mac_data_; // FIFO 数据发送/接收口
     volatile uint32_t* const mac_ia0_;  // MAC 地址低4字节
     volatile uint32_t* const mac_ia1_;  // MAC 地址高2字节
+    Mutex rx_mutex_;
+    Mutex tx_mutex_;
 
 public:
     StellarisEth();

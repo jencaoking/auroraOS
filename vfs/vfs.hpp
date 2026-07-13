@@ -1,20 +1,23 @@
 #ifndef VFS_HPP
 #define VFS_HPP
 
+#include "mutex.hpp"
+
 class VNode {
 public:
     virtual ~VNode() = default;
-    // 增加 open_file, 传递 flags
-    virtual int open_file(const char* /*path*/, int /*flags*/) { return 0; }
+    // 增加 open_file, 传递 flags 和 priv 指针
+    virtual int open_file(const char* /*path*/, int /*flags*/, void** /*priv*/) { return 0; }
+    virtual void close_file(void* /*priv*/) {}
     // 增加 offset 参数
-    virtual int read(char* /*buf*/, int /*len*/, int /*offset*/) { return -1; }
-    virtual int write(const char* /*buf*/, int /*len*/, int /*offset*/) { return -1; }
-    virtual int ioctl(int /*request*/, void* /*arg*/) { return -1; }
-    virtual int get_size() const { return 0; }
+    virtual int read(char* /*buf*/, int /*len*/, int /*offset*/, void* /*priv*/) { return -1; }
+    virtual int write(const char* /*buf*/, int /*len*/, int /*offset*/, void* /*priv*/) { return -1; }
+    virtual int ioctl(int /*request*/, void* /*arg*/, void* /*priv*/) { return -1; }
+    virtual int get_size(void* /*priv*/) const { return 0; }
 };
 
 struct MountPoint {
-    const char* path;
+    char path[32];
     VNode* vnode;
 };
 
@@ -23,6 +26,7 @@ struct FileDescriptor {
     VNode* vnode;
     int offset;
     bool used;
+    void* priv;
 };
 
 class VfsManager {
@@ -56,8 +60,10 @@ private:
 
     // 升级为完整的文件描述符表
     FileDescriptor fd_table_[MAX_OPEN_FILES]{};
+    Mutex vfs_mutex_;
 
     bool strings_equal(const char* s1, const char* s2) const;
+    void str_copy(char* dest, const char* src, int max_len);
 };
 
 #endif

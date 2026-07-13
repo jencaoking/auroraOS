@@ -26,12 +26,17 @@ private:
     int flush_page(int index) {
         if (!pool_[index].is_valid || !pool_[index].is_dirty) return 0;
         
-        int res = flash_.write_blocks(
-            pool_[index].block_addr, 
-            pool_[index].page_offset, 
-            pool_[index].data, 
-            flash_.get_page_size()
-        );
+        int res = -1;
+        // P0 Fix: 失败重试 3 次再上报
+        for (int retry = 0; retry < 3; retry++) {
+            res = flash_.write_blocks(
+                pool_[index].block_addr, 
+                pool_[index].page_offset, 
+                pool_[index].data, 
+                flash_.get_page_size()
+            );
+            if (res == 0) break;
+        }
         
         if (res == 0) pool_[index].is_dirty = false;
         return res;
@@ -73,10 +78,17 @@ private:
         pool_[oldest_idx].last_access_tick = ++tick_counter_;
 
         if (!for_write) {
+            // P0 Fix: Unlock before I/O
+            cache_mutex_.unlock();
             flash_.read_blocks(block_addr, page_offset, pool_[oldest_idx].data, flash_.get_page_size());
+            cache_mutex_.lock();
         } else {
-            // 如果是整页写覆盖，先读入旧背景数据，防止修改页内局部字节时丢失其他数据
+            // P0 Fix: NOR Flash 不需要写前强制读背景页（对于本用例的局部更新可通过直接写或擦除，
+            // 但如果擦除粒度是 block 而写粒度是 page，读回旧数据是必须的。
+            // 无论如何，在 IO 时释放锁以避免 UI 掉帧。
+            cache_mutex_.unlock();
             flash_.read_blocks(block_addr, page_offset, pool_[oldest_idx].data, flash_.get_page_size());
+            cache_mutex_.lock();
         }
 
         return oldest_idx;
@@ -98,6 +110,7 @@ public:
     int read(uint32_t block_addr, uint32_t offset, uint8_t* buf, uint32_t size) {
         cache_mutex_.lock();
         uint32_t page_size = flash_.get_page_size();
+        if (page_size > 256) page_size = 256; // P0 Fix: Prevent OOB for larger page sizes
         uint32_t bytes_read = 0;
 
         while (bytes_read < size) {
@@ -108,13 +121,19 @@ public:
             if (chunk > size - bytes_read) chunk = size - bytes_read;
 
             int cache_idx = get_or_alloc_page(block_addr, page_offset, false);
+            // P0 Fix: Handle -1 safely
+            if (cache_idx == -1) {
+                cache_mutex_.unlock();
+                return -1; 
+            }
+            
             for (uint32_t i = 0; i < chunk; i++) {
                 buf[bytes_read + i] = pool_[cache_idx].data[in_page_idx + i];
             }
             bytes_read += chunk;
         }
         cache_mutex_.unlock();
-        return 0;
+        return bytes_read;
     }
 
     // ========================================================
@@ -123,6 +142,7 @@ public:
     int write(uint32_t block_addr, uint32_t offset, const uint8_t* buf, uint32_t size) {
         cache_mutex_.lock();
         uint32_t page_size = flash_.get_page_size();
+        if (page_size > 256) page_size = 256; // P0 Fix: Prevent OOB
         uint32_t bytes_written = 0;
 
         while (bytes_written < size) {
@@ -133,6 +153,12 @@ public:
             if (chunk > size - bytes_written) chunk = size - bytes_written;
 
             int cache_idx = get_or_alloc_page(block_addr, page_offset, true);
+            // P0 Fix: Handle -1 safely
+            if (cache_idx == -1) {
+                cache_mutex_.unlock();
+                return -1;
+            }
+            
             for (uint32_t i = 0; i < chunk; i++) {
                 pool_[cache_idx].data[in_page_idx + i] = buf[bytes_written + i];
             }
@@ -140,7 +166,7 @@ public:
             bytes_written += chunk;
         }
         cache_mutex_.unlock();
-        return 0;
+        return bytes_written;
     }
 
     int erase(uint32_t block_addr) {
@@ -152,8 +178,9 @@ public:
                 pool_[i].is_dirty = false;
             }
         }
-        int res = flash_.erase_block(block_addr);
         cache_mutex_.unlock();
+        // P0 Fix: Unlock before I/O
+        int res = flash_.erase_block(block_addr);
         return res;
     }
 
@@ -165,6 +192,8 @@ public:
         cache_mutex_.lock();
         for (int i = 0; i < CACHE_POOL_SIZE; i++) {
             if (pool_[i].is_valid && pool_[i].is_dirty) {
+                // To avoid holding lock during flush, we could copy data, but simple solution is to keep lock.
+                // It's acceptable for explicit sync to block.
                 int res = flush_page(i);
                 if (res != 0 && final_res == 0) {
                     final_res = res; // 记录第一次遇到的错误

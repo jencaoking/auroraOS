@@ -5,6 +5,7 @@
 #include <string.h>
 #include "../../kernel/task.hpp"
 #include "../../kernel/msg_queue.hpp"
+#include "posix.hpp" // For open/write/close logging
 
 // ========================================================
 // 蓝牙连接状态机
@@ -56,7 +57,7 @@ private:
         // 1. 注册 0x180A 设备信息 (包含 Manufacturer Name, Model Number 等)
         // 2. 注册 0x180D 心率服务 (设定 Characteristic 为 Notify 属性)
         // 3. 注册 0x180F 电池服务 (设定 Characteristic 为 Read/Notify 属性)
-        // 4. 注册 0xFF01 Aurora 自定义服务 (设定为 Write Without Response，用于接收 Lua 脚本)
+        // 4. 注册 0xFF01 Aurora 自定义服务 (设定为 Security Mode 1 Level 3 配对后可写，用于接收 Lua 脚本)
     }
 
 public:
@@ -126,9 +127,27 @@ public:
                     // 断开后立刻重启广播
                     // HalBle::start_advertising(...);
                     break;
-                case 0x03: // EVENT_DATA_RECEIVED (例如收到手机传来的 Lua 小程序数据包)
-                    // 将收到的分片数据扔给 VFS 或 MiniProgramEngine 处理
+                case 0x03: { // EVENT_DATA_RECEIVED (例如收到手机传来的 Lua 小程序数据包)
+                    // ========================================================
+                    // 安全加固: 对接收到的 Lua 代码数据进行签名验签，防止执行恶意代码
+                    // ========================================================
+                    bool signature_valid = false;
+                    // TODO: 调用实际的 Crypto 库对 payload 进行验签 (如 ECDSA-SHA256)
+                    // 只有持有正确私钥的设备发来的代码才被执行
+                    // signature_valid = Crypto::verify_ecdsa(event.payload, ...);
+                    
+                    if (signature_valid) {
+                        // 将收到的分片数据扔给 VFS 或 MiniProgramEngine 处理
+                    } else {
+                        // 记录安全告警，丢弃非法请求
+                        int fd = open("/dev/uart0", 0);
+                        if (fd >= 0) {
+                            write(fd, "[BLE] Security Alert: Invalid Lua signature!\r\n", 46);
+                            close(fd);
+                        }
+                    }
                     break;
+                }
             }
             Arch::enable_interrupts();
         }

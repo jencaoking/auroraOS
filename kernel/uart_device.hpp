@@ -25,7 +25,7 @@ public:
     }
 
     // 实现 POSIX 风格的 write
-    int write(const char* buf, int len, int offset) override {
+    int write(const char* buf, int len, int offset, void* priv) override {
         (void)offset; // UART is a stream device, ignore offset
         LockGuard lock(tx_mutex_);
         return write_internal(buf, len);
@@ -43,7 +43,7 @@ public:
     }
 
     // 实现 POSIX 风格的 read，并自带行缓冲和退格回显功能
-    int read(char* buf, int len, int offset) override {
+    int read(char* buf, int len, int offset, void* priv) override {
         (void)offset;
         int bytes_read = 0;
         

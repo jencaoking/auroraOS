@@ -8,7 +8,7 @@
 // ProcFS 节点基类：只读，不支持写
 class ProcNode : public VNode {
 public:
-    int write(const char* buf, int len, int offset) override { return -1; } // 拒绝写入
+    int write(const char* buf, int len, int offset, void* priv) override { return -1; } // 拒绝写入
 };
 
 // ==========================================
@@ -16,7 +16,7 @@ public:
 // ==========================================
 class MemInfoNode : public ProcNode {
 public:
-    int read(char* buf, int len, int offset) override {
+    int read(char* buf, int len, int offset, void* priv) override {
         // 简单处理：仅在 offset 为 0 时生成数据，防止被无限读取
         if (offset > 0) return 0; 
 
@@ -50,7 +50,7 @@ public:
 // ==========================================
 class TaskInfoNode : public ProcNode {
 public:
-    int read(char* buf, int len, int offset) override {
+    int read(char* buf, int len, int offset, void* priv) override {
         if (offset > 0) return 0;
         
         int pos = 0;
@@ -66,6 +66,7 @@ public:
         append_str("-----------------------------\n");
         
         Scheduler& sched = Scheduler::instance();
+        Arch::disable_interrupts(); // 保证并发读取 TCB 时任务队列不会被修改
         int count = sched.get_task_count();
         
         for (int i = 0; i < count; i++) {
@@ -79,11 +80,14 @@ public:
             if (tcb->state == TaskState::Running) append_str("RUN\t");
             else if (tcb->state == TaskState::Ready) append_str("RDY\t");
             else if (tcb->state == TaskState::Sleeping) append_str("SLP\t");
+            else if (tcb->state == TaskState::Blocked) append_str("BLK\t");
+            else if (tcb->state == TaskState::Suspended) append_str("SUS\t");
             else append_str("UNK\t");
 
             append_num(tcb->sleep_ticks);
             append_str("\n");
         }
+        Arch::enable_interrupts();
         
         buf[pos] = '\0';
         return pos;
