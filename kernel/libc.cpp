@@ -1,6 +1,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "memory.hpp"
+#ifndef AURORA_HOST_TEST
+#include "autoconf.h"
+#endif
+#include "arch_api.hpp"
+#include "task.hpp"
+
 extern "C" {
 
 void* memcpy(void* dest, const void* src, size_t n) {
@@ -69,7 +76,11 @@ void* memmove(void* dest, const void* src, size_t n) {
 int atoi(const char* str) {
     int res = 0;
     int sign = 1;
+    while (*str == ' ' || *str == '\t' || *str == '\n' || *str == '\r' || *str == '\v' || *str == '\f') {
+        str++;
+    }
     if (*str == '-') { sign = -1; str++; }
+    else if (*str == '+') { str++; }
     while (*str >= '0' && *str <= '9') {
         res = res * 10 + (*str - '0');
         str++;
@@ -113,12 +124,6 @@ void sys_print_c(const char* str) {
     sys_print(str);
 }
 
-#include "memory.hpp"
-#ifndef AURORA_HOST_TEST
-#include "autoconf.h"
-#endif
-#include "arch_api.hpp"
-#include "task.hpp"
 
 void* malloc(size_t size) {
 #ifdef CONFIG_NO_DYNAMIC_ALLOCATION
@@ -200,9 +205,6 @@ void* realloc(void* ptr, size_t size) {
     
     // 先获取 old_size，避免内部锁重入
     size_t old_size = KernelHeap::instance().get_requested_size(ptr);
-    if (old_size == 0) {
-        return nullptr; // 无效指针
-    }
     
     void* new_ptr = malloc(size);
     if (new_ptr) {
@@ -254,6 +256,7 @@ float strtof(const char* nptr, char** endptr) {
 
 // 极简 math.h 占位，供 Lua lvm 引擎链接通过
 float floorf(float x) {
+    if (x >= 2147483647.0f || x <= -2147483648.0f || x != x) return x; // 避免 UB
     int i = static_cast<int>(x);
     return static_cast<float>(x < 0.0f && x != static_cast<float>(i) ? i - 1 : i);
 }
@@ -273,7 +276,9 @@ float powf(float base, float exp) {
 
 float fmodf(float x, float y) {
     if (y == 0.0f) return 0.0f;
-    int quotient = static_cast<int>(x / y);
+    float div = x / y;
+    if (div >= 2147483647.0f || div <= -2147483648.0f || div != div) return 0.0f; // 避免 UB
+    int quotient = static_cast<int>(div);
     return x - quotient * y;
 }
 
