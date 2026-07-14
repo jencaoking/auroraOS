@@ -661,7 +661,7 @@ python scripts/genconfig.py
 - [x] 消息传递 IPC（QNX 风格同步 MsgSend/Receive/Reply）
 - [x] WiFi 驱动 + 完整 TCP/IP
 - [x] GPU 驱动抽象与图形管道 (Command Buffer / KMS)
-- [ ] GUIX 智能图形框架与多窗口管理
+- [x] GUIX 智能图形框架与多窗口管理
 - [ ] 摄像头 + 多媒体
 - [ ] 应用沙盒
 

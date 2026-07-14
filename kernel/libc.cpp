@@ -77,7 +77,14 @@ int atoi(const char* str) {
     return res * sign;
 }
 
-int errno = 0;
+int* __errno_location() {
+    TaskControlBlock* current = Scheduler::instance().get_current_tcb();
+    if (current) {
+        return &current->errno_val;
+    }
+    static int global_errno = 0;
+    return &global_errno;
+}
 
 // Dummy _ctype_ array to satisfy newlib's <ctype.h> macros if they are not overridden
 extern const char _ctype_[257] = {
@@ -111,6 +118,7 @@ void sys_print_c(const char* str) {
 #include "autoconf.h"
 #endif
 #include "arch_api.hpp"
+#include "task.hpp"
 
 void* malloc(size_t size) {
 #ifdef CONFIG_NO_DYNAMIC_ALLOCATION

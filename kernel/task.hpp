@@ -103,6 +103,11 @@ struct TaskControlBlock {
     uint32_t ipc_msg_len;
     uint32_t ipc_max_len;
     uint32_t ipc_sender_id;  // 记录发送方 ID (或接收到的 Sender ID)
+
+    // ========================================================
+    // 7. 【POSIX 兼容层】
+    // ========================================================
+    int errno_val;           // 线程本地 errno
 };
 
 
@@ -258,6 +263,8 @@ public:
         for (int i = 0; i < 16; i++) tcb.signal_handlers[i] = nullptr;
         tcb.held_mutexes = nullptr;
         tcb.waiting_on_mutex = nullptr;
+
+        tcb.errno_val = 0; // 初始化线程本地 errno
 
         // 初始化 IPC 与 CSpace
         tcb.ipc_state = auroraos::kernel::IpcState::Ready;

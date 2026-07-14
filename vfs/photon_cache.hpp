@@ -11,6 +11,7 @@ struct CachePage {
     uint8_t  data[256]; // 对齐闪存 256B 物理页
     bool     is_valid;
     bool     is_dirty;
+    bool     is_reserved;
     uint32_t last_access_tick;
 };
 
@@ -44,7 +45,7 @@ private:
 
     // 内部方法：LRU (最近最少使用) 算法淘汰替换缓存槽位
     int get_or_alloc_page(uint32_t block_addr, uint32_t page_offset, bool for_write) {
-        int oldest_idx = 0;
+        int oldest_idx = -1;
         uint32_t oldest_tick = 0xFFFFFFFF;
 
         // 1. 命中检测
@@ -53,13 +54,17 @@ private:
                 pool_[i].last_access_tick = ++tick_counter_;
                 return i;
             }
-            if (!pool_[i].is_valid) {
+            if (!pool_[i].is_valid && !pool_[i].is_reserved) {
                 oldest_idx = i;
                 oldest_tick = 0;
-            } else if (pool_[i].last_access_tick < oldest_tick) {
+            } else if (!pool_[i].is_reserved && pool_[i].last_access_tick < oldest_tick) {
                 oldest_idx = i;
                 oldest_tick = pool_[i].last_access_tick;
             }
+        }
+        
+        if (oldest_idx == -1) {
+            return -1; // 所有槽位均被其他线程保留
         }
 
         // 2. 缓存未命中，如果被淘汰的页是脏页，必须先将其落盘保护
@@ -74,6 +79,9 @@ private:
         //    命中检测将得到 is_valid=false，从而不会读到未填充的陈旧数据）。
         pool_[oldest_idx].is_valid = false;
         pool_[oldest_idx].is_dirty = false;
+        pool_[oldest_idx].is_reserved = true;
+        pool_[oldest_idx].block_addr = block_addr;
+        pool_[oldest_idx].page_offset = page_offset;
 
         // 4. 在持锁状态下解锁，使用栈上临时缓冲区执行 flash 读取，
         //    避免在 I/O 期间 UI 任务因等锁而掉帧。
@@ -86,6 +94,15 @@ private:
         flash_.read_blocks(block_addr, page_offset, tmp_data, page_size);
         cache_mutex_.lock();
 
+        // 重新检查是否被其他线程加载 (Bug #2 修复: 防止冗余并避免覆盖)
+        for (int i = 0; i < CACHE_POOL_SIZE; i++) {
+            if (i != oldest_idx && pool_[i].is_valid && pool_[i].block_addr == block_addr && pool_[i].page_offset == page_offset) {
+                pool_[oldest_idx].is_reserved = false;
+                pool_[i].last_access_tick = ++tick_counter_;
+                return i;
+            }
+        }
+
         // 5. I/O 完成后，在持锁的原子步骤里将数据与元数据一并写入槽位，
         //    最后才翻 is_valid 对外可见。
         for (uint32_t i = 0; i < page_size; i++) {
@@ -95,6 +112,7 @@ private:
         pool_[oldest_idx].page_offset     = page_offset;
         pool_[oldest_idx].last_access_tick = ++tick_counter_;
         pool_[oldest_idx].is_valid        = true; // ← 数据确认有效后才对外可见
+        pool_[oldest_idx].is_reserved     = false;
 
         return oldest_idx;
     }
@@ -104,6 +122,7 @@ public:
         for (int i = 0; i < CACHE_POOL_SIZE; i++) {
             pool_[i].is_valid = false;
             pool_[i].is_dirty = false;
+            pool_[i].is_reserved = false;
         }
     }
 
@@ -181,6 +200,7 @@ public:
             if (pool_[i].is_valid && pool_[i].block_addr == block_addr) {
                 pool_[i].is_valid = false;
                 pool_[i].is_dirty = false;
+                pool_[i].is_reserved = false;
             }
         }
         cache_mutex_.unlock();

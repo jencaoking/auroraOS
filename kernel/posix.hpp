@@ -3,6 +3,21 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <errno.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+// 线程本地 errno 宏
+int* __errno_location();
+#undef errno
+#define errno (*__errno_location())
+
+
+#ifdef __cplusplus
+} // 关闭上面的 extern "C"
+#endif
 
 #ifdef AURORA_HOST_TEST
 #include <fcntl.h>
@@ -31,8 +46,8 @@ int ioctl(int fd, int request, void* arg);
 int lseek(int fd, int offset, int whence);
 
 // 延时接口
-void sleep(uint32_t seconds);
-void usleep(uint32_t usec);
+unsigned int sleep(unsigned int seconds);
+int usleep(unsigned int usec);
 #endif
 
 // POSIX 信号量不透明指针

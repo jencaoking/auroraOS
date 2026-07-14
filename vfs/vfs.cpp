@@ -60,7 +60,9 @@ int VfsManager::open(const char* path, int flags) {
     int path_len = 0;
     bool has_traversal = false;
     for (const char* p = path; *p; p++, path_len++) {
-        if (p[0] == '.' && p[1] == '.') has_traversal = true;
+        if (p[0] == '.' && p[1] == '.' && (p[2] == '/' || p[2] == '\0') && (p == path || p[-1] == '/')) {
+            has_traversal = true;
+        }
         if (path_len >= 255) return -1; // Path too long
     }
     if (has_traversal) return -1;
@@ -109,21 +111,46 @@ int VfsManager::open(const char* path, int flags) {
 }
 
 int VfsManager::read(int fd, char* buf, int len) {
-    LockGuard lock(vfs_mutex_);
-    if (fd < 0 || fd >= MAX_OPEN_FILES || !fd_table_[fd].used) return -1;
-    if (!buf || len < 0 || len > 1048576) return -1; // 最大单次读写 1MB
-    // 透传 offset 给具体节点，并自动推进游标
-    int bytes = fd_table_[fd].vnode->read(buf, len, fd_table_[fd].offset, fd_table_[fd].priv);
-    if (bytes > 0) fd_table_[fd].offset += bytes;
+    VNode* vnode = nullptr;
+    void* priv = nullptr;
+    int offset = 0;
+    {
+        LockGuard lock(vfs_mutex_);
+        if (fd < 0 || fd >= MAX_OPEN_FILES || !fd_table_[fd].used) return -1;
+        if (!buf || len < 0 || len > 1048576) return -1; // 最大单次读写 1MB
+        vnode = fd_table_[fd].vnode;
+        priv = fd_table_[fd].priv;
+        offset = fd_table_[fd].offset;
+    }
+    int bytes = vnode->read(buf, len, offset, priv);
+    if (bytes > 0) {
+        LockGuard lock(vfs_mutex_);
+        if (fd_table_[fd].used && fd_table_[fd].priv == priv) {
+            fd_table_[fd].offset += bytes;
+        }
+    }
     return bytes;
 }
 
 int VfsManager::write(int fd, const char* buf, int len) {
-    LockGuard lock(vfs_mutex_);
-    if (fd < 0 || fd >= MAX_OPEN_FILES || !fd_table_[fd].used) return -1;
-    if (!buf || len < 0 || len > 1048576) return -1;
-    int bytes = fd_table_[fd].vnode->write(buf, len, fd_table_[fd].offset, fd_table_[fd].priv);
-    if (bytes > 0) fd_table_[fd].offset += bytes;
+    VNode* vnode = nullptr;
+    void* priv = nullptr;
+    int offset = 0;
+    {
+        LockGuard lock(vfs_mutex_);
+        if (fd < 0 || fd >= MAX_OPEN_FILES || !fd_table_[fd].used) return -1;
+        if (!buf || len < 0 || len > 1048576) return -1;
+        vnode = fd_table_[fd].vnode;
+        priv = fd_table_[fd].priv;
+        offset = fd_table_[fd].offset;
+    }
+    int bytes = vnode->write(buf, len, offset, priv);
+    if (bytes > 0) {
+        LockGuard lock(vfs_mutex_);
+        if (fd_table_[fd].used && fd_table_[fd].priv == priv) {
+            fd_table_[fd].offset += bytes;
+        }
+    }
     return bytes;
 }
 
@@ -147,13 +174,15 @@ int VfsManager::lseek(int fd, int offset, int whence) {
     return -1;
 }
 
-void VfsManager::close(int fd) {
+int VfsManager::close(int fd) {
     LockGuard lock(vfs_mutex_);
     if (fd >= 0 && fd < MAX_OPEN_FILES && fd_table_[fd].used) {
         fd_table_[fd].vnode->close_file(fd_table_[fd].priv);
         fd_table_[fd].used = false;
         fd_table_[fd].priv = nullptr;
+        return 0;
     }
+    return -1;
 }
 
 int VfsManager::ioctl(int fd, int request, void* arg) {

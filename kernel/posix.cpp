@@ -9,67 +9,103 @@ extern "C" {
 
 int open(const char* path, int flags) {
 #ifdef CONFIG_VFS
-    return VfsManager::instance().open(path, flags);
+    int res = VfsManager::instance().open(path, flags);
+    if (res < 0) {
+        errno = ENOENT;
+        return -1;
+    }
+    return res;
 #else
+    errno = ENOSYS;
     return -1;
 #endif
 }
 
 int close(int fd) {
 #ifdef CONFIG_VFS
-    VfsManager::instance().close(fd);
+    if (VfsManager::instance().close(fd) < 0) {
+        errno = EBADF;
+        return -1;
+    }
     return 0;
 #else
     (void)fd;
+    errno = ENOSYS;
     return -1;
 #endif
 }
 
 int read(int fd, void* buf, size_t count) {
 #ifdef CONFIG_VFS
-    return VfsManager::instance().read(fd, static_cast<char*>(buf), count);
+    int res = VfsManager::instance().read(fd, static_cast<char*>(buf), count);
+    if (res < 0) {
+        errno = EIO;
+        return -1;
+    }
+    return res;
 #else
     (void)fd; (void)buf; (void)count;
+    errno = ENOSYS;
     return -1;
 #endif
 }
 
 int write(int fd, const void* buf, size_t count) {
 #ifdef CONFIG_VFS
-    return VfsManager::instance().write(fd, static_cast<const char*>(buf), count);
+    int res = VfsManager::instance().write(fd, static_cast<const char*>(buf), count);
+    if (res < 0) {
+        errno = EIO;
+        return -1;
+    }
+    return res;
 #else
     (void)fd; (void)buf; (void)count;
+    errno = ENOSYS;
     return -1;
 #endif
 }
 
 int ioctl(int fd, int request, void* arg) {
 #ifdef CONFIG_VFS
-    return VfsManager::instance().ioctl(fd, request, arg);
+    int res = VfsManager::instance().ioctl(fd, request, arg);
+    if (res < 0) {
+        errno = EINVAL;
+        return -1;
+    }
+    return res;
 #else
     (void)fd; (void)request; (void)arg;
+    errno = ENOSYS;
     return -1;
 #endif
 }
 
 int lseek(int fd, int offset, int whence) {
 #ifdef CONFIG_VFS
-    return VfsManager::instance().lseek(fd, offset, whence);
+    int res = VfsManager::instance().lseek(fd, offset, whence);
+    if (res < 0) {
+        errno = EINVAL;
+        return -1;
+    }
+    return res;
 #else
     (void)fd; (void)offset; (void)whence;
+    errno = ENOSYS;
     return -1;
 #endif
 }
 
-void sleep(uint32_t seconds) {
+unsigned int sleep(unsigned int seconds) {
     // 假设 1 tick = 1ms，这里转换为 ticks 延时
     sys_sleep(seconds * 1000);
+    return 0;
 }
 
-void usleep(uint32_t usec) {
+int usleep(unsigned int usec) {
     uint32_t ticks = usec / 1000;
     if (ticks == 0) ticks = 1; // 至少休眠 1 个 tick 让出 CPU
     sys_sleep(ticks);
+    return 0;
 }
 
 int sem_init(sem_t* sem, int pshared, unsigned int value) {
