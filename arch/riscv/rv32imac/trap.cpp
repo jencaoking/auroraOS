@@ -48,12 +48,12 @@ extern "C" {
                 // Move mepc past ecall instruction (4 bytes)
                 sp[31] += 4; // mepc is at index 31
 
-                // Map RISC-V arguments a0-a7 (x10-x17) to InterruptFrame (r0-r3)
+                // Map RISC-V arguments a0-a7 (x10-x17) to Syscall Arguments
                 InterruptFrame frame;
-                frame.r0 = sp[9];  // x10 (a0)
-                frame.r1 = sp[10]; // x11 (a1)
-                frame.r2 = sp[11]; // x12 (a2)
-                frame.r3 = sp[12]; // x13 (a3)
+                frame.arg0 = sp[9];  // x10 (a0)
+                frame.arg1 = sp[10]; // x11 (a1)
+                frame.arg2 = sp[11]; // x12 (a2)
+                frame.arg3 = sp[12]; // x13 (a3)
                 frame.pc = sp[31] - 4; // PC of ecall
                 frame.svc_num = sp[16]; // a7 (x17) is syscall number
 

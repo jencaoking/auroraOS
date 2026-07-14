@@ -106,9 +106,9 @@ extern "C" {
 
         switch (svc_number) {
             case SYS_PRINT: { // SysCall: 串口输出（在内核特权态安全调用）
-                // 【参数校验】：r0 指针必须属于该任务的栈或 Flash 只读段
+                // 【参数校验】：arg0 指针必须属于该任务的栈或 Flash 只读段
                 constexpr size_t MAX_PRINT_LEN = 256u;
-                const char* str = reinterpret_cast<const char*>(frame->r0);
+                const char* str = reinterpret_cast<const char*>(frame->arg0);
                 
                 // 为了防止没有 \0 导致的越界读取，我们先验证最多 MAX_PRINT_LEN 字节是否在合法空间
                 // 然后在安全范围内寻找 \0
@@ -139,7 +139,7 @@ extern "C" {
             case SYS_SLEEP: { // SysCall: 任务 Sleep
                 // 【参数校验】：sleep 时长不超过 10 分钟（600,000 ms）
                 constexpr uint32_t MAX_SLEEP_MS = 600'000u;
-                const uint32_t ms = frame->r0;
+                const uint32_t ms = frame->arg0;
                 if (ms > MAX_SLEEP_MS) {
                     uart_puts("[Kernel] SYS_SLEEP: duration out of range\n");
                     break;
@@ -149,12 +149,12 @@ extern "C" {
             }
             case SYS_IPC_CALL: { // SysCall: 发起 IPC 请求并阻塞等待响应
                 if (!cur) break;
-                uint32_t cap_id = frame->r0;
-                void* msg = reinterpret_cast<void*>(frame->r1);
-                uint32_t len = frame->r2;
+                uint32_t cap_id = frame->arg0;
+                void* msg = reinterpret_cast<void*>(frame->arg1);
+                uint32_t len = frame->arg2;
                 
-                // 从 r3 解析 IpcReplyDesc
-                const IpcReplyDesc* desc = reinterpret_cast<const IpcReplyDesc*>(frame->r3);
+                // 从 arg3 解析 IpcReplyDesc
+                const IpcReplyDesc* desc = reinterpret_cast<const IpcReplyDesc*>(frame->arg3);
                 if (!SyscallValidator::validate_user_ptr(desc, sizeof(IpcReplyDesc), stack_base, stack_size)) {
                     uart_puts("[Kernel] SYS_IPC_CALL: invalid desc ptr\n");
                     break;
@@ -185,10 +185,10 @@ extern "C" {
             }
             case SYS_IPC_RECEIVE: { // SysCall: 接收 IPC 请求
                 if (!cur) break;
-                uint32_t cap_id = frame->r0;
-                void* msg_buf = reinterpret_cast<void*>(frame->r1);
-                uint32_t max_len = frame->r2;
-                uint32_t* out_sender_id = reinterpret_cast<uint32_t*>(frame->r3);
+                uint32_t cap_id = frame->arg0;
+                void* msg_buf = reinterpret_cast<void*>(frame->arg1);
+                uint32_t max_len = frame->arg2;
+                uint32_t* out_sender_id = reinterpret_cast<uint32_t*>(frame->arg3);
                 
                 // 校验 msg_buf 和 out_sender_id
                 if (max_len > 0 && !SyscallValidator::validate_user_ptr(msg_buf, max_len, stack_base, stack_size)) {
@@ -220,9 +220,9 @@ extern "C" {
             }
             case SYS_IPC_REPLY: { // SysCall: 回复 IPC 请求
                 if (!cur) break;
-                uint32_t sender_id = frame->r0;
-                void* reply_msg = reinterpret_cast<void*>(frame->r1);
-                uint32_t len = frame->r2;
+                uint32_t sender_id = frame->arg0;
+                void* reply_msg = reinterpret_cast<void*>(frame->arg1);
+                uint32_t len = frame->arg2;
                 
                 // 校验 reply_msg
                 if (len > 0 && !SyscallValidator::validate_user_ptr(reply_msg, len, stack_base, stack_size)) {
