@@ -24,6 +24,11 @@ enum class TaskPriority : uint8_t {
     Realtime = 4   // 最高硬实时优先级：底层网络帧拦截等
 };
 
+enum class TaskPrivilege : uint32_t {
+    Kernel = 0,
+    User = 1
+};
+
 enum class TaskState {
     Ready,
     Running,
@@ -45,6 +50,7 @@ using SignalHandler = void (*)(int sig);
 // 遵循 C.2: 若需要不变量则使用 class，此处为纯数据故用 struct
 struct TaskControlBlock {
     uint32_t*    stack_ptr;       // 任务当前栈顶指针（由 PendSV 保存/恢复）
+    uint32_t     privilege;       // 特权级 (0: Kernel, 1: User)，固定在偏移量 4
     void         (*entry_point)(); // 任务入口函数（供 start() 引导跳入第一个任务用）
     TaskState    state;           // 任务状态机
     uint32_t     id;              // 任务唯一 ID
@@ -235,7 +241,8 @@ public:
                      uint32_t* stack_space,
                      uint32_t  stack_size,
                      TaskPriority prio = TaskPriority::Normal,
-                     uint8_t size_pow2 = 0) { // 默认为 0 表示未指定
+                     uint8_t size_pow2 = 0,
+                     TaskPrivilege priv = TaskPrivilege::Kernel) { // 默认为内核特权
         if (task_count >= MAX_TASKS) return nullptr;
 
         TaskControlBlock& tcb = tasks[task_count];
@@ -245,6 +252,7 @@ public:
         tcb.base_priority = prio;
         tcb.current_priority = prio;
         tcb.entry_point = task_entry;
+        tcb.privilege = static_cast<uint32_t>(priv);
         tcb.stack_base = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(stack_space));
         tcb.size_pow2 = size_pow2;
         
@@ -477,7 +485,8 @@ public:
 #endif
 
         Arch::start_first_task(g_current_tcb_ptr->stack_ptr,
-                               tasks[current_task_index].entry_point);
+                               tasks[current_task_index].entry_point,
+                               tasks[current_task_index].privilege);
     }
 
 private:

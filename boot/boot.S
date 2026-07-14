@@ -111,6 +111,13 @@ PendSV_Handler:
     ldr r3, =g_current_tcb_ptr
     str r2, [r3]                @ *g_current_tcb_ptr = *g_next_tcb_ptr (同步 C++ 的选择)
 
+    @ --- 动态更新特权级 (CONTROL.nPRIV) ---
+    ldr r3, [r2, #4]            @ 读取新任务的 privilege (TCB 偏移 4)
+    mrs r0, control
+    bfi r0, r3, #0, #1          @ 将 r3 的最低位插入 control 的第 0 位 (nPRIV)
+    msr control, r0
+    isb                         @ 指令同步屏障
+
     @ --- 动态更新 MPU 沙盒 ---
     push {r2, lr}               @ 保存 r2 (新 TCB 指针) 和 lr (EXC_RETURN)，8字节对齐
     mov r0, r2                  @ r0 = 参数 next_tcb

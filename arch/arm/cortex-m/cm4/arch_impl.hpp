@@ -147,17 +147,19 @@ namespace Arch {
     // 与 init_thread_stack() 配套：弹出预留的 R4-R11，置 PSP/CONTROL，开中断后跳入入口
     // 这是调度器与具体架构异常返回机制之间唯一的接触面，移植时只需重写此函数
     // =====================================================================
-    [[noreturn]] inline void start_first_task(uint32_t* stack_ptr, void (*entry_point)()) {
+    [[noreturn]] inline void start_first_task(uint32_t* stack_ptr, void (*entry_point)(), uint32_t privilege = 0) {
         __asm__ volatile (
             "ldm  %0!, {r4-r11}  \n\t"  // 弹出 R4-R11（init_thread_stack 预留的）
             "msr  psp, %0        \n\t"  // 将更新后的指针写入 PSP
-            "mov  r0, #2         \n\t"  // CONTROL = 0b10: Thread mode, use PSP
+            "mov  r0, #2         \n\t"  // CONTROL = 0b10 (SPSEL=1, PSP)
+            "orr  r0, r0, %2     \n\t"  // 合并特权级 (0: Kernel->2, 1: User->3)
             "msr  control, r0   \n\t"
             "isb                 \n\t"  // 指令同步屏障
             "cpsie i             \n\t"  // 全局开中断
-            "bx   %1             \n\t"  // 跳入任务入口（直接 bx，不保存 LR）
+            "bx   %1             \n\t"  // 跳入任务入口
             : : "r"(stack_ptr),
-                "r"(reinterpret_cast<uint32_t>(entry_point))
+                "r"(reinterpret_cast<uint32_t>(entry_point)),
+                "r"(privilege)
             : "r0", "r4", "r5", "r6", "r7", "r8", "r9", "r10", "r11", "memory"
         );
         __builtin_unreachable();

@@ -663,7 +663,7 @@ python scripts/genconfig.py
 - [x] GPU 驱动抽象与图形管道 (Command Buffer / KMS)
 - [x] GUIX 智能图形框架与多窗口管理
 - [x] 摄像头 + 多媒体 (USB 协议栈与相机抽象架构)
-- [ ] 应用沙盒
+- [x] 应用沙盒 (User Mode Privilege Separation)
 
 ---
 

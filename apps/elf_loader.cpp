@@ -295,7 +295,7 @@ bool ElfLoader::load_and_exec(const char* filepath) {
     uint32_t stack_size = 512 * sizeof(uint32_t);
 #endif
 
-    TaskControlBlock* tcb = Scheduler::instance().create_task(app_entry, app_stack, stack_size, TaskPriority::Low);
+    TaskControlBlock* tcb = Scheduler::instance().create_task(app_entry, app_stack, stack_size, TaskPriority::Low, 0, TaskPrivilege::User);
     if (!tcb) {
         sys_print("[ElfLoader] Error: task table full, cannot spawn loaded program!\r\n");
 #ifdef ARCH_AARCH64

@@ -59,6 +59,11 @@ protected:
         0x80, 0x50, 0x00, 0x00, 0x04,
         0x00, 0x00, 0x00, 0x02
     };
+
+    const uint8_t debit_tx_0[9] = {
+        0x80, 0x50, 0x00, 0x00, 0x04,
+        0x00, 0x00, 0x00, 0x00
+    };
 };
 
 TEST_F(NfcServiceTest, TransitCardDeductsBalanceAndNotifies) {
@@ -210,4 +215,19 @@ TEST_F(NfcServiceTest, ReplayAttackIsBlocked) {
     EXPECT_EQ(response.length, 2);
     EXPECT_EQ(response.data[0], 0x90);
     EXPECT_EQ(response.data[1], 0x00);
+}
+
+TEST_F(NfcServiceTest, ReplayAttackWithZeroTxIdIsBlocked) {
+    // tx_id = 0 shouldn't bypass the check
+    ApduResponse response;
+    NfcController::instance().simulate_field_on(NfcTagType::TYPE_A);
+    
+    NfcController::instance().simulate_incoming_apdu(select_transit, sizeof(select_transit), response);
+    
+    // Send DEBIT with tx_id = 0
+    bool handled = NfcController::instance().simulate_incoming_apdu(debit_tx_0, sizeof(debit_tx_0), response);
+    EXPECT_TRUE(handled);
+    EXPECT_EQ(response.length, 2);
+    EXPECT_EQ(response.data[0], 0x69);
+    EXPECT_EQ(response.data[1], 0x85); // Condition not satisfied (tx_id = 0 <= last_tx_id = 0)
 }

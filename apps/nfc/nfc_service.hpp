@@ -120,7 +120,7 @@ public:
             uint32_t tx_id = (req.data[5] << 24) | (req.data[6] << 16) | (req.data[7] << 8) | req.data[8];
             
             // Bug 4: Replay protection
-            if (tx_id <= selected_card_->last_tx_id && tx_id != 0) {
+            if (tx_id <= selected_card_->last_tx_id) {
                 resp.length = 2;
                 resp.data[0] = 0x69;
                 resp.data[1] = 0x85; // Conditions not satisfied (replay detected)
