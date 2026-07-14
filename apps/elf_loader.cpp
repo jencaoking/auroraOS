@@ -43,6 +43,12 @@ bool ElfLoader::load_and_exec(const char* filepath) {
         VfsManager::instance().close(fd);
         return false;
     }
+    
+    if (ehdr.e_phnum > 16) {
+        sys_print("[ElfLoader] Error: Too many program headers!\r\n");
+        VfsManager::instance().close(fd);
+        return false;
+    }
 
     sys_print("[ElfLoader] Valid ARM ELF detected. Parsing Segments...\r\n");
 
@@ -127,6 +133,14 @@ bool ElfLoader::load_and_exec(const char* filepath) {
                 return false;
             }
 
+            // [安全加固] 重新校验 p_filesz 防止 TOCTOU
+            if (phdr.p_filesz > phdr.p_memsz) {
+                sys_print("[ElfLoader] Error: p_filesz > p_memsz (TOCTOU attempt)!\r\n");
+                delete[] segment_memory;
+                VfsManager::instance().close(fd);
+                return false;
+            }
+
             VfsManager::instance().lseek(fd, phdr.p_offset, 0);
             int actual_read = VfsManager::instance().read(fd, segment_memory + offset_in_mem, phdr.p_filesz);
             if (actual_read < 0) actual_read = 0;
@@ -158,9 +172,16 @@ bool ElfLoader::load_and_exec(const char* filepath) {
             return false;
         }
         sys_print("[ElfLoader] Parsing Section Headers for Relocation...\r\n");
-        Elf32_Shdr* shdrs = new Elf32_Shdr[ehdr.e_shnum];
+        Elf32_Shdr* shdrs = new Elf32_Shdr[ehdr.e_shnum]();
         VfsManager::instance().lseek(fd, ehdr.e_shoff, 0);
-        VfsManager::instance().read(fd, reinterpret_cast<char*>(shdrs), ehdr.e_shnum * sizeof(Elf32_Shdr));
+        int shdr_read = VfsManager::instance().read(fd, reinterpret_cast<char*>(shdrs), ehdr.e_shnum * sizeof(Elf32_Shdr));
+        if (shdr_read != static_cast<int>(ehdr.e_shnum * sizeof(Elf32_Shdr))) {
+            sys_print("[ElfLoader] Error: Cannot read section headers!\r\n");
+            delete[] shdrs;
+            delete[] segment_memory;
+            VfsManager::instance().close(fd);
+            return false;
+        }
 
         Elf32_Sym* symtab = nullptr;
         uint32_t sym_count = 0;
@@ -172,17 +193,26 @@ bool ElfLoader::load_and_exec(const char* filepath) {
                 if (symtab) { delete[] symtab; symtab = nullptr; }
                 if (strtab) { delete[] strtab; strtab = nullptr; }
                 
+                if (shdrs[i].sh_size % sizeof(Elf32_Sym) != 0) continue;
                 sym_count = shdrs[i].sh_size / sizeof(Elf32_Sym);
-                symtab = new Elf32_Sym[sym_count];
+                symtab = new Elf32_Sym[sym_count]();
                 VfsManager::instance().lseek(fd, shdrs[i].sh_offset, 0);
-                VfsManager::instance().read(fd, reinterpret_cast<char*>(symtab), shdrs[i].sh_size);
+                int sym_read = VfsManager::instance().read(fd, reinterpret_cast<char*>(symtab), sym_count * sizeof(Elf32_Sym));
+                if (sym_read != static_cast<int>(sym_count * sizeof(Elf32_Sym))) {
+                    delete[] symtab; symtab = nullptr;
+                    continue;
+                }
                 
                 uint32_t strtab_idx = shdrs[i].sh_link;
                 if (strtab_idx < ehdr.e_shnum) {
                     if (shdrs[strtab_idx].sh_size > 256 * 1024) continue;
-                    strtab = new char[shdrs[strtab_idx].sh_size];
+                    strtab = new char[shdrs[strtab_idx].sh_size]();
                     VfsManager::instance().lseek(fd, shdrs[strtab_idx].sh_offset, 0);
-                    VfsManager::instance().read(fd, strtab, shdrs[strtab_idx].sh_size);
+                    int str_read = VfsManager::instance().read(fd, strtab, shdrs[strtab_idx].sh_size);
+                    if (str_read != static_cast<int>(shdrs[strtab_idx].sh_size)) {
+                        delete[] strtab; strtab = nullptr;
+                        continue;
+                    }
                 }
             }
         }
@@ -190,10 +220,15 @@ bool ElfLoader::load_and_exec(const char* filepath) {
         for (int i = 0; i < ehdr.e_shnum; i++) {
             if (shdrs[i].sh_type == SHT_REL && symtab && strtab) {
                 if (shdrs[i].sh_size > 256 * 1024) continue;
+                if (shdrs[i].sh_size % sizeof(Elf32_Rel) != 0) continue;
                 uint32_t rel_count = shdrs[i].sh_size / sizeof(Elf32_Rel);
-                Elf32_Rel* rels = new Elf32_Rel[rel_count];
+                Elf32_Rel* rels = new Elf32_Rel[rel_count]();
                 VfsManager::instance().lseek(fd, shdrs[i].sh_offset, 0);
-                VfsManager::instance().read(fd, reinterpret_cast<char*>(rels), shdrs[i].sh_size);
+                int rel_read = VfsManager::instance().read(fd, reinterpret_cast<char*>(rels), rel_count * sizeof(Elf32_Rel));
+                if (rel_read != static_cast<int>(rel_count * sizeof(Elf32_Rel))) {
+                    delete[] rels;
+                    continue;
+                }
 
                 for (uint32_t r = 0; r < rel_count; r++) {
                     uint32_t sym_idx = ELF32_R_SYM(rels[r].r_info);
@@ -237,6 +272,13 @@ bool ElfLoader::load_and_exec(const char* filepath) {
                             sys_print("[ElfLoader] Error: Unresolved symbol: ");
                             sys_print(sym_name);
                             sys_print("\r\n");
+                            delete[] rels;
+                            if (strtab) delete[] strtab;
+                            if (symtab) delete[] symtab;
+                            delete[] shdrs;
+                            delete[] segment_memory;
+                            VfsManager::instance().close(fd);
+                            return false;
                         }
                     } else {
                         S = reinterpret_cast<uintptr_t>(segment_memory) + (sym.st_value - min_vaddr);
@@ -316,7 +358,25 @@ bool ElfLoader::load_and_exec(const char* filepath) {
             dest[b] = src[b];
         }
         
-        vasp->map(min_vaddr + offset, reinterpret_cast<uintptr_t>(phys_page), auroraos::kernel::MapFlags::User | auroraos::kernel::MapFlags::Read | auroraos::kernel::MapFlags::Write | auroraos::kernel::MapFlags::Execute);
+        // MPU/MMU Permissions based on segment flags (W^X protection)
+        uint32_t current_vaddr = min_vaddr + offset;
+        uint32_t map_flags = auroraos::kernel::MapFlags::User | auroraos::kernel::MapFlags::Read;
+        
+        Elf32_Phdr temp_phdr;
+        for (int i = 0; i < ehdr.e_phnum; i++) {
+            VfsManager::instance().lseek(fd, ehdr.e_phoff + i * ehdr.e_phentsize, 0);
+            VfsManager::instance().read(fd, reinterpret_cast<char*>(&temp_phdr), sizeof(temp_phdr));
+            if (temp_phdr.p_type == PT_LOAD && temp_phdr.p_memsz > 0) {
+                // If page falls within this segment
+                if (current_vaddr >= temp_phdr.p_vaddr && current_vaddr < temp_phdr.p_vaddr + temp_phdr.p_memsz) {
+                    if (temp_phdr.p_flags & PF_W) map_flags |= auroraos::kernel::MapFlags::Write;
+                    if (temp_phdr.p_flags & PF_X) map_flags |= auroraos::kernel::MapFlags::Execute;
+                    break;
+                }
+            }
+        }
+        
+        vasp->map(current_vaddr, reinterpret_cast<uintptr_t>(phys_page), map_flags);
     }
     
     // Map stack page
@@ -328,11 +388,14 @@ bool ElfLoader::load_and_exec(const char* filepath) {
     
     delete[] segment_memory;
 #else
-    uint32_t* app_stack = new uint32_t[512];
-    uint32_t stack_size = 512 * sizeof(uint32_t);
+    // Cortex-M Path
+    // Use PageAllocator to ensure MPU alignment requirements (size_pow2 = 12 -> 4096 bytes)
+    uint32_t* app_stack = reinterpret_cast<uint32_t*>(auroraos::kernel::PageAllocator::instance().alloc_page());
+    uint32_t stack_size = auroraos::kernel::PageAllocator::PAGE_SIZE;
 #endif
 
-    TaskControlBlock* tcb = Scheduler::instance().create_task(app_entry, app_stack, stack_size, TaskPriority::Low, 0, TaskPrivilege::User);
+    // [安全加固] size_pow2 传 12 (对应 4096 字节), 修复传 0 导致 MPU 沙盒配置失败的问题
+    TaskControlBlock* tcb = Scheduler::instance().create_task(app_entry, app_stack, stack_size, TaskPriority::Low, 12, TaskPrivilege::User);
     if (!tcb) {
         sys_print("[ElfLoader] Error: task table full, cannot spawn loaded program!\r\n");
 #ifdef ARCH_AARCH64

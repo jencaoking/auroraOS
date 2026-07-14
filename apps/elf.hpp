@@ -32,6 +32,11 @@ struct Elf32_Ehdr {
     uint16_t e_shstrndx;         // 节区名称字符串表索引
 };
 
+// Program header flags
+#define PF_X 1
+#define PF_W 2
+#define PF_R 4
+
 // 2. ELF 32位 程序段头 (Program Header)
 struct Elf32_Phdr {
     uint32_t p_type;             // 段类型 (必须寻找 PT_LOAD)
