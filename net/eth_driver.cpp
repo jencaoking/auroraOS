@@ -20,12 +20,16 @@ StellarisEth::StellarisEth()
     // 使用 Kconfig 配置的默认 MAC 地址
 #ifdef CONFIG_NET_DEFAULT_MAC
     const char* mac_str = CONFIG_NET_DEFAULT_MAC;
-    mac_address_[0] = parse_hex_octet(mac_str);
-    mac_address_[1] = parse_hex_octet(mac_str);
-    mac_address_[2] = parse_hex_octet(mac_str);
-    mac_address_[3] = parse_hex_octet(mac_str);
-    mac_address_[4] = parse_hex_octet(mac_str);
-    mac_address_[5] = parse_hex_octet(mac_str);
+    for (int i = 0; i < 6; i++) {
+        auto hex_val = [](char c) -> uint8_t {
+            if (c >= '0' && c <= '9') return c - '0';
+            if (c >= 'a' && c <= 'f') return c - 'a' + 10;
+            if (c >= 'A' && c <= 'F') return c - 'A' + 10;
+            return 0;
+        };
+        mac_address_[i] = (hex_val(mac_str[0]) << 4) | hex_val(mac_str[1]);
+        if (mac_str[2] != '\0') mac_str += 3;
+    }
 #else
     // 如果没有配置则回退到 BSP (board.h) 提供的值
     mac_address_[0] = BOARD_DEFAULT_MAC0;

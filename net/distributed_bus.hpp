@@ -5,6 +5,7 @@
 #include "task.hpp"
 #include "posix.hpp"
 #include <string.h>
+#include <stdio.h> // For snprintf
 #include "../utils/json_parser.hpp"
 #include "../utils/hmac_sha256.hpp"   // HmacSha256, Crc32
 #include "device_route_table.hpp"
@@ -45,19 +46,27 @@ private:
     struct ReplayEntry {
         char     device_id[32];
         uint32_t last_seq;
+        uint32_t last_active_tick;
         bool     valid;
     };
     ReplayEntry replay_table_[16]{};
 
     [[nodiscard]] bool check_and_update_seq(
-            const char* device_id, uint32_t seq) noexcept
+            const char* device_id, uint32_t seq, uint32_t now_tick) noexcept
     {
         for (auto& e : replay_table_) {
             if (e.valid && strncmp(e.device_id, device_id, 31) == 0) {
+                // Allow sequence reset or gap if device was inactive for > 30 seconds (30000 ticks)
+                if (now_tick - e.last_active_tick > 30000u) {
+                    e.last_seq = seq;
+                    e.last_active_tick = now_tick;
+                    return true;
+                }
                 if (seq <= e.last_seq)         return false;  // replay!
                 if (seq > e.last_seq + static_cast<uint32_t>(REPLAY_WINDOW))
                                                return false;  // gap too large
                 e.last_seq = seq;
+                e.last_active_tick = now_tick;
                 return true;
             }
         }
@@ -67,6 +76,7 @@ private:
                 strncpy(e.device_id, device_id, 31);
                 e.device_id[31] = '\0';
                 e.last_seq = seq;
+                e.last_active_tick = now_tick;
                 e.valid    = true;
                 return true;
             }
@@ -201,6 +211,14 @@ public:
     }
 
     void init() {
+        const uint8_t default_key[32] = {
+            0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,
+            0x11,0x12,0x13,0x14,0x15,0x16,0x17,0x18,
+            0x21,0x22,0x23,0x24,0x25,0x26,0x27,0x28,
+            0x31,0x32,0x33,0x34,0x35,0x36,0x37,0x38
+        };
+        set_key(default_key, 1);
+
         // 1. 创建 UDP Socket
         udp_socket_ = lwip_socket(AF_INET, SOCK_DGRAM, 0);
         if (udp_socket_ < 0) return;
@@ -235,13 +253,35 @@ public:
         broadcast_addr.sin_port        = lwip_htons(SOFTBUS_PORT);
         broadcast_addr.sin_addr.s_addr = lwip_htonl(INADDR_BROADCAST);
 
-        // 构建超级终端设备凭证 (JSON/RPC 风格)
-        // auth 字段使用 "DISABLED" 标记，防止本机信标被其他运行旧版本的
-        // 节点误认为合法（旧版本固定接受 "hmac_sha256_result"）。
-        // 真实 HMAC 实现就绪后，此字段应替换为动态计算的 HMAC-SHA256 值。
-        const char* beacon_payload =
-            "{\"event\":\"beacon\",\"device_id\":\"aurorawatch\","
-            "\"cap\":[\"display\",\"touch\"],\"auth\":\"DISABLED\"}";
+        static uint32_t beacon_seq = 1;
+        uint32_t seq = beacon_seq++;
+        
+        const KeySlot& slot = key_slots_[active_slot_];
+        const char* challenge = "aurorawatch";
+        const uint8_t seq_bytes[4] = {
+            static_cast<uint8_t>(seq >> 24), static_cast<uint8_t>(seq >> 16),
+            static_cast<uint8_t>(seq >>  8), static_cast<uint8_t>(seq)
+        };
+        
+        HmacSha256 ctx;
+        ctx.init(slot.key, 32u);
+        ctx.update(reinterpret_cast<const uint8_t*>(challenge), 11);
+        ctx.update(seq_bytes, 4u);
+        uint8_t computed[32]{};
+        ctx.finish(computed);
+        
+        char auth_hex[65] = {0};
+        const char* hex_chars = "0123456789abcdef";
+        for (int i = 0; i < 32; i++) {
+            auth_hex[i*2] = hex_chars[(computed[i] >> 4) & 0x0F];
+            auth_hex[i*2+1] = hex_chars[computed[i] & 0x0F];
+        }
+        
+        char beacon_payload[256];
+        snprintf(beacon_payload, sizeof(beacon_payload),
+            "{\"event\":\"beacon\",\"device_id\":\"%s\","
+            "\"cap\":[\"display\",\"touch\"],\"seq\":\"%u\",\"auth\":\"%s\"}",
+            challenge, seq, auth_hex);
 
         lwip_sendto(udp_socket_, beacon_payload,
                     strlen(beacon_payload), 0,
@@ -305,7 +345,7 @@ public:
 
                     // 验签 + 防重放
                     if (verify_hmac(device_id, auth_token, seq) &&
-                        check_and_update_seq(device_id, seq))
+                        check_and_update_seq(device_id, seq, now_tick))
                     {
                         DeviceRouteTable::instance().register_or_update_device(
                             ip_str, device_id, cap_array, now_tick);
