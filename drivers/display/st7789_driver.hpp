@@ -196,7 +196,7 @@ public:
         volatile uint32_t* dma_totlen = reinterpret_cast<uint32_t*>(AM_HAL_IOM_DMA_TOTLEN);
         volatile uint32_t* iom_status = reinterpret_cast<uint32_t*>(AM_HAL_IOM_STATUS);
         
-        *dma_targ   = reinterpret_cast<uint32_t>(buffer);
+        *dma_targ   = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(buffer));
         *dma_totlen = pixel_count * 2;
         *dma_cfg    = 0x1; // Enable DMA
         

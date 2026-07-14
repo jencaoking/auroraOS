@@ -37,7 +37,7 @@ TEST_F(MutexTest, RecursiveLock) {
     Mutex m;
     
     // Simulate being in a task context
-    TaskControlBlock* current = Scheduler::instance().create_task([](){}, nullptr, 0, TaskPriority::Normal);
+    (void)Scheduler::instance().create_task([](){}, nullptr, 0, TaskPriority::Normal);
     Scheduler::instance().schedule(); // Switch to the new task
     
     // First lock
@@ -113,7 +113,7 @@ TEST_F(MutexTest, UniqueLockRAII) {
     Scheduler::instance().set_task_state(task1->id, TaskState::Suspended);
 
     // Task 2 can now acquire
-    TaskControlBlock* task2 = Scheduler::instance().create_task([](){}, nullptr, 0, TaskPriority::Normal);
+    (void)Scheduler::instance().create_task([](){}, nullptr, 0, TaskPriority::Normal);
     Scheduler::instance().schedule(); // Switch to task2
     UniqueLock lock2(m, 5);
     EXPECT_TRUE(lock2.owns_lock());
@@ -130,7 +130,7 @@ TEST_F(MutexTest, PITimeoutRevert) {
     
     Scheduler::instance().set_task_state(task1->id, TaskState::Suspended);
     
-    TaskControlBlock* task2 = Scheduler::instance().create_task([](){}, nullptr, 0, TaskPriority::High);
+    (void)Scheduler::instance().create_task([](){}, nullptr, 0, TaskPriority::High);
     Scheduler::instance().schedule();
     
     // task2 waits, elevates task1 (High), then times out

@@ -4,6 +4,11 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#ifdef AURORA_HOST_TEST
+#include <fcntl.h>
+#include <unistd.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -24,11 +29,11 @@ int read(int fd, void* buf, size_t count);
 int write(int fd, const void* buf, size_t count);
 int ioctl(int fd, int request, void* arg);
 int lseek(int fd, int offset, int whence);
-#endif
 
 // 延时接口
 void sleep(uint32_t seconds);
 void usleep(uint32_t usec);
+#endif
 
 // POSIX 信号量不透明指针
 typedef void* sem_t;

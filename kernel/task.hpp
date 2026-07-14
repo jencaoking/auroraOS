@@ -151,7 +151,7 @@ public:
         
         if (tcb.next_ready == -1) return; // Not in queue
         
-        if (tcb.next_ready == task_index) { 
+        if (static_cast<uint32_t>(tcb.next_ready) == task_index) { 
             // Only element
             ready_head[prio] = -1;
             ready_bitmask &= ~(1 << prio);

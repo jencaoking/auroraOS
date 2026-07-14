@@ -70,6 +70,8 @@ public:
         GestureEvent result = {GestureType::NONE, event.x, event.y};
 
         switch (event.state) {
+            case TouchState::IDLE:
+                break;
             case TouchState::PRESSED:
                 if (current_state_ == TouchState::IDLE || current_state_ == TouchState::RELEASED) {
                     current_state_ = TouchState::PRESSED;
