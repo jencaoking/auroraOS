@@ -81,6 +81,11 @@ struct TaskControlBlock {
     // 4. 【MPU Sandbox】(Verified descriptor with CRC32)
     // ========================================================
     SandboxDescriptor mpu_sandbox;
+    
+    // ========================================================
+    // 5. 【MMU VASP】(Virtual Address Space Page Directory)
+    // ========================================================
+    uintptr_t pgdir_base;
 };
 
 

@@ -46,6 +46,19 @@ namespace Arch {
     inline void trigger_context_switch() {
         __asm__ volatile ("svc #0" : : : "memory");
     }
+
+    inline void switch_address_space(uintptr_t pgdir_base) {
+        if (pgdir_base != 0) {
+            __asm__ volatile (
+                "msr ttbr0_el1, %0 \n\t"
+                "isb \n\t"
+                "tlbi vmalle1is \n\t"  // 刷写 TLB
+                "dsb sy \n\t"
+                "isb \n\t"
+                :: "r"(pgdir_base) : "memory"
+            );
+        }
+    }
 }
 
 #endif // ARCH_AARCH64_IMPL_HPP

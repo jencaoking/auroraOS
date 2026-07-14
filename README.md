@@ -656,7 +656,7 @@ python scripts/genconfig.py
 - [x] Cortex-A 架构适配 (ARMv8-A AArch64) 与基础汇编引导
 - [x] MMU 虚拟内存与强类型 PTE 页表项 (Type Safety)
 - [x] 硬件中断控制器 GIC 初始化
-- [ ] 进程隔离 + 虚拟内存地址空间映射 (VASP)
+- [x] 进程隔离 + 虚拟内存地址空间映射 (VASP)
 - [ ] 基于 seL4 的 Capability 安全模型与权限管理
 - [ ] 消息传递 IPC（QNX 风格同步 MsgSend/Receive/Reply）
 - [ ] WiFi 驱动 + 完整 TCP/IP
