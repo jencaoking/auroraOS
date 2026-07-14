@@ -44,7 +44,8 @@ namespace Arch {
     // 从特权 main 上下文引导进入第一个任务：切换 PSP/CONTROL、开中断、跳入入口
     // 与 init_thread_stack() 配套，是调度器唯一「无中生有」建立任务上下文的入口
     [[noreturn]] void start_first_task(uint32_t* stack_ptr,
-                                       void (*entry_point)());
+                                       void (*entry_point)(),
+                                       uint32_t privilege);
 }
 
 // 拉入当前架构的内联实现 (arch/arm/cortex-m/cm4/arch_impl.hpp 等)

@@ -47,7 +47,8 @@ inline uint32_t* init_thread_stack(void (*/*entry*/)(void),
 }
 
 [[noreturn]] inline void start_first_task(uint32_t* /*stack_ptr*/,
-                                          void (*/*entry*/)(void)) {
+                                          void (*/*entry*/)(void),
+                                          uint32_t /*privilege*/) {
     throw std::logic_error(
         "Arch::start_first_task must not be called from host unit tests");
 }
