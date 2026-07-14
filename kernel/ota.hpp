@@ -20,8 +20,8 @@ public:
 
 private:
     bool verify_signature(uint32_t part_b_offset, uint32_t image_size, const uint8_t* expected_signature);
-    void erase_partition(uint32_t start_addr, uint32_t size);
-    void write_flash_word(uint32_t address, uint32_t data);
+    bool erase_partition(uint32_t start_addr, uint32_t size);
+    bool write_flash_word(uint32_t address, uint32_t data);
 };
 
 } // namespace aurora
