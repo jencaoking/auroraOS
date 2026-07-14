@@ -9,7 +9,7 @@
 
 class KernelHeap {
 private:
-    struct BlockHeader {
+    struct alignas(8) BlockHeader {
         uint32_t magic;       // 魔数校验，防止越界或非法指针
         size_t size;          // 包含头部在内的总大小
         size_t requested_size;// 原始请求大小（防止 realloc OOB read）
@@ -36,6 +36,11 @@ public:
     void init(void* start_addr, void* end_addr) {
         uintptr_t start = reinterpret_cast<uintptr_t>(start_addr);
         uintptr_t end = reinterpret_cast<uintptr_t>(end_addr);
+
+        if (end <= start || end - start < sizeof(BlockHeader) + 8) {
+            Arch::disable_interrupts();
+            while (true) {} // PANIC: heap region too small
+        }
 
         // 8字节对齐
         start = (start + 7) & ~7;
@@ -67,6 +72,11 @@ public:
 private:
     void* allocate_impl(size_t size) {
         IrqGuard lock; // CP.20: RAII 线程安全保护，改用关中断自旋锁避免死锁
+        
+        if (size > SIZE_MAX - 7 - sizeof(BlockHeader)) {
+            return nullptr;
+        }
+        
         size_t size_orig = size;
         // 8字节对齐
         size = (size + 7) & ~7;

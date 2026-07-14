@@ -11,13 +11,17 @@ extern "C" {
     extern uint32_t _heap_end;
 }
 
-// 覆写标准 C++ 全局 new 运算符
 void* operator new(size_t size) {
 #ifdef CONFIG_NO_DYNAMIC_ALLOCATION
     Arch::disable_interrupts();
     while (true) {} // PANIC: Dynamic allocation is disabled
 #else
-    return KernelHeap::instance().allocate(size);
+    void* p = KernelHeap::instance().allocate(size);
+    if (!p) {
+        Arch::disable_interrupts();
+        while (true) {} // PANIC: Heap exhausted
+    }
+    return p;
 #endif
 }
 
@@ -26,7 +30,12 @@ void* operator new[](size_t size) {
     Arch::disable_interrupts();
     while (true) {} // PANIC: Dynamic allocation is disabled
 #else
-    return KernelHeap::instance().allocate(size);
+    void* p = KernelHeap::instance().allocate(size);
+    if (!p) {
+        Arch::disable_interrupts();
+        while (true) {} // PANIC: Heap exhausted
+    }
+    return p;
 #endif
 }
 
