@@ -103,6 +103,12 @@ private:
             }
         }
 
+        // 如果在 I/O 期间该块被 erase 擦除，erase 会清除 is_reserved
+        if (!pool_[oldest_idx].is_reserved) {
+            // 预留被取消（说明刚读出的数据已失效，且块被擦除），直接递归重试
+            return get_or_alloc_page(block_addr, page_offset, for_write);
+        }
+
         // 5. I/O 完成后，在持锁的原子步骤里将数据与元数据一并写入槽位，
         //    最后才翻 is_valid 对外可见。
         for (uint32_t i = 0; i < page_size; i++) {
@@ -197,10 +203,10 @@ public:
         cache_mutex_.lock();
         // 如果要擦除某块，先让缓存池中属于该块的所有页失效
         for (int i = 0; i < CACHE_POOL_SIZE; i++) {
-            if (pool_[i].is_valid && pool_[i].block_addr == block_addr) {
+            if ((pool_[i].is_valid || pool_[i].is_reserved) && pool_[i].block_addr == block_addr) {
                 pool_[i].is_valid = false;
                 pool_[i].is_dirty = false;
-                pool_[i].is_reserved = false;
+                pool_[i].is_reserved = false; // 取消其他线程的预留
             }
         }
         cache_mutex_.unlock();

@@ -1,5 +1,6 @@
 #include "vfs.hpp"
 #include "device.hpp"
+#include "../kernel/task.hpp"
 
 bool VfsManager::strings_equal(const char* s1, const char* s2) const {
     if (!s1 || !s2) return false;
@@ -95,6 +96,7 @@ int VfsManager::open(const char* path, int flags) {
         if (!fd_table_[fd].used) {
             fd_table_[fd].used = true; // 先占位
             fd_table_[fd].priv = nullptr;
+            fd_table_[fd].ref_count = 0; // Initialize ref_count
             
             // 尝试让底层 VNode 处理特定于节点的打开逻辑
             if (target->open_file(relative_path, flags, &fd_table_[fd].priv) < 0) {
@@ -121,11 +123,13 @@ int VfsManager::read(int fd, char* buf, int len) {
         vnode = fd_table_[fd].vnode;
         priv = fd_table_[fd].priv;
         offset = fd_table_[fd].offset;
+        fd_table_[fd].ref_count++;
     }
     int bytes = vnode->read(buf, len, offset, priv);
-    if (bytes > 0) {
+    {
         LockGuard lock(vfs_mutex_);
-        if (fd_table_[fd].used && fd_table_[fd].priv == priv) {
+        fd_table_[fd].ref_count--;
+        if (bytes > 0 && fd_table_[fd].used && fd_table_[fd].priv == priv) {
             fd_table_[fd].offset += bytes;
         }
     }
@@ -143,11 +147,13 @@ int VfsManager::write(int fd, const char* buf, int len) {
         vnode = fd_table_[fd].vnode;
         priv = fd_table_[fd].priv;
         offset = fd_table_[fd].offset;
+        fd_table_[fd].ref_count++;
     }
     int bytes = vnode->write(buf, len, offset, priv);
-    if (bytes > 0) {
+    {
         LockGuard lock(vfs_mutex_);
-        if (fd_table_[fd].used && fd_table_[fd].priv == priv) {
+        fd_table_[fd].ref_count--;
+        if (bytes > 0 && fd_table_[fd].used && fd_table_[fd].priv == priv) {
             fd_table_[fd].offset += bytes;
         }
     }
@@ -175,14 +181,28 @@ int VfsManager::lseek(int fd, int offset, int whence) {
 }
 
 int VfsManager::close(int fd) {
-    LockGuard lock(vfs_mutex_);
-    if (fd >= 0 && fd < MAX_OPEN_FILES && fd_table_[fd].used) {
-        fd_table_[fd].vnode->close_file(fd_table_[fd].priv);
-        fd_table_[fd].used = false;
-        fd_table_[fd].priv = nullptr;
-        return 0;
+    while (true) {
+        VNode* vnode = nullptr;
+        void* priv = nullptr;
+        {
+            LockGuard lock(vfs_mutex_);
+            if (fd < 0 || fd >= MAX_OPEN_FILES || !fd_table_[fd].used) return -1;
+            
+            if (fd_table_[fd].ref_count == 0) {
+                vnode = fd_table_[fd].vnode;
+                priv = fd_table_[fd].priv;
+                fd_table_[fd].used = false;
+                fd_table_[fd].priv = nullptr;
+            }
+        }
+        
+        if (vnode) {
+            return vnode->close_file(priv);
+        }
+        
+        // Wait for ref_count to drop (I/O to finish)
+        Scheduler::instance().sleep_ms(1);
     }
-    return -1;
 }
 
 int VfsManager::ioctl(int fd, int request, void* arg) {

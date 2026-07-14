@@ -16,14 +16,7 @@ private:
     lfs_config   cfg_;
     PhotonCacheLayer& cache_;
     bool         is_mounted_;
-    int          sync_timer_id_;
-
-    static void sync_timer_cb(void* arg) {
-        if (arg) {
-            auto* adapter = static_cast<LittleFsAdapter*>(arg);
-            adapter->cache_.sync();
-        }
-    }
+    // sync_timer_cb removed. 缓存落盘统一交由外部的 daemon_task 处理以避免生命周期竞态
 
     // ========================================================
     // 绑定给 LittleFS 的静态底层操作桥接回调
@@ -50,7 +43,7 @@ private:
 
 public:
     LittleFsAdapter(PhotonCacheLayer& cache, uint32_t block_size = 4096, uint32_t block_count = 128) 
-        : cache_(cache), is_mounted_(false), sync_timer_id_(-1) {
+        : cache_(cache), is_mounted_(false) {
         
         cfg_.context     = &cache_;
         cfg_.read        = lfs_read_bridge;
@@ -75,9 +68,7 @@ public:
     }
 
     ~LittleFsAdapter() {
-        if (sync_timer_id_ >= 0) {
-            TimerManager::instance().stop_timer(sync_timer_id_);
-        }
+        // 定时器已移除，无竞态风险
     }
 
     bool mount() {
@@ -87,7 +78,7 @@ public:
             is_mounted_ = false;
         } else {
             is_mounted_ = true;
-            sync_timer_id_ = TimerManager::instance().start_timer(5000, TimerType::Periodic, sync_timer_cb, this);
+            // 不再自行创建定时器，由 kernel.cpp 的 system_daemon_task 统一调用 g_photon_cache.sync()
         }
         return is_mounted_;
     }
@@ -149,13 +140,13 @@ public:
         return bytes;
     }
 
-    void close_file(void* priv) override {
-        if (priv) {
-            lfs_file_t* file = static_cast<lfs_file_t*>(priv);
-            lfs_file_sync(fs_.get_lfs(), file);
-            lfs_file_close(fs_.get_lfs(), file);
-            delete file;
-        }
+    int close_file(void* priv) override {
+        if (!priv) return -1;
+        lfs_file_t* file = static_cast<lfs_file_t*>(priv);
+        lfs_file_sync(fs_.get_lfs(), file);
+        int res = lfs_file_close(fs_.get_lfs(), file);
+        delete file;
+        return res;
     }
 
     int get_size(void* priv) const override {

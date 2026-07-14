@@ -83,7 +83,7 @@ int RamFile::write(const char* buf, int len, int offset, void* priv) {
             new_capacity *= 2;
         }
         
-        char* new_data = new char[(int)new_capacity];
+        char* new_data = new char[(size_t)new_capacity];
         if (!new_data) {
             // 扩容失败，截断写入
             if (offset >= capacity_) return 0; // 完全无法写入

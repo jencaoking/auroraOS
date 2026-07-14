@@ -8,7 +8,7 @@ public:
     virtual ~VNode() = default;
     // 增加 open_file, 传递 flags 和 priv 指针
     virtual int open_file(const char* /*path*/, int /*flags*/, void** /*priv*/) { return 0; }
-    virtual void close_file(void* /*priv*/) {}
+    virtual int close_file(void* /*priv*/) { return 0; }
     // 增加 offset 参数
     virtual int read(char* /*buf*/, int /*len*/, int /*offset*/, void* /*priv*/) { return -1; }
     virtual int write(const char* /*buf*/, int /*len*/, int /*offset*/, void* /*priv*/) { return -1; }
@@ -27,6 +27,7 @@ struct FileDescriptor {
     int offset;
     bool used;
     void* priv;
+    int ref_count;
 };
 
 class VfsManager {
