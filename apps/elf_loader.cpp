@@ -54,7 +54,12 @@ bool ElfLoader::load_and_exec(const char* filepath) {
 
     for (int i = 0; i < ehdr.e_phnum; i++) {
         VfsManager::instance().lseek(fd, ehdr.e_phoff + i * ehdr.e_phentsize, 0);
-        VfsManager::instance().read(fd, reinterpret_cast<char*>(&phdr), sizeof(phdr));
+        int phdr_read = VfsManager::instance().read(fd, reinterpret_cast<char*>(&phdr), sizeof(phdr));
+        if (phdr_read != sizeof(phdr)) {
+            sys_print("[ElfLoader] Error: Cannot read Program Header!\r\n");
+            VfsManager::instance().close(fd);
+            return false;
+        }
 
         if (phdr.p_type == PT_LOAD && phdr.p_memsz > 0) {
             // [安全加固 1] 检查段地址加法回绕溢出
@@ -93,7 +98,7 @@ bool ElfLoader::load_and_exec(const char* filepath) {
         return false;
     }
 
-    char* segment_memory = new char[total_memsz];
+    char* segment_memory = new char[total_memsz]();
     if (!segment_memory) {
         sys_print("[ElfLoader] Out of Memory while allocating segment!\r\n");
         VfsManager::instance().close(fd);
@@ -103,7 +108,13 @@ bool ElfLoader::load_and_exec(const char* filepath) {
     // 第二遍遍历：实际加载数据
     for (int i = 0; i < ehdr.e_phnum; i++) {
         VfsManager::instance().lseek(fd, ehdr.e_phoff + i * ehdr.e_phentsize, 0);
-        VfsManager::instance().read(fd, reinterpret_cast<char*>(&phdr), sizeof(phdr));
+        int phdr_read = VfsManager::instance().read(fd, reinterpret_cast<char*>(&phdr), sizeof(phdr));
+        if (phdr_read != sizeof(phdr)) {
+            sys_print("[ElfLoader] Error: Cannot read Program Header (pass 2)!\r\n");
+            delete[] segment_memory;
+            VfsManager::instance().close(fd);
+            return false;
+        }
 
         if (phdr.p_type == PT_LOAD && phdr.p_memsz > 0) {
             uint32_t offset_in_mem = phdr.p_vaddr - min_vaddr;
@@ -140,6 +151,12 @@ bool ElfLoader::load_and_exec(const char* filepath) {
 
     // --- 第三遍遍历：解析 Section Headers 进行重定位 ---
     if (ehdr.e_shnum > 0) {
+        if (ehdr.e_shnum > 64) {
+            sys_print("[ElfLoader] Error: Too many section headers!\r\n");
+            delete[] segment_memory;
+            VfsManager::instance().close(fd);
+            return false;
+        }
         sys_print("[ElfLoader] Parsing Section Headers for Relocation...\r\n");
         Elf32_Shdr* shdrs = new Elf32_Shdr[ehdr.e_shnum];
         VfsManager::instance().lseek(fd, ehdr.e_shoff, 0);
@@ -151,6 +168,10 @@ bool ElfLoader::load_and_exec(const char* filepath) {
 
         for (int i = 0; i < ehdr.e_shnum; i++) {
             if (shdrs[i].sh_type == SHT_SYMTAB) {
+                if (shdrs[i].sh_size > 256 * 1024) continue;
+                if (symtab) { delete[] symtab; symtab = nullptr; }
+                if (strtab) { delete[] strtab; strtab = nullptr; }
+                
                 sym_count = shdrs[i].sh_size / sizeof(Elf32_Sym);
                 symtab = new Elf32_Sym[sym_count];
                 VfsManager::instance().lseek(fd, shdrs[i].sh_offset, 0);
@@ -158,6 +179,7 @@ bool ElfLoader::load_and_exec(const char* filepath) {
                 
                 uint32_t strtab_idx = shdrs[i].sh_link;
                 if (strtab_idx < ehdr.e_shnum) {
+                    if (shdrs[strtab_idx].sh_size > 256 * 1024) continue;
                     strtab = new char[shdrs[strtab_idx].sh_size];
                     VfsManager::instance().lseek(fd, shdrs[strtab_idx].sh_offset, 0);
                     VfsManager::instance().read(fd, strtab, shdrs[strtab_idx].sh_size);
@@ -167,6 +189,7 @@ bool ElfLoader::load_and_exec(const char* filepath) {
 
         for (int i = 0; i < ehdr.e_shnum; i++) {
             if (shdrs[i].sh_type == SHT_REL && symtab && strtab) {
+                if (shdrs[i].sh_size > 256 * 1024) continue;
                 uint32_t rel_count = shdrs[i].sh_size / sizeof(Elf32_Rel);
                 Elf32_Rel* rels = new Elf32_Rel[rel_count];
                 VfsManager::instance().lseek(fd, shdrs[i].sh_offset, 0);
@@ -179,6 +202,20 @@ bool ElfLoader::load_and_exec(const char* filepath) {
                     if (sym_idx >= sym_count) continue;
                     
                     Elf32_Sym& sym = symtab[sym_idx];
+                    
+                    // st_name bounding check
+                    uint32_t strtab_idx = shdrs[i].sh_link; // Need to verify we link to same strtab
+                    // Since we stored symtab and strtab globally in our temp vars, we can just use the known strtab size.
+                    // But we didn't save strtab_size. Let's find it.
+                    uint32_t strtab_size = 0;
+                    for (int j = 0; j < ehdr.e_shnum; j++) {
+                        if (shdrs[j].sh_type == SHT_SYMTAB && shdrs[j].sh_link < ehdr.e_shnum) {
+                            strtab_size = shdrs[shdrs[j].sh_link].sh_size;
+                            break;
+                        }
+                    }
+                    if (sym.st_name >= strtab_size) continue;
+                    
                     const char* sym_name = strtab + sym.st_name;
                     
                     uintptr_t S = 0;
@@ -207,7 +244,7 @@ bool ElfLoader::load_and_exec(const char* filepath) {
 
                     uint32_t P_vaddr = rels[r].r_offset;
                     uint32_t P_mem_offset = P_vaddr - min_vaddr;
-                    if (P_mem_offset >= total_memsz) continue; 
+                    if (P_mem_offset + sizeof(uint32_t) > total_memsz) continue;
 
                     uint32_t* P_ptr = reinterpret_cast<uint32_t*>(segment_memory + P_mem_offset);
 
@@ -311,6 +348,7 @@ bool ElfLoader::load_and_exec(const char* filepath) {
 
 #ifdef ARCH_AARCH64
     tcb->pgdir_base = vasp->get_pgdir_base();
+    tcb->vasp_ptr = vasp;
 #endif
 
     VfsManager::instance().close(fd);

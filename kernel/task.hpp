@@ -94,6 +94,9 @@ struct TaskControlBlock {
     // 5. 【MMU VASP】(Virtual Address Space Page Directory)
     // ========================================================
     uintptr_t pgdir_base;
+#ifdef ARCH_AARCH64
+    void* vasp_ptr;
+#endif
 
     // ========================================================
     // 6. 【seL4 Capability & IPC 模型】
