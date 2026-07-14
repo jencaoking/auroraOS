@@ -2,9 +2,10 @@
 #define ARCH_IMPL_HPP
 
 #include <stdint.h>
+#include "board.h"
 
 namespace Arch {
-    constexpr uintptr_t CLINT_BASE = 0x2000000;
+    constexpr uintptr_t CLINT_BASE = BOARD_CLINT_BASE;
     constexpr uintptr_t CLINT_MSIP = CLINT_BASE + 0x0000;
     constexpr uintptr_t CLINT_MTIMECMP = CLINT_BASE + 0x4000;
     constexpr uintptr_t CLINT_MTIME  = CLINT_BASE + 0xBFF8;
