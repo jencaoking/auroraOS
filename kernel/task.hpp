@@ -111,7 +111,8 @@ struct TaskControlBlock {
     void* ipc_reply_buf;
     uint32_t ipc_msg_len;
     uint32_t ipc_max_len;
-    uint32_t ipc_sender_id;  // 记录发送方 ID (或接收到的 Sender ID)
+    uint32_t ipc_sender_id;   // 记录发送方 ID (或接收到的 Sender ID)
+    uint32_t ipc_receiver_id; // 记录配对的接收方 ID，用于验证 Reply 权限
 
     // ========================================================
     // 7. 【POSIX 兼容层】
