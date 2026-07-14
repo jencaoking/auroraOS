@@ -4,14 +4,27 @@
 #include "autoconf.h"
 #endif
 
+#ifdef CONFIG_NO_DYNAMIC_ALLOCATION
+static char ramfs_buffers[4][1024];
+static bool ramfs_buf_used[4] = {false, false, false, false};
+#endif
+
 // 依赖全局重载的 operator new
 RamFile::RamFile(int capacity) : capacity_(capacity), file_size_(0) {
 #ifdef CONFIG_NO_DYNAMIC_ALLOCATION
-    static char ramfs_buffers[4][1024]; // Support max 4 files of 1KB each
-    static int next_buf = 0;
-    if (next_buf < 4 && capacity <= 1024) {
-        data_ = ramfs_buffers[next_buf++];
-        capacity_ = 1024;
+    if (capacity <= 1024) {
+        data_ = nullptr;
+        for (int i = 0; i < 4; i++) {
+            if (!ramfs_buf_used[i]) {
+                ramfs_buf_used[i] = true;
+                data_ = ramfs_buffers[i];
+                capacity_ = 1024;
+                break;
+            }
+        }
+        if (!data_) {
+            capacity_ = 0;
+        }
     } else {
         data_ = nullptr;
         capacity_ = 0;
@@ -29,6 +42,15 @@ RamFile::RamFile(int capacity) : capacity_(capacity), file_size_(0) {
 RamFile::~RamFile() {
 #ifndef CONFIG_NO_DYNAMIC_ALLOCATION
     delete[] data_;
+#else
+    if (data_) {
+        for (int i = 0; i < 4; i++) {
+            if (data_ == ramfs_buffers[i]) {
+                ramfs_buf_used[i] = false;
+                break;
+            }
+        }
+    }
 #endif
 }
 
@@ -45,19 +67,23 @@ int RamFile::read(char* buf, int len, int offset, void* priv) {
 }
 
 int RamFile::write(const char* buf, int len, int offset, void* priv) {
-    // 如果写入超出了当前物理容量，尝试动态扩容
-    if (offset + len > capacity_) {
+    // 检查溢出
+    long long required_capacity = (long long)offset + len;
+    if (required_capacity < 0 || required_capacity > 1073741824LL) { // 限制最大 1GB
+        if (offset >= capacity_) return 0;
+        len = capacity_ - offset;
+    } else if (required_capacity > capacity_) {
 #ifdef CONFIG_NO_DYNAMIC_ALLOCATION
         // 扩容失败，截断写入
         if (offset >= capacity_) return 0; // 完全无法写入
         len = capacity_ - offset;
 #else
-        int new_capacity = capacity_ == 0 ? 512 : capacity_ * 2;
-        while (new_capacity < offset + len) {
+        long long new_capacity = capacity_ == 0 ? 512 : (long long)capacity_ * 2;
+        while (new_capacity < required_capacity) {
             new_capacity *= 2;
         }
         
-        char* new_data = new char[new_capacity];
+        char* new_data = new char[(int)new_capacity];
         if (!new_data) {
             // 扩容失败，截断写入
             if (offset >= capacity_) return 0; // 完全无法写入

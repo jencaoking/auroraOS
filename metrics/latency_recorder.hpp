@@ -42,6 +42,11 @@ public:
         return avg_cycles / Arch::get_cycles_per_us();
     }
 
+    uint32_t get_avg_cycles() const {
+        if (count_ == 0) return 0;
+        return static_cast<uint32_t>(total_cycles_ / count_);
+    }
+
     uint32_t get_max_us() const {
         if (count_ == 0) return 0;
         return max_cycles_ / Arch::get_cycles_per_us();

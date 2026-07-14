@@ -154,8 +154,7 @@ public:
         // For dirty ratio, we stored percentage directly in the cycles field.
         // We will just use max_cycles since it is a raw value (unscaled by cycles_per_us).
         // Wait, max_us divides by cycles_per_us! We should just get average without dividing.
-        uint32_t dirty_ratio = Metrics::get_recorder(METRIC_DIRTY_RATIO).get_count() > 0 ? 
-            (Metrics::get_recorder(METRIC_DIRTY_RATIO).get_avg_us() * Arch::get_cycles_per_us()) : 0;
+        uint32_t dirty_ratio = Metrics::get_recorder(METRIC_DIRTY_RATIO).get_avg_cycles();
         append_str("\ndirty_ratio "); append_num(dirty_ratio);
         append_str("%\n");
         buf[pos] = '\0';

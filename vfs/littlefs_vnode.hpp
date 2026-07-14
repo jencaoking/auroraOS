@@ -4,6 +4,7 @@
 #include "vfs.hpp"
 #include "photon_cache.hpp"
 #include "../kernel/posix.hpp"
+#include "../kernel/timer.hpp"
 // 引入第三方开源库接口 (假定项目附带于 3rdparty/littlefs/lfs.h)
 extern "C" {
 #include "lfs.h"
@@ -15,6 +16,14 @@ private:
     lfs_config   cfg_;
     PhotonCacheLayer& cache_;
     bool         is_mounted_;
+    int          sync_timer_id_;
+
+    static void sync_timer_cb(void* arg) {
+        if (arg) {
+            auto* adapter = static_cast<LittleFsAdapter*>(arg);
+            adapter->cache_.sync();
+        }
+    }
 
     // ========================================================
     // 绑定给 LittleFS 的静态底层操作桥接回调
@@ -41,7 +50,7 @@ private:
 
 public:
     LittleFsAdapter(PhotonCacheLayer& cache, uint32_t block_size = 4096, uint32_t block_count = 128) 
-        : cache_(cache), is_mounted_(false) {
+        : cache_(cache), is_mounted_(false), sync_timer_id_(-1) {
         
         cfg_.context     = &cache_;
         cfg_.read        = lfs_read_bridge;
@@ -65,6 +74,12 @@ public:
         cfg_.metadata_max = 0;
     }
 
+    ~LittleFsAdapter() {
+        if (sync_timer_id_ >= 0) {
+            TimerManager::instance().stop_timer(sync_timer_id_);
+        }
+    }
+
     bool mount() {
         int err = lfs_mount(&lfs_, &cfg_);
         // P0 Fix: 挂载失败不应格式化，直接报告失败
@@ -72,6 +87,7 @@ public:
             is_mounted_ = false;
         } else {
             is_mounted_ = true;
+            sync_timer_id_ = TimerManager::instance().start_timer(5000, TimerType::Periodic, sync_timer_cb, this);
         }
         return is_mounted_;
     }
@@ -136,6 +152,7 @@ public:
     void close_file(void* priv) override {
         if (priv) {
             lfs_file_t* file = static_cast<lfs_file_t*>(priv);
+            lfs_file_sync(fs_.get_lfs(), file);
             lfs_file_close(fs_.get_lfs(), file);
             delete file;
         }

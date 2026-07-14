@@ -28,6 +28,7 @@ int* __errno_location();
 extern "C" {
 #endif
 
+#ifndef AURORA_HOST_TEST
 // 标准 POSIX 文件打开标志
 #define O_RDONLY    0x0000
 #define O_WRONLY    0x0001
@@ -36,8 +37,8 @@ extern "C" {
 #define O_TRUNC     0x0400
 #define O_APPEND    0x0800
 
-#ifndef AURORA_HOST_TEST
 // 标准文件操作接口
+
 int open(const char* path, int flags);
 int close(int fd);
 int read(int fd, void* buf, size_t count);

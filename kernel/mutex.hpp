@@ -78,14 +78,22 @@ public:
             locked_ = true;
             owner_ = current;
             recursive_count_ = 1;
-            this->next_held_ = static_cast<Mutex*>(owner_->held_mutexes);
-            owner_->held_mutexes = this;
+            if (owner_) {
+                this->next_held_ = static_cast<Mutex*>(owner_->held_mutexes);
+                owner_->held_mutexes = this;
+            }
             Arch::enable_interrupts();
             return true;
-        } else if (owner_ == current) {
+        } else if (owner_ && owner_ == current) {
             recursive_count_++;
             Arch::enable_interrupts();
             return true;
+        }
+
+        if (!current) {
+            // 调度器未启动，但发生资源竞争，只能死锁挂起或直接返回
+            Arch::enable_interrupts();
+            return false;
         }
 
         uint8_t wait_prio = static_cast<uint8_t>(current->current_priority);
@@ -107,7 +115,7 @@ public:
                 owner_->held_mutexes = this;
                 Arch::enable_interrupts();
                 return true;
-            } else if (owner_ == current) {
+            } else if (owner_ && owner_ == current) {
                 wait_mask_ &= ~(1 << current->id);
                 current->waiting_on_mutex = nullptr;
                 recursive_count_++;
@@ -141,17 +149,19 @@ public:
         TaskControlBlock* current = Scheduler::instance().get_current_tcb();
         Arch::disable_interrupts();
         
-        if (owner_ == current) {
+        if (locked_ && owner_ == current) {
             recursive_count_--;
             if (recursive_count_ == 0) {
                 // 从持有的锁链表中移除自身
-                Mutex** curr_ptr = reinterpret_cast<Mutex**>(&owner_->held_mutexes);
-                while (*curr_ptr) {
-                    if (*curr_ptr == this) {
-                        *curr_ptr = this->next_held_;
-                        break;
+                if (owner_) {
+                    Mutex** curr_ptr = reinterpret_cast<Mutex**>(&owner_->held_mutexes);
+                    while (*curr_ptr) {
+                        if (*curr_ptr == this) {
+                            *curr_ptr = this->next_held_;
+                            break;
+                        }
+                        curr_ptr = &(*curr_ptr)->next_held_;
                     }
-                    curr_ptr = &(*curr_ptr)->next_held_;
                 }
                 this->next_held_ = nullptr;
                 
@@ -160,7 +170,9 @@ public:
                 locked_ = false;
 
                 // 重新计算原拥有者的优先级并可能传播
-                recalculate_priority_chain(old_owner);
+                if (old_owner) {
+                    recalculate_priority_chain(old_owner);
+                }
                 
                 // 唤醒最高优先级的等待者
                 if (wait_mask_ != 0) {
@@ -198,15 +210,17 @@ public:
 
     void force_unlock(TaskControlBlock* target_owner) {
         Arch::disable_interrupts();
-        if (owner_ == target_owner) {
+        if (locked_ && owner_ == target_owner) {
             // 从持有的锁链表中移除自身
-            Mutex** curr_ptr = reinterpret_cast<Mutex**>(&owner_->held_mutexes);
-            while (*curr_ptr) {
-                if (*curr_ptr == this) {
-                    *curr_ptr = this->next_held_;
-                    break;
+            if (owner_) {
+                Mutex** curr_ptr = reinterpret_cast<Mutex**>(&owner_->held_mutexes);
+                while (*curr_ptr) {
+                    if (*curr_ptr == this) {
+                        *curr_ptr = this->next_held_;
+                        break;
+                    }
+                    curr_ptr = &(*curr_ptr)->next_held_;
                 }
-                curr_ptr = &(*curr_ptr)->next_held_;
             }
             this->next_held_ = nullptr;
 
@@ -214,7 +228,9 @@ public:
             locked_ = false;
             recursive_count_ = 0;
             
-            recalculate_priority_chain(target_owner);
+            if (target_owner) {
+                recalculate_priority_chain(target_owner);
+            }
             if (wait_mask_ != 0) {
                 uint32_t best_id = 0xFFFFFFFF;
                 uint8_t best_prio = 0;

@@ -44,16 +44,18 @@ void SerialRpcBus::send_request(const char* cmd, const char* payload) {
     LockGuard lock(tx_mutex_);
     int fd = VfsManager::instance().open("/dev/uart0", 0);
     if (fd >= 0) {
-        char buf[128];
+        char buf[256];
         int len = 0;
         auto append = [&](const char* s) { 
-            while (*s && len < (int)sizeof(buf) - 1) buf[len++] = *s++; 
+            while (*s && len < (int)sizeof(buf) - 3) buf[len++] = *s++; 
         };
         append("$RPC,");
         append(cmd);
         append(",");
         append(payload);
-        append("#\n");
+        buf[len++] = '#';
+        buf[len++] = '\n';
+        buf[len] = '\0';
         VfsManager::instance().write(fd, buf, len);
         VfsManager::instance().close(fd);
     }
@@ -125,7 +127,12 @@ void SerialRpcBus::poll() {
                 state_ = 0; 
             } else if (pay_idx_ < 63) {
                 payload_buf_[pay_idx_++] = c;
+            } else {
+                state_ = 7; // 溢出错误状态
             }
+            break;
+        case 7:
+            if (c == '#') state_ = 0;
             break;
         default: state_ = 0; break;
     }
