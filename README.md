@@ -4,11 +4,11 @@
   <p><i>借鉴 12 款顶尖 OS · ARM Cortex-M4 · lwIP TCP/IP · Lua 小程序 · MPU 内存保护</i></p>
 
   [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-  [![Platform](https://img.shields.io/badge/Platform-ARM%20Cortex--M4/M4F-brightgreen.svg)]()
+  [![Platform](https://img.shields.io/badge/Platform-Cortex--M4%20%7C%20AArch64%20%7C%20RV32-brightgreen.svg)]()
   [![Network](https://img.shields.io/badge/Network-lwIP%20TCP%2FIP-orange.svg)]()
   [![Storage](https://img.shields.io/badge/Storage-LittleFS%20%2B%20PhotonCache-purple.svg)]()
   [![Script](https://img.shields.io/badge/Script-Lua%205.4.6-yellow.svg)]()
-  [![Security](https://img.shields.io/badge/Security-MPU%20%2B%20PI%20Mutex-red.svg)]()
+  [![Security](https://img.shields.io/badge/Security-MPU%20%7C%20MMU%20%7C%20Syscall%20Val-red.svg)]()
   [![Build](https://img.shields.io/badge/Build-Kconfig%20%2B%20CMake-informational.svg)]()
 </div>
 
@@ -55,8 +55,8 @@
 | 第三方依赖 | lwIP 2.x（141K 行）+ Lua 5.4.6（25K 行）+ LittleFS |
 | 模块目录 | 14 个功能子目录 |
 | Git 提交 | 60+ 次（main 分支）|
-| 目标架构 | ARM Cortex-M4 / M4F（Thumb-2）|
-| 支持板级 | TI LM3S6965-QB · 小米手环 8（Ambiq Apollo3 Blue）|
+| 目标架构 | ARM Cortex-M4/M4F (Thumb-2) · AArch64 · RISC-V 32 (RV32IMAC) |
+| 支持板级 | TI LM3S6965-QB · QEMU RV32 Virt · 小米手环 8（Ambiq Apollo3 Blue）|
 | 构建系统 | CMake + Kconfig（Linux 内核风格可裁剪配置）|
 | CI/CD | GitHub Actions 自动化构建 |
 | 开发语言 | C++（内核）+ C（驱动/lwIP/Lua）+ ARM Assembly（启动）|
@@ -82,9 +82,12 @@ auroraOS 坚信"好的架构来自借鉴与融合"。系统不是从零发明一
 
 ### 🛡️ 安全与隔离
 
-- **MPU 内存保护单元**：Cortex-M4 MPU 8 区域配置，Flash 只读 + RAM 特权态 + 用户态沙盒，MemManage 异常捕获违规访问
+- **MPU 与 MMU 内存保护**：Cortex-M4 MPU 8 区域配置（Flash只读+RAM特权态+用户态栈沙盒），AArch64 MMU 虚拟内存管理（强类型 PTE 页表项与进程空间隔离），MemManage 异常捕获违规访问
+- **系统调用参数强校验**：对所有 SVC（ARM）与 ECALL（RISC-V）系统调用指针及对应长度参数执行 `validate_user_ptr` 安全校验，对 `SYS_PRINT` 最长限制 256 字节并在安全边界内强制寻找 `\0` 终止符
+- **IPC 传参描述符设计**：设计 `IpcReplyDesc` 描述符，通过 `r3` 寄存器传递用户态 `reply_buf` 和 `max_reply_len` 限制，突破 Cortex-M 4寄存器硬件传参瓶颈，防范内核缓冲区溢出
+- **免挂死异常终止**：修复 `MemManage_Handler` 的 while 死循环。被终止的破坏任务在调用 `schedule()` 后正常 `return`，促使硬件自动执行尾链并触发 PendSV 完成上下文切换
 - **特权分离**：CONTROL.nPRIV 用户态/内核态切换，PendSV 动态沙盒更新
-- **SVC 系统调用**：用户态通过 SVC 软中断进入内核态，PC 回溯读立即数分发
+- **SVC / ECALL 系统调用**：用户态通过软中断/系统调用指令进入内核态，PC 回溯读立即数（ARM）或读取 `a7`（RISC-V）分发系统调用
 
 ### 💾 存储与文件系统
 
@@ -241,12 +244,21 @@ auroraOS/
 │   ├── ethernetif.cpp         #   pbuf ↔ 网卡 FIFO 互转
 │   ├── lwipopts.h             #   lwIP 配置
 │   └── arch/                  #   cc.h + sys_arch.h
-├── arch/arm/cortex-m/
-│   ├── cm4/arch_impl.hpp      #   Cortex-M4 架构实现
-│   └── cm4f/arch_impl.hpp     #   Cortex-M4F 架构实现（miband 分支，FPU）
+├── arch/                      # 架构抽象层
+│   ├── arm/
+│   │   ├── cortex-m/
+│   │   │   ├── cm4/arch_impl.hpp  #   Cortex-M4 架构实现
+│   │   │   └── cm4f/arch_impl.hpp #   Cortex-M4F 架构实现（miband 分支，FPU）
+│   │   └── cortex-a/              #   ARMv8-A AArch64 架构实现
+│   └── riscv/rv32imac/        #   RISC-V 32 架构移植
+│       ├── arch_impl.hpp      #     CSR 寄存器控制与 CLINT 时钟驱动
+│       ├── boot.S             #     启动汇编入口
+│       ├── trap_vector.S      #     统一 M-mode 硬件中断与异常处理向量
+│       └── trap.cpp           #     C++ 异常与 syscall 路由分发
 ├── boards/
 │   ├── ti/lm3s6965-qb/board.h #   TI LM3S6965 板级定义
-│   └── xiaomi/miband8/board.h #   小米手环 8 板级定义（miband 分支）
+│   ├── xiaomi/miband8/board.h #   小米手环 8 板级定义（miband 分支）
+│   └── riscv/rv32_virt/       #   QEMU RV32 Virt 板级定义
 ├── syscall/syscall.hpp        # SVC 系统调用（sys_print/sys_yield/sys_sleep）
 ├── ai/intent_engine.hpp       # 意图引擎（传感器规则决策）
 ├── ui/complications.hpp       # 表盘 Complication UI 引擎
@@ -369,8 +381,12 @@ class VfsManager {
 **ELF 动态加载器（ElfLoader）安全防护**：
 - **地址回绕溢出校验**：在第一轮扫描 PT_LOAD 段时，校验 `phdr.p_vaddr + phdr.p_memsz < phdr.p_vaddr`。如果发生加法回绕整数溢出，则立即拒绝加载。
 - **最大内存配额硬限制**：对 ELF 所需的总虚拟内存跨度 `total_memsz` 实施 256KB 的硬性限额保护，防止超大段配置引发系统级堆耗尽崩溃。
-- **第二轮加载 OOB 检查**：加载前强制校验 `offset_in_mem + phdr.p_memsz <= total_memsz`，阻断利用重叠段或畸形段偏移覆盖内核堆的漏洞。
+- **第二轮加载 OOB 检查**：加载前强制校验 `offset_in_mem + phdr.p_memsz <= total_memsz`，并且在第二遍读取时重新校验 `phdr.p_filesz <= phdr.p_memsz`，阻断利用 TOCTOU（Time-of-Check to Time-of-Use）恶意更改段大小来破坏内核堆的攻击漏洞。
 - **截断与未初始化内存泄露防护**：对比 `VfsManager::read` 的实际返回字节数与段声明大小。如果文件被恶意截断，则动态将未读出区域及 BSS 段全量清零，严防内核堆历史敏感垃圾信息泄露。
+- **Section/Symbol/Rel 结构求模对齐校验**：强制校验 `shdrs[i].sh_size % sizeof(Elf32_Sym) == 0` 及 `sizeof(Elf32_Rel) == 0`，分配与读取使用相同的求模对齐边界大小，杜绝畸形 ELF section size 导致的堆溢出。
+- **W^X 严格内存访问限制**：针对 AArch64 页表映射实现严格的 W^X 保护。不使用通用的 RWX，而是逐个审查页所属的 `PT_LOAD` 段 `p_flags`。只在 `PF_W` 时给写权限，`PF_X` 时给执行权限，保证只读代码段不被篡改，数据段/栈不可执行。
+- **未解析符号强拦截**：当重定位解析遇到内核导出表中不存在的 unresolved symbol 时，强制中断加载流程，执行完整的堆资源释放，防止系统跳转至 `0x0` 地址跑飞。
+- **MPU 沙盒错位修复**：Cortex-M 分支的任务栈空间改用 `PageAllocator` 页面对齐分配（4096字节对齐），并且在 `create_task` 时将 `size_pow2` 参数正确纠正为 `12`，彻底修复了传 `0` 导致 MPU 配置失败从而保留旧任务沙盒权限的安全隔离缺失漏洞。
 
 ### 网络协议栈
 
@@ -604,9 +620,16 @@ python scripts/genconfig.py
 - [x] Kconfig 配置系统
 - [x] lwIP TCP/IP 全栈 + DHCP
 - [x] MPU 内存保护（计划外提前实现）
-- [x] 以太网驱动防死锁排空机制
-- [x] 分布式软总线/JSON解析越界防护
-- [x] Shell 命令补全（ping/netstat/reboot/date）
+- [x] 以太网与网络协议栈安全加固 (4字节对齐, 独立锁保护, lwIP core locking)
+- [x] 分布式软总线 Challenge-Response 鉴权与正则白名单防御
+- [x] 设备路由表 LRU 淘汰、DDoS 限流与非阻塞 Dumping 设计
+- [x] 无锁 Single-Producer-Single-Consumer (SPSC) 环形消息队列 (适配 BLE 中断)
+- [x] 蓝牙 Security Mode 1 Level 3 配对认证与 Lua 签名验签
+- [x] 蓝牙状态联动的智能 Tickless 睡眠决策与休眠窗口动态调节
+- [x] RISC-V 32 (RV32IMAC) 架构移植与 CLINT/CSR 控制 (实现 QEMU Virt 运行)
+- [x] ELF 加载器 Heap 越界写/TOCTOU/W^X 控制安全加固
+- [x] 系统调用 SVC/ECALL 参数校验安全加固 (IpcReplyDesc 突破传参瓶颈)
+- [x] 故障处理器（MemManage）尾链调度死锁解除
 - [x] 内核调度器死亡任务兜底切换与死锁修复
 - [x] 内核内存堆双重释放拦截（魔数）与 realloc 越界读取修复
 - [x] irq_save/restore 扩展

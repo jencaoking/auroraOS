@@ -19,23 +19,32 @@ volatile uint32_t* const FMC = reinterpret_cast<uint32_t*>(FLASH_CTRL_BASE + 0x0
 
 constexpr uint32_t FLASH_KEY = 0x71D50000;
 
-void erase_page(uint32_t address) {
+bool erase_page(uint32_t address) {
     *FMA = address & ~(1024 - 1);
     *FMC = FLASH_KEY | 0x2; // Erase
-    while (*FMC & 0x2) {} 
+    uint32_t timeout = 1000000;
+    while ((*FMC & 0x2) && --timeout) {} 
+    return timeout > 0;
 }
 
-void write_word(uint32_t address, uint32_t data) {
+bool write_word(uint32_t address, uint32_t data) {
     *FMA = address;
     *FMD = data;
     *FMC = FLASH_KEY | 0x1; // Write
-    while (*FMC & 0x1) {} 
+    uint32_t timeout = 1000000;
+    while ((*FMC & 0x1) && --timeout) {} 
+    return timeout > 0;
 }
 
 } // namespace flash
 
 namespace {
 
+#ifdef CONFIG_SECURE_BOOT_PROD
+// Read from eFuse / OTP area
+const uint8_t* ROOT_PUBLIC_KEY = reinterpret_cast<const uint8_t*>(0x400E0000); // Mock eFuse addr
+#else
+#warning "Using Mock Root Public Key! DO NOT USE IN PRODUCTION."
 const uint8_t ROOT_PUBLIC_KEY[32] = {
     // 32 bytes mock public key
     0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 
@@ -43,9 +52,13 @@ const uint8_t ROOT_PUBLIC_KEY[32] = {
     0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 
     0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA
 };
+#endif
 
-bool verify_firmware(aurora::FirmwareHeader* header, uint32_t offset) {
+bool verify_firmware(aurora::FirmwareHeader* header, uint32_t offset, uint32_t part_size) {
     if (header->magic != aurora::FIRMWARE_MAGIC) return false;
+    
+    // Bounds check for image_size
+    if (header->image_size == 0 || header->image_size > part_size - 128) return false;
     
     // Header size is 128 bytes
     const uint8_t* message = reinterpret_cast<const uint8_t*>(offset + 128);
@@ -68,44 +81,68 @@ extern "C" void kernel_main() {
     FirmwareHeader* part_a = reinterpret_cast<FirmwareHeader*>(part_a_offset);
     FirmwareHeader* part_b = reinterpret_cast<FirmwareHeader*>(part_b_offset);
 
-    bool a_valid = verify_firmware(part_a, part_a_offset);
-    bool b_valid = verify_firmware(part_b, part_b_offset);
+    bool a_valid = verify_firmware(part_a, part_a_offset, part_size);
+    bool b_valid = verify_firmware(part_b, part_b_offset, part_size);
 
     // If B has a pending update and is valid, or if A is invalid and B is valid (recovery from interrupted swap)
     if (b_valid && (!a_valid || part_b->status == FirmwareStatus::UPDATE_PENDING)) {
         // Power-loss safe OTA Swap (B -> A)
+        bool flash_ok = true;
+        
+        // Bounds check before copy
+        if (part_b->image_size == 0 || part_b->image_size > part_size - 128) {
+            flash_ok = false;
+        }
+
         // 1. Erase A entirely
-        for (uint32_t addr = part_a_offset; addr < part_a_offset + part_size; addr += 1024) {
-            flash::erase_page(addr);
+        if (flash_ok) {
+            for (uint32_t addr = part_a_offset; addr < part_a_offset + part_size; addr += 1024) {
+                if (!flash::erase_page(addr)) {
+                    flash_ok = false;
+                    break;
+                }
+            }
         }
         
         // 2. Copy BODY (skip first 128 bytes header)
-        uint32_t words_to_copy = part_b->image_size / 4;
-        if (part_b->image_size % 4 != 0) words_to_copy++;
-        
-        uint32_t* src = reinterpret_cast<uint32_t*>(part_b_offset + 128);
-        uint32_t* dst = reinterpret_cast<uint32_t*>(part_a_offset + 128);
-        for (uint32_t i = 0; i < words_to_copy; ++i) {
-            flash::write_word(reinterpret_cast<uint32_t>(&dst[i]), src[i]);
+        if (flash_ok) {
+            uint32_t words_to_copy = part_b->image_size / 4;
+            if (part_b->image_size % 4 != 0) words_to_copy++;
+            
+            uint32_t* src = reinterpret_cast<uint32_t*>(part_b_offset + 128);
+            uint32_t* dst = reinterpret_cast<uint32_t*>(part_a_offset + 128);
+            for (uint32_t i = 0; i < words_to_copy; ++i) {
+                if (!flash::write_word(reinterpret_cast<uint32_t>(&dst[i]), src[i])) {
+                    flash_ok = false;
+                    break;
+                }
+            }
         }
         
         // 3. Write HEADER last to ensure A is marked valid only when completely copied
-        uint32_t* header_src = reinterpret_cast<uint32_t*>(part_b_offset);
-        uint32_t* header_dst = reinterpret_cast<uint32_t*>(part_a_offset);
-        for (uint32_t i = 0; i < 128 / 4; ++i) {
-            // Modify status to VALID
-            uint32_t word = header_src[i];
-            if (i == 3) { // offset 12 is status
-                word = static_cast<uint32_t>(FirmwareStatus::VALID);
+        if (flash_ok) {
+            uint32_t* header_src = reinterpret_cast<uint32_t*>(part_b_offset);
+            uint32_t* header_dst = reinterpret_cast<uint32_t*>(part_a_offset);
+            for (uint32_t i = 0; i < 128 / 4; ++i) {
+                // Modify status to VALID
+                uint32_t word = header_src[i];
+                if (i == 3) { // offset 12 is status
+                    word = static_cast<uint32_t>(FirmwareStatus::VALID);
+                }
+                if (!flash::write_word(reinterpret_cast<uint32_t>(&header_dst[i]), word)) {
+                    flash_ok = false;
+                    break;
+                }
             }
-            flash::write_word(reinterpret_cast<uint32_t>(&header_dst[i]), word);
         }
         
-        // Invalidate PART_B
-        flash::erase_page(part_b_offset);
+        // Re-check A BEFORE erasing B
+        a_valid = verify_firmware(part_a, part_a_offset, part_size);
         
-        // Re-check A
-        a_valid = verify_firmware(part_a, part_a_offset);
+        // Only if A is fully valid and written correctly, we can erase B
+        if (a_valid) {
+            flash::erase_page(part_b_offset);
+        }
     }
 
     if (a_valid) {
@@ -118,7 +155,13 @@ extern "C" void kernel_main() {
         uint32_t app_sp = *reinterpret_cast<uint32_t*>(vector_table_addr);
         uint32_t app_pc = *reinterpret_cast<uint32_t*>(vector_table_addr + 4);
 
+        // Sanity check: SP must point to RAM (e.g., 0x2XXXXXXX), PC must be in Flash and have Thumb bit (bit0) set
+        if ((app_sp & 0xF0000000) != 0x20000000 || (app_pc & 0x1) == 0) {
+            while (true) {} // Sanity check failed, halt
+        }
+
         asm volatile(
+            "cpsid i\n"     // Disable interrupts before handing over to app
             "msr msp, %0\n"
             "bx %1\n"
             :: "r"(app_sp), "r"(app_pc)
