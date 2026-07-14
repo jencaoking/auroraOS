@@ -14,6 +14,7 @@ Window::Window(uint32_t width, uint32_t height, gpu::GpuDevice* gpu, Compositor*
 
 Window::~Window() {
     if (compositor_) {
+        invalidate();               // 必须在 delete backing_store_ 之前调用，否则无宽高
         compositor_->remove_window(this);
     }
     delete backing_store_;

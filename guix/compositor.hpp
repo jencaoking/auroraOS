@@ -20,6 +20,7 @@ struct Rect {
 class Compositor {
 public:
     Compositor(gpu::Surface* screen_surface, gpu::GpuDevice* gpu);
+    ~Compositor();
     
     void add_window(Window* win);
     void remove_window(Window* win);
@@ -31,7 +32,6 @@ public:
     void composite();
 
 private:
-    void sort_windows();
 
     gpu::Surface* screen_;
     gpu::GpuDevice* gpu_;

@@ -11,6 +11,7 @@ namespace guix {
 class Compositor;
 
 class Window {
+    friend class Compositor;
 public:
     Window(uint32_t width, uint32_t height, gpu::GpuDevice* gpu, Compositor* compositor);
     ~Window();

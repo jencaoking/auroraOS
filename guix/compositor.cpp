@@ -27,6 +27,15 @@ Compositor::Compositor(gpu::Surface* screen_surface, gpu::GpuDevice* gpu)
     damage_rect_.clear();
 }
 
+Compositor::~Compositor() {
+    // 解除所有窗口的绑定，防止它们在析构时出现 Use-After-Free
+    Window* curr = window_head_;
+    while (curr) {
+        curr->compositor_ = nullptr;
+        curr = curr->next;
+    }
+}
+
 void Compositor::add_window(Window* win) {
     if (!win) return;
     
@@ -95,8 +104,8 @@ void Compositor::composite() {
         damage_rect_.y = 0;
     }
     
-    uint32_t screen_w = screen_->get_width();
-    uint32_t screen_h = screen_->get_height();
+    int32_t screen_w = static_cast<int32_t>(screen_->get_width());
+    int32_t screen_h = static_cast<int32_t>(screen_->get_height());
     
     if (damage_rect_.x + damage_rect_.w > screen_w) {
         damage_rect_.w = screen_w - damage_rect_.x;
