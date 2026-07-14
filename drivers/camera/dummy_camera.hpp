@@ -12,6 +12,11 @@ public:
     ~DummyCamera() override;
 
     bool init(uint16_t width, uint16_t height, PixelFormat fmt) override;
+    // ⚠️ 生命周期约定 (Lifecycle Contract):
+    // 传递给 callback 的 Surface 指针生命周期由 Camera 驱动严格拥有。
+    // 接收方在 callback 执行期间可同步读取数据，或立即发起深度拷贝。
+    // 严禁在上层逻辑中长期保存该指针，因为在 init() 重置、分辨率变更或驱动析构时，
+    // 该 Surface 会被销毁，导致保存的指针悬空。
     void set_frame_callback(FrameCallback callback, void* user_data) override;
     void start_capture() override;
     void stop_capture() override;

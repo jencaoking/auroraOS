@@ -17,6 +17,13 @@ DummyCamera::~DummyCamera() {
 bool DummyCamera::init(uint16_t width, uint16_t height, PixelFormat fmt) {
     if (capturing_) return false;
     
+    // 中危防御：防止 width 或 height 为 0 导致后续取模除零崩溃
+    if (width == 0 || height == 0) return false;
+    
+    // 中危防御：本 dummy 类仅支持 RGB565 语义的像素填充。
+    // 拒绝其他压缩格式 (如 JPEG)，以防止由于 Surface 分配过小而导致堆越界溢出。
+    if (fmt != PixelFormat::RGB565) return false;
+    
     width_ = width;
     height_ = height;
     format_ = fmt;
@@ -53,7 +60,8 @@ void DummyCamera::simulate_frame_arrival() {
     uint32_t total = width_ * height_;
     
     // Base color shifts with frame_count_
-    uint16_t color = (frame_count_ << 11) | ((frame_count_ & 0x3F) << 5) | (frame_count_ & 0x1F);
+    // 低危修复：对 R 分量增加 & 0x1F 掩码，防止高位溢出污染 G 颜色通道
+    uint16_t color = ((frame_count_ & 0x1F) << 11) | ((frame_count_ & 0x3F) << 5) | (frame_count_ & 0x1F);
     
     for (uint32_t i = 0; i < total; ++i) {
         buf[i] = color; // Fill solid changing color
