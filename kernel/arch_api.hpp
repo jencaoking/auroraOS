@@ -46,6 +46,18 @@ namespace Arch {
     [[noreturn]] void start_first_task(uint32_t* stack_ptr,
                                        void (*entry_point)(),
                                        uint32_t privilege);
+
+    // ── 内存保护单元 (MPU/PMP) ──────────────────────────────────────────
+    struct MpuRegion {
+        uintptr_t base;
+        uint8_t size_pow2;
+        uint32_t ap;
+        bool execute_never;
+        bool is_device;
+    };
+    void mpu_configure_region(uint8_t idx, const MpuRegion& region) noexcept;
+    void mpu_enable() noexcept;
+    void mpu_disable() noexcept;
 }
 
 // 拉入当前架构的内联实现 (arch/arm/cortex-m/cm4/arch_impl.hpp 等)

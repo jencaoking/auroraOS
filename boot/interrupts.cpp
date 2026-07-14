@@ -66,10 +66,15 @@ extern "C" {
     volatile uint32_t g_switch_start_cycle = 0;
 
     // 由 PendSV_Handler 调用的 MPU 动态沙盒切换
+    // RISC-V 不使用 ARM MPU 路径: PMP 入口由 trap.cpp 在任务切换时统一管理
     void mpu_switch_sandbox(TaskControlBlock* next) {
+#if !defined(ARCH_RISCV32)
         if (next && next->size_pow2 > 0) {
             MPU::instance().update_user_sandbox_verified(next->mpu_sandbox);
         }
+#else
+        (void)next; // RISC-V: PMP 区域在 trap_handler_c 的上下文切换路径中更新
+#endif
     }
 
     void pendsv_metrics_hook() {
