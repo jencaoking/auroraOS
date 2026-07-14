@@ -410,9 +410,11 @@ void system_daemon_task(void) {
     });
 #endif
 
+    IntentEngine::Context intent_ctx;
+
     while (true) {
         // 1. 意图引擎监控传感器变化
-        IntentEngine::process_sensors(g_lua_app);
+        IntentEngine::process_sensors(g_lua_app, intent_ctx);
         
         Scheduler::instance().sleep_ms(500); // 采样间隔
     }
