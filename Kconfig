@@ -12,12 +12,16 @@ config BOARD_LM3S6965_QB
 config BOARD_MIBAND8
     bool "Xiaomi Mi Band 8 (Ambiq Apollo3 Cortex-M4F)"
 
+config BOARD_QEMU_RV32_VIRT
+    bool "QEMU RISC-V 32 Virt (RV32IMAC)"
+
 endchoice
 
 config BOARD
     string
     default "lm3s6965-qb" if BOARD_LM3S6965_QB
     default "miband8" if BOARD_MIBAND8
+    default "qemu_rv32_virt" if BOARD_QEMU_RV32_VIRT
 
 menu "System Core Configuration"
 

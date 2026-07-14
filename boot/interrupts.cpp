@@ -90,9 +90,13 @@ extern "C" {
     // ================================================================
     void SVC_Handler_C(InterruptFrame* frame) {
         isr_enter_cycle = Arch::get_cycle();
-        // 通过 PC 回溔到 SVC 指令，提取 8 位系统调用号
+#if defined(ARCH_RISCV32)
+        const uint8_t svc_number = static_cast<uint8_t>(frame->svc_num);
+#else
+        // 通过 PC 回溯到 SVC 指令，提取 8 位系统调用号
         const uint16_t svc_instr = reinterpret_cast<const uint16_t*>(frame->pc)[-1];
         const uint8_t  svc_number = static_cast<uint8_t>(svc_instr & 0xFF);
+#endif
 
         // 获取当前任务的栈边界，用于参数指针校验
         const TaskControlBlock* cur = Scheduler::instance().get_current_tcb();

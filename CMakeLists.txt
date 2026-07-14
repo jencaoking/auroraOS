@@ -31,6 +31,10 @@ if(BOARD STREQUAL "lm3s6965-qb")
 elseif(BOARD STREQUAL "miband8")
     set(BOARD_DIR "xiaomi/miband8")
     set(ARCH_DIR  "arm/cortex-m/cm4f")
+elseif(BOARD STREQUAL "qemu_rv32_virt")
+    set(BOARD_DIR "qemu/rv32_virt")
+    set(ARCH_DIR  "riscv/rv32imac")
+    set(QEMU_MACH "virt")
 else()
     message(FATAL_ERROR "Unsupported BOARD: ${BOARD}! Please check boards/ directory.")
 endif()
@@ -54,15 +58,18 @@ elseif(BOARD STREQUAL "miband8")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CPU_FLAGS} -O2 -g -include autoconf.h -DLUA_32BITS=1")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CPU_FLAGS} -fno-exceptions -fno-rtti -fno-threadsafe-statics -O2 -g -include autoconf.h -DLUA_32BITS=1")
     set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} ${CPU_FLAGS}")
+elseif(BOARD STREQUAL "qemu_rv32_virt")
+    set(CPU_FLAGS "-march=rv32imac -mabi=ilp32 -mcmodel=medany -ffreestanding -fno-builtin -fno-common -Wall -Wextra")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CPU_FLAGS} -O2 -g -include autoconf.h -DLUA_32BITS=1")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CPU_FLAGS} -fno-exceptions -fno-rtti -fno-threadsafe-statics -O2 -g -include autoconf.h -DLUA_32BITS=1")
+    set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} ${CPU_FLAGS}")
 endif()
 
 # =====================================================================
 # 3. 源码收集
 # =====================================================================
 set(SOURCES
-    boot/boot.S
     boot/uart.c
-    boot/interrupts.cpp
     kernel/memory.cpp
     kernel/libc.cpp
     kernel/posix.cpp
@@ -70,6 +77,19 @@ set(SOURCES
     kernel/ota.cpp
     metrics/metrics.cpp
 )
+
+if(BOARD STREQUAL "qemu_rv32_virt")
+    list(APPEND SOURCES
+        arch/riscv/rv32imac/boot.S
+        arch/riscv/rv32imac/trap.cpp
+        arch/riscv/rv32imac/trap_vector.S
+    )
+else()
+    list(APPEND SOURCES
+        boot/boot.S
+        boot/interrupts.cpp
+    )
+endif()
 
 if(BOARD STREQUAL "lm3s6965-qb")
     list(APPEND SOURCES
@@ -84,6 +104,14 @@ elseif(BOARD STREQUAL "miband8")
         arch/arm/cortex-m/cm4f/context_switch.S
         apps/watch/miband_main.cpp
         apps/watch/watch_app.cpp
+    )
+elseif(BOARD STREQUAL "qemu_rv32_virt")
+    list(APPEND SOURCES
+        apps/shell.cpp
+        apps/elf_loader.cpp
+        apps/lua_ui_binding.cpp
+        apps/kernel.cpp
+        apps/net_app.cpp
     )
 endif()
 
@@ -167,6 +195,25 @@ if(BOARD STREQUAL "lm3s6965-qb")
         ${CMAKE_SOURCE_DIR}/arch/${ARCH_DIR}
         ${CMAKE_SOURCE_DIR}/boards/${BOARD_DIR}
     )
+elseif(BOARD STREQUAL "qemu_rv32_virt")
+    target_include_directories(auroraOS.elf PRIVATE 
+        ${CMAKE_SOURCE_DIR}
+        ${CMAKE_SOURCE_DIR}/config
+        ${CMAKE_SOURCE_DIR}/boot
+        ${CMAKE_SOURCE_DIR}/kernel
+        ${CMAKE_SOURCE_DIR}/syscall
+        ${CMAKE_SOURCE_DIR}/vfs
+        ${CMAKE_SOURCE_DIR}/apps
+        ${CMAKE_SOURCE_DIR}/net
+        ${CMAKE_SOURCE_DIR}/adapter/net
+        ${CMAKE_SOURCE_DIR}/3rdparty/lwip/src/include
+        ${CMAKE_SOURCE_DIR}/3rdparty/littlefs
+        ${CMAKE_SOURCE_DIR}/drivers/display
+        ${CMAKE_SOURCE_DIR}/drivers/sensor
+        ${CMAKE_SOURCE_DIR}/drivers/input
+        ${CMAKE_SOURCE_DIR}/arch/${ARCH_DIR}
+        ${CMAKE_SOURCE_DIR}/boards/${BOARD_DIR}
+    )
 elseif(BOARD STREQUAL "miband8")
     target_include_directories(auroraOS.elf PRIVATE 
         ${CMAKE_SOURCE_DIR}
@@ -193,6 +240,14 @@ endif()
 if(BOARD STREQUAL "lm3s6965-qb")
     target_link_options(auroraOS.elf PRIVATE
         -T ${CMAKE_SOURCE_DIR}/config/linker.ld
+        -nostartfiles
+        -Wl,--gc-sections
+        --specs=nano.specs
+        --specs=nosys.specs
+    )
+elseif(BOARD STREQUAL "qemu_rv32_virt")
+    target_link_options(auroraOS.elf PRIVATE
+        -T ${CMAKE_SOURCE_DIR}/config/linker_rv32.ld
         -nostartfiles
         -Wl,--gc-sections
         --specs=nano.specs
