@@ -2,13 +2,12 @@ ENTRY(_start)
 
 MEMORY
 {
-    RAM (rwx) : ORIGIN = 0x80000000, LENGTH = 128M
+    FLASH (rx) : ORIGIN = 0x20000000, LENGTH = 32M
+    RAM (rwx)  : ORIGIN = 0x80000000, LENGTH = 128M
 }
 
 SECTIONS
 {
-    . = ORIGIN(RAM);
-
     .text : {
         _stext = .;
         KEEP(*(.init))
@@ -17,7 +16,7 @@ SECTIONS
         *(.srodata .srodata.*)
         . = ALIGN(4);
         _etext = .;
-    } > RAM
+    } > FLASH
 
     .data : {
         . = ALIGN(4);
@@ -26,7 +25,8 @@ SECTIONS
         *(.sdata .sdata.*)
         . = ALIGN(4);
         _edata = .;
-    } > RAM
+    } > RAM AT > FLASH
+    _sidata = LOADADDR(.data);
 
     .bss (NOLOAD) : {
         . = ALIGN(4);
@@ -42,6 +42,6 @@ SECTIONS
     . += 0x10000; /* 64KB boot stack */
     _estack = .;
     
-    _flash_start = ORIGIN(RAM);
+    _flash_start = ORIGIN(FLASH);
     _flash_end = _etext;
 }
