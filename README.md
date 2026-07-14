@@ -651,11 +651,14 @@ python scripts/genconfig.py
 - [x] 安全启动 (Secure Boot，上电 Ed25519 签名验证 Root of Trust)
 - [x] 页面栈导航器与 GUI 动画引擎 (ScreenNavigator 栈式导航、右滑手势 Pop、过渡平移/渐变动画)
 - [x] ELF 重定位解析与 Lua UI 深度绑定 (R_ARM_ABS32 / R_ARM_THM_CALL 动态解析与 Lua 触控/路由绑定)
-### Phase 4: 手机探索（18-36 个月）— 🌌 规划中
+### Phase 4: 手机探索（18-36 个月）— 🌌 规划中 / 进行中
 
-- [ ] MMU 虚拟内存（Cortex-A）
-- [ ] 进程隔离 + Capability 安全模型（seL4）
-- [ ] 消息传递 IPC（QNX 风格）
+- [x] Cortex-A 架构适配 (ARMv8-A AArch64) 与基础汇编引导
+- [x] MMU 虚拟内存与强类型 PTE 页表项 (Type Safety)
+- [x] 硬件中断控制器 GIC 初始化
+- [ ] 进程隔离 + 虚拟内存地址空间映射 (VASP)
+- [ ] 基于 seL4 的 Capability 安全模型与权限管理
+- [ ] 消息传递 IPC（QNX 风格同步 MsgSend/Receive/Reply）
 - [ ] WiFi 驱动 + 完整 TCP/IP
 - [ ] GPU 驱动 + GUIX 图形框架
 - [ ] 摄像头 + 多媒体
