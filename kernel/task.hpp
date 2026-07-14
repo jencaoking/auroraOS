@@ -4,7 +4,9 @@
 #include <stdint.h>
 #include <stddef.h>
 #include "arch_api.hpp" // 引入底层架构 HAL 接口
-#include "mpu.hpp"      // For SandboxDescriptor
+#include "mpu.hpp"
+#include "cspace.hpp"
+#include "ipc.hpp"      // For SandboxDescriptor
 
 class Mutex; // 前向声明，用于优先级继承
 
@@ -86,6 +88,21 @@ struct TaskControlBlock {
     // 5. 【MMU VASP】(Virtual Address Space Page Directory)
     // ========================================================
     uintptr_t pgdir_base;
+
+    // ========================================================
+    // 6. 【seL4 Capability & IPC 模型】
+    // ========================================================
+    auroraos::kernel::Capability cspace[auroraos::kernel::MAX_CSPACE_SLOTS];
+    auroraos::kernel::IpcState ipc_state;
+    
+    // IPC 端点等待队列链表
+    TaskControlBlock* ipc_blocked_next;
+    
+    void* ipc_msg_buf;
+    void* ipc_reply_buf;
+    uint32_t ipc_msg_len;
+    uint32_t ipc_max_len;
+    uint32_t ipc_sender_id;  // 记录发送方 ID (或接收到的 Sender ID)
 };
 
 
@@ -241,6 +258,15 @@ public:
         for (int i = 0; i < 16; i++) tcb.signal_handlers[i] = nullptr;
         tcb.held_mutexes = nullptr;
         tcb.waiting_on_mutex = nullptr;
+
+        // 初始化 IPC 与 CSpace
+        tcb.ipc_state = auroraos::kernel::IpcState::Ready;
+        tcb.ipc_blocked_next = nullptr;
+        for (int i = 0; i < auroraos::kernel::MAX_CSPACE_SLOTS; i++) {
+            tcb.cspace[i].type = auroraos::kernel::CapType::Null;
+            tcb.cspace[i].rights = {0, 0, 0, 0};
+            tcb.cspace[i].object = nullptr;
+        }
 
         // 【栈水印】在栈底（数组首元素，栈向下增长所以首地址 = 最低地址）写入哨兵
         static constexpr uint32_t STACK_CANARY = 0xDEADBEEFu;
@@ -402,7 +428,14 @@ public:
     }
 
     // 遵循 F.16: 返回裸指针仅表示非所有权观察（调度器拥有 TCB 数组）
-    TaskControlBlock* get_current_tcb() { return &tasks[current_task_index]; }
+    TaskControlBlock* get_current_tcb() {
+        if (!started_) return nullptr;
+        return &tasks[current_task_index];
+    }
+    
+    TaskControlBlock& get_task(uint32_t id) {
+        return tasks[id];
+    }
 
     int get_task_count() const { return task_count; }
     TaskControlBlock* get_task(int index) { 

@@ -5,6 +5,8 @@
 #include "timer.hpp"
 #include "work_queue.hpp"
 #include "mpu.hpp"
+#include "../kernel/cspace.hpp"
+#include "../kernel/ipc.hpp"
 #include "frame_scheduler_v2.hpp"
 #include "../metrics/metrics.hpp"
 
@@ -124,6 +126,64 @@ extern "C" {
                     break;
                 }
                 Scheduler::instance().sleep_ms(ms);
+                break;
+            }
+            case SYS_IPC_CALL: { // SysCall: 发起 IPC 请求并阻塞等待响应
+                if (!cur) break;
+                uint32_t cap_id = frame->r0;
+                void* msg = reinterpret_cast<void*>(frame->r1);
+                uint32_t len = frame->r2;
+                void* reply_buf = reinterpret_cast<void*>(frame->r3);
+                // Note: In inline asm we pushed 5th arg to stack (or r4), for simplicity here we assume 5th arg is in r12 or stack, but since we didn't push properly in SVC frame, let's hardcode max_reply_len for safety in phase 1 or fetch from r4 if we saved it. 
+                // Cortex-M exception frame doesn't push r4. Let's assume max_reply_len is 256.
+                uint32_t max_reply_len = 256; 
+                
+                if (cap_id < auroraos::kernel::MAX_CSPACE_SLOTS) {
+                    const auto& cap = cur->cspace[cap_id];
+                    if (cap.type == auroraos::kernel::CapType::Endpoint && cap.rights.write) {
+                        auto* ep = static_cast<auroraos::kernel::Endpoint*>(cap.object);
+                        // We must cast away const to call Endpoint methods (scheduler tasks are mutated)
+                        TaskControlBlock* mutable_cur = Scheduler::instance().get_current_tcb();
+                        ep->call(mutable_cur, msg, len, reply_buf, max_reply_len);
+                        Scheduler::instance().schedule(); // Block and switch task
+                    }
+                }
+                break;
+            }
+            case SYS_IPC_RECEIVE: { // SysCall: 接收 IPC 请求
+                if (!cur) break;
+                uint32_t cap_id = frame->r0;
+                void* msg_buf = reinterpret_cast<void*>(frame->r1);
+                uint32_t max_len = frame->r2;
+                uint32_t* out_sender_id = reinterpret_cast<uint32_t*>(frame->r3);
+                
+                if (cap_id < auroraos::kernel::MAX_CSPACE_SLOTS) {
+                    const auto& cap = cur->cspace[cap_id];
+                    if (cap.type == auroraos::kernel::CapType::Endpoint && cap.rights.read) {
+                        auto* ep = static_cast<auroraos::kernel::Endpoint*>(cap.object);
+                        TaskControlBlock* mutable_cur = Scheduler::instance().get_current_tcb();
+                        ep->receive(mutable_cur, msg_buf, max_len);
+                        
+                        if (mutable_cur->ipc_state == auroraos::kernel::IpcState::Receiving) {
+                            // No sender was waiting, we blocked.
+                            Scheduler::instance().schedule();
+                        } else if (out_sender_id) {
+                            // We fast-pathed and received a message immediately.
+                            *out_sender_id = mutable_cur->ipc_sender_id;
+                        }
+                    }
+                }
+                break;
+            }
+            case SYS_IPC_REPLY: { // SysCall: 回复 IPC 请求
+                if (!cur) break;
+                uint32_t sender_id = frame->r0;
+                void* reply_msg = reinterpret_cast<void*>(frame->r1);
+                uint32_t len = frame->r2;
+                // Reply is non-blocking for the receiver, it just wakes up the sender.
+                // We use static reply method for now
+                auroraos::kernel::Endpoint::reply(nullptr, sender_id, reply_msg, len);
+                Scheduler::instance().schedule(); // Yield to the awoken sender (Fastpath)
                 break;
             }
             default:
