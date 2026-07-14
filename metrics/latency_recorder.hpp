@@ -38,8 +38,10 @@ public:
 
     uint32_t get_avg_us() const {
         if (count_ == 0) return 0;
+        uint32_t cpu = Arch::get_cycles_per_us();
+        if (cpu == 0) return 0;
         uint32_t avg_cycles = total_cycles_ / count_;
-        return avg_cycles / Arch::get_cycles_per_us();
+        return avg_cycles / cpu;
     }
 
     uint32_t get_avg_cycles() const {
@@ -49,11 +51,28 @@ public:
 
     uint32_t get_max_us() const {
         if (count_ == 0) return 0;
-        return max_cycles_ / Arch::get_cycles_per_us();
+        uint32_t cpu = Arch::get_cycles_per_us();
+        if (cpu == 0) return 0;
+        return max_cycles_ / cpu;
     }
 
+    uint32_t get_min_us() const {
+        if (count_ == 0) return 0;
+        uint32_t cpu = Arch::get_cycles_per_us();
+        if (cpu == 0) return 0;
+        return min_cycles_ / cpu;
+    }
+    
+    uint32_t get_min_cycles() const {
+        if (count_ == 0) return 0;
+        return min_cycles_;
+    }
+
+    // Note: get_p99_us only considers the most recent HIST_SIZE (100) samples.
     uint32_t get_p99_us() const {
         if (count_ == 0) return 0;
+        uint32_t cpu = Arch::get_cycles_per_us();
+        if (cpu == 0) return 0;
         int valid_samples = count_ < HIST_SIZE ? count_ : HIST_SIZE;
         uint32_t temp[HIST_SIZE];
         for(int i=0; i<valid_samples; i++) temp[i] = history_[i];
@@ -70,7 +89,7 @@ public:
         
         int p99_idx = (valid_samples * 99) / 100;
         if (p99_idx >= valid_samples) p99_idx = valid_samples - 1;
-        return temp[p99_idx] / Arch::get_cycles_per_us();
+        return temp[p99_idx] / cpu;
     }
     
     uint32_t get_count() const { return count_; }

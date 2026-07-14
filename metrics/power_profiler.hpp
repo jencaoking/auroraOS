@@ -9,7 +9,6 @@ private:
     uint64_t total_sleep_cycles_;
     uint64_t total_active_cycles_;
     uint32_t sleep_count_;
-    uint32_t last_record_cycle_;
 
 public:
     PowerProfiler() { reset(); }
@@ -18,7 +17,6 @@ public:
         total_sleep_cycles_ = 0;
         total_active_cycles_ = 0;
         sleep_count_ = 0;
-        last_record_cycle_ = Arch::get_cycle();
     }
 
     void add_sleep_time(uint32_t sleep_cycles) {
