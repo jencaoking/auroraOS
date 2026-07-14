@@ -211,6 +211,8 @@ public:
     }
 
     void init() {
+#ifdef DEBUG_BYPASS_SOFTBUS_KEY
+#warning "Using hardcoded SoftBus key for debugging! Do not use in production."
         const uint8_t default_key[32] = {
             0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,
             0x11,0x12,0x13,0x14,0x15,0x16,0x17,0x18,
@@ -218,6 +220,10 @@ public:
             0x31,0x32,0x33,0x34,0x35,0x36,0x37,0x38
         };
         set_key(default_key, 1);
+#else
+        // TODO: Read actual device key from Secure Element or encrypted OTP partition
+        // uint8_t key[32]; SecureStorage::read_softbus_key(key); set_key(key, version);
+#endif
 
         // 1. 创建 UDP Socket
         udp_socket_ = lwip_socket(AF_INET, SOCK_DGRAM, 0);
