@@ -7,6 +7,7 @@
 
 extern "C" {
 
+#ifndef AURORA_HOST_TEST
 int open(const char* path, int flags) {
 #ifdef CONFIG_VFS
     int res = VfsManager::instance().open(path, flags);
@@ -97,6 +98,8 @@ int lseek(int fd, int offset, int whence) {
 
 unsigned int sleep(unsigned int seconds) {
     // 假设 1 tick = 1ms，这里转换为 ticks 延时
+    // 防止无符号整数溢出（UINT32_MAX / 1000 约等于 4294967）
+    if (seconds > 4294967) seconds = 4294967;
     sys_sleep(seconds * 1000);
     return 0;
 }
@@ -107,10 +110,17 @@ int usleep(unsigned int usec) {
     sys_sleep(ticks);
     return 0;
 }
+#endif
+
 
 int sem_init(sem_t* sem, int pshared, unsigned int value) {
     (void)pshared;
     Semaphore* s = new Semaphore(value);
+    if (!s) {
+        errno = ENOMEM;
+        *sem = nullptr;
+        return -1;
+    }
     *sem = s;
     return 0;
 }
@@ -121,6 +131,7 @@ int sem_wait(sem_t* sem) {
         s->wait();
         return 0;
     }
+    errno = EINVAL;
     return -1;
 }
 
@@ -130,6 +141,7 @@ int sem_post(sem_t* sem) {
         s->signal();
         return 0;
     }
+    errno = EINVAL;
     return -1;
 }
 
@@ -138,8 +150,10 @@ int sem_destroy(sem_t* sem) {
     if (s) {
         delete s;
         *sem = nullptr;
+        return 0;
     }
-    return 0;
+    errno = EINVAL;
+    return -1;
 }
 
 }
